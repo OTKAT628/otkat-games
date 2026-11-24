@@ -110,7 +110,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			_restart()
 
 func _toggle_hide() -> void:
-	if finished or phase != "seek":
+	if finished:
 		return
 	if hidden:
 		hidden = false
