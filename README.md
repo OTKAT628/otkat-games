@@ -7,6 +7,7 @@
 - Каталог проектов: `web/games/index.html`
 - Hide & Seek: `web/hide-and-seek/index.html`
 - Survival: `web/survival/index.html`
+- Центр загрузок: `web/downloads/index.html`
 - Общие стили: `web/styles.css`
 
 ## Первые игры
@@ -17,7 +18,10 @@
 В каталоге представлены девять самостоятельных проектов: Hide & Seek, Survival, Arena, Forgotten, Skyrun, Racing, Space, Magic и Prehistoric. Остальные игры будут создаваться постепенно, после первых двух.
 
 ## Публикация сайта
-Для GitHub Pages выберите источник **Deploy from a branch**, ветку `main` (в интерфейсе может отображаться как «основной») и папку `/web`. Не выбирайте `/docs`: файлы сайта находятся в `web/`.
+В репозитории настроен GitHub Actions workflow `.github/workflows/deploy.yml`, который публикует содержимое папки `web/` на GitHub Pages.
+В настройках **Settings → Pages → Build and deployment → Source** выберите **GitHub Actions**. Не выбирайте публикацию из ветки `/docs`: сайт находится в `web/` и workflow загружает именно эту папку.
+
+Если GitHub не разрешает включить Pages для приватного репозитория на текущем тарифе, потребуется сделать репозиторий публичным или выбрать другой бесплатный хостинг. Не меняйте видимость репозитория, пока не решите, что исходники можно открыть всем.
 
 ## План
 См. `docs/ROADMAP.md`. Ссылки на скачивание появятся только после сборки и проверки Windows/Android версий.
