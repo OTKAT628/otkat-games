@@ -1,1 +1,93 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hide & Seek — OTKAT</title><link rel="stylesheet" href="../styles.css"></head><body><header class="nav"><a class="logo" href="../index.html">OTKAT<span>GAMES</span></a><nav><a href="../index.html#games">Все игры</a><a href="../index.html#studio">Студия</a><a href="../downloads/index.html">Скачать</a></nav><a class="account" href="../index.html">На главную OTKAT ↗</a></header><main><section class="hero"><div class="hero-text"><p class="eyebrow">OTKAT ORIGINAL · ПРОТОТИП</p><h1>HIDE<br><em>& SEEK</em></h1><p class="intro">Кто спрячется лучше всех? Выбирай укрытие, изучай карту и не дай охотнику тебя найти. Впереди — новые арены, стили персонажей и игровые режимы.</p><a class="button" href="../index.html#games">Вернуться к играм ↗</a></div><div class="hero-visual"><div class="orb orb-a"></div><div class="orb orb-b"></div><div class="symbol">?</div><p>HIDE SMART<br>SEEK HARD</p></div></section><section class="section"><p class="eyebrow">ЧТО В РАЗРАБОТКЕ</p><h2>Особенности игры</h2><div class="cards"><article class="game-card"><div class="card-info"><h3>Разные карты</h3><p>Мультяшные площадки, необычные комнаты и тактические локации.</p></div></article><article class="game-card"><div class="card-info"><h3>Скины и облики</h3><p>Персонажи, костюмы, аксессуары и тематические коллекции.</p></div></article><article class="game-card"><div class="card-info"><h3>Режимы</h3><p>Классические прятки, командные матчи и особые испытания.</p></div></article><article class="game-card"><div class="card-info"><h3>Игра с друзьями</h3><p>Сетевая игра запланирована после готовности базового игрового цикла.</p></div></article></div></section></main><footer><a class="logo" href="../index.html">OTKAT<span>GAMES</span></a><p>© 2026 OTKAT</p><span>Сборка ещё не опубликована</span></footer></body></html>
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1220">
+<title>Hide & Seek — OTKAT</title>
+<meta name="description" content="Hide & Seek от OTKAT — прятки с разными картами, стилями и обликами персонажей.">
+<link rel="stylesheet" href="../styles.css">
+<style>
+.game-intro{padding:65px 10vw 55px;background:radial-gradient(ellipse at 78% 35%,#6b385f 0,transparent 44%),linear-gradient(120deg,#0a1220,#182039)}
+.game-intro h1{font-size:clamp(48px,7vw,82px);line-height:.98;letter-spacing:-.06em;margin:18px 0}
+.game-intro h1 em{font-style:normal;color:#ffbd7a}
+.game-intro .intro{max-width:620px}
+.game-section{padding:60px 10vw}
+.game-section h2{font-size:clamp(30px,4vw,44px);margin:10px 0 12px;letter-spacing:-.04em}
+.game-lead{max-width:650px;color:var(--muted);line-height:1.8;font-size:14px}
+.play-preview{margin-top:28px;border:1px solid #ffffff20;border-radius:14px;overflow:hidden;background:#142238}
+.preview-art{min-height:220px;padding:26px;display:flex;align-items:end;justify-content:space-between;gap:15px;transition:background .2s}
+.preview-art strong{font-size:clamp(28px,4vw,46px);line-height:1;letter-spacing:-.04em}
+.preview-art span{font-size:11px;letter-spacing:.16em;color:#fff}
+.preview-copy{padding:22px 25px}
+.preview-copy h3{margin:0 0 7px;font-size:22px}
+.preview-copy p{margin:0;color:var(--muted);line-height:1.7;font-size:13px}
+.chooser{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0 0}
+.choice{border:1px solid #ffffff30;background:#ffffff08;color:#eaf1f7;border-radius:30px;padding:10px 15px;font:inherit;font-size:12px;cursor:pointer}
+.choice[aria-pressed=true]{border-color:var(--cyan);background:#6ce5df1b;color:var(--cyan)}
+.selection-note{font-size:12px;color:var(--muted);margin-top:14px}
+.feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:25px}
+.feature{padding:22px;border:1px solid #ffffff1c;border-radius:10px;background:#142238}
+.feature h3{margin:0 0 8px;font-size:17px}.feature p{margin:0;color:var(--muted);font-size:13px;line-height:1.7}
+.notice{margin-top:24px;padding:17px 20px;border-left:2px solid var(--gold);background:#ffffff08;color:var(--muted);font-size:12px;line-height:1.8}
+@media(max-width:760px){.game-intro{padding:52px 7vw 42px}.game-section{padding:48px 7vw}.feature-grid{grid-template-columns:1fr}.preview-art{min-height:180px}}
+</style>
+</head>
+<body>
+<header class="nav"><a class="logo" href="../index.html">OTKAT<span>GAMES</span></a><nav><a href="../index.html#games">Все игры</a><a href="../games/index.html">Каталог</a><a href="../downloads/index.html">Скачать</a></nav><a class="account" href="../index.html">На главную ↗</a></header>
+<main>
+<section class="game-intro">
+<p class="eyebrow">OTKAT ORIGINAL · ПЕРВЫЙ ИГРОВОЙ ПРОЕКТ</p>
+<h1>HIDE<br><em>& SEEK</em></h1>
+<p class="intro">Прячься, маскируйся под предметы и перехитри охотника. Выбирай арену и внешний вид персонажа — у каждой карты свой характер и свои тактики.</p>
+<a class="button" href="#customize">Выбрать карту и облик ↓</a>
+</section>
+<section class="game-section" id="customize">
+<p class="eyebrow">ТВОЙ СТИЛЬ ИГРЫ</p><h2>Выбери карту</h2>
+<p class="game-lead">Это интерактивный просмотр концепций. Нажимай на названия карт, чтобы посмотреть настроение и особенности каждой будущей арены.</p>
+<div class="chooser" role="group" aria-label="Выбор карты">
+<button class="choice" data-map="cartoon" aria-pressed="true">Мультяшный город</button>
+<button class="choice" data-map="studio" aria-pressed="false">Телестудия</button>
+<button class="choice" data-map="tactical" aria-pressed="false">Тактический комплекс</button>
+<button class="choice" data-map="dream" aria-pressed="false">Сюрреалистичный парк</button>
+</div>
+<div class="play-preview">
+<div class="preview-art" id="map-art" style="background:radial-gradient(circle at 75% 20%,#ffc17b,#a85872 40%,#283d68 90%)"><strong id="map-title">МУЛЬТЯШНЫЙ<br>ГОРОД</strong><span>КАРТА 01</span></div>
+<div class="preview-copy"><h3 id="map-subtitle">Яркие улицы и забавные укрытия</h3><p id="map-description">Пёстрые витрины, небольшие дворики, игровые площадки и множество предметов, среди которых легко затеряться.</p></div>
+</div>
+<p class="selection-note">А теперь выбери стиль персонажа:</p>
+<div class="chooser" role="group" aria-label="Выбор стиля персонажа">
+<button class="choice" data-skin="toon" aria-pressed="true">Мультяшный</button>
+<button class="choice" data-skin="anime" aria-pressed="false">Аниме</button>
+<button class="choice" data-skin="tactical" aria-pressed="false">Тактический</button>
+<button class="choice" data-skin="creator" aria-pressed="false">Авторский стиль</button>
+</div>
+<p class="selection-note" id="skin-description" aria-live="polite">Мультяшные герои с выразительными силуэтами, яркими цветами и забавными эмоциями.</p>
+<div class="notice">Стили здесь представлены как направления для оригинального дизайна. Мы не будем копировать персонажей, логотипы или защищённые материалы Nickelodeon, Cartoon Network, CS:GO или работ сторонних авторов. Вместо этого разработаем собственные образы с похожим общим настроением.</div>
+</section>
+<section class="game-section" style="background:#111e30">
+<p class="eyebrow">ОСНОВА ГЕЙМПЛЕЯ</p><h2>Прячься. Ищи. Побеждай.</h2>
+<div class="feature-grid">
+<article class="feature"><h3>Разные арены</h3><p>Каждая карта предлагает новые маршруты, укрытия, секреты и способы обмануть охотника.</p></article>
+<article class="feature"><h3>Облики персонажей</h3><p>Косметические скины позволят выбрать настроение героя и выделиться в матче.</p></article>
+<article class="feature"><h3>Режимы игры</h3><p>Начнём с классических пряток, а затем добавим командные правила и особые испытания.</p></article>
+</div>
+<p class="notice">Страница и выбор концепций уже работают, но сама игра ещё разрабатывается. Кнопки скачивания появятся, когда будет готова настоящая сборка для Windows или Android.</p>
+<a class="button" href="../downloads/index.html">Центр загрузок OTKAT ↗</a>
+</section>
+</main>
+<footer><a class="logo" href="../index.html">OTKAT<span>GAMES</span></a><p>© 2026 OTKAT. Независимая игровая студия.</p><a href="../index.html" style="color:var(--cyan);text-decoration:none">Вернуться на главную ↗</a></footer>
+<script>
+const maps={
+cartoon:{title:"МУЛЬТЯШНЫЙ<br>ГОРОД",subtitle:"Яркие улицы и забавные укрытия",description:"Пёстрые витрины, небольшие дворики, игровые площадки и множество предметов, среди которых легко затеряться.",bg:"radial-gradient(circle at 75% 20%,#ffc17b,#a85872 40%,#283d68 90%)",label:"КАРТА 01"},
+studio:{title:"БОЛЬШАЯ<br>ТЕЛЕСТУДИЯ",subtitle:"Декорации, павильоны и закулисье",description:"Игровые декорации, коридоры за сценой, гримёрки и реквизит. Карта с неожиданными переходами и укрытиями.",bg:"radial-gradient(circle at 75% 20%,#83e2ed,#397ca8 42%,#1c3158 90%)",label:"КАРТА 02"},
+tactical:{title:"ТАКТИЧЕСКИЙ<br>КОМПЛЕКС",subtitle:"Линии обзора и продуманные маршруты",description:"Современный тренировочный объект с контейнерами, помещениями и несколькими путями обхода. Упор на тактику, без копирования существующих игровых карт.",bg:"radial-gradient(circle at 75% 20%,#c0d18a,#5a825e 42%,#1b3542 90%)",label:"КАРТА 03"},
+dream:{title:"ПАРК<br>СНОВИДЕНИЙ",subtitle:"Странные формы и невозможные уголки",description:"Необычный парк с фантастическими объектами, мягкими цветами и тайными проходами. Здесь сложно понять, что настоящее укрытие.",bg:"radial-gradient(circle at 75% 20%,#e2a4e9,#7955a8 42%,#24234c 90%)",label:"КАРТА 04"}
+};
+document.querySelectorAll("[data-map]").forEach(btn=>btn.addEventListener("click",()=>{
+ const m=maps[btn.dataset.map];document.querySelectorAll("[data-map]").forEach(b=>b.setAttribute("aria-pressed",String(b===btn)));
+ document.getElementById("map-title").innerHTML=m.title;document.getElementById("map-subtitle").textContent=m.subtitle;document.getElementById("map-description").textContent=m.description;document.getElementById("map-art").style.background=m.bg;document.querySelector("#map-art span").textContent=m.label;
+}));
+const skins={toon:"Мультяшные герои с выразительными силуэтами, яркими цветами и забавными эмоциями.",anime:"Оригинальные аниме-образы: выразительные причёски, стилизованные костюмы и яркие эффекты.",tactical:"Сдержанные тактические костюмы, экипировка и практичные цветовые сочетания.",creator:"Необычные авторские образы с экспериментальными формами, цветами и деталями — без копирования чужих персонажей."};
+document.querySelectorAll("[data-skin]").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll("[data-skin]").forEach(b=>b.setAttribute("aria-pressed",String(b===btn)));document.getElementById("skin-description").textContent=skins[btn.dataset.skin]}));
+</script>
+</body></html>
