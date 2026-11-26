@@ -78,7 +78,7 @@ function box(parent,x,y,z,sx,sy,sz,material,shadow=true){const m=new THREE.Mesh(
 function sphere(parent,x,y,z,r,material){const m=new THREE.Mesh(new THREE.SphereGeometry(r,16,12),material);m.position.set(x,y,z);m.castShadow=true;parent.add(m);return m}
 const floor=new THREE.Mesh(new THREE.PlaneGeometry(100,100),mats.grass);floor.rotation.x=-Math.PI/2;floor.position.y=-.08;floor.receiveShadow=true;scene.add(floor);
 const arena= new THREE.Group();scene.add(arena);
-box(arena,0,.08,0,30,.16,30,mats.grass);
+box(arena,0,0,0,30,.08,30,mats.grass);
 box(arena,0,.13,0,5,.08,30,mats.path,false);box(arena,0,.14,0,30,.08,4,mats.path,false);
 for(let i=-14;i<=14;i+=2){box(arena,i,.19,-14,.09,.04,.09,mats.wood,false);box(arena,i,.19,14,.09,.04,.09,mats.wood,false)}
 // A small stylized courtyard with readable silhouettes and cover.
@@ -89,6 +89,7 @@ for(const p of [[-12,2,1],[-12,10,1],[-7,12,.9],[12,-2,1],[12,11,1],[-2,-12,.85]
 function crate(x,z){const g=new THREE.Group();g.position.set(x,0,z);arena.add(g);box(g,0,.55,0,1.5,1.1,1.5,mats.wood);for(let i=-1;i<=1;i+=2){const b=box(g,i*.35,.56,.77,.12,.95,.05,mats.wood2);b.rotation.z=.35}box(g,0,.56,.78,1.35,.12,.06,mats.wood2);return g}
 crate(-4,5);crate(5,-3);crate(-10,5);crate(3,10);
 const coverDefs=[{x:-8,z:-7,r:2.6,label:'Домик'},{x:8,z:7,r:2.5,label:'Домик'},{x:8,z:-8,r:2.5,label:'Домик'},{x:-4,z:5,r:1.8,label:'Ящик'},{x:5,z:-3,r:1.8,label:'Ящик'}];
+const solids=[{x:-8,z:-7,r:2.05},{x:8,z:7,r:2.05},{x:8,z:-8,r:2.05},{x:-4,z:5,r:1.05},{x:5,z:-3,r:1.05},{x:-10,z:5,r:1.05},{x:3,z:10,r:1.05}];
 for(const c of coverDefs){const ring=new THREE.Mesh(new THREE.RingGeometry(c.r-.08,c.r,.9),new THREE.MeshBasicMaterial({color:'#f6d18b',side:THREE.DoubleSide,transparent:true,opacity:.6}));ring.rotation.x=-Math.PI/2;ring.position.set(c.x,.025,c.z);arena.add(ring)}
 // Low boundary fences keep characters in the playable courtyard.
 for(let i=-14;i<=14;i+=2){box(arena,i,.55,-15,.18,1,.18,mats.wood);box(arena,i,.55,15,.18,1,.18,mats.wood);box(arena,-15,.55,i,.18,1,.18,mats.wood);box(arena,15,.55,i,.18,1,.18,mats.wood)}
@@ -109,11 +110,11 @@ document.querySelector('#start').onclick=()=>{overlay.style.display='none';reset
 function resetGame(){player.position.set(-11,0,11);player.rotation.y=0;player.visible=true;hunter.position.set(11,0,-11);state.running=true;state.finished=false;state.hidden=false;state.phase='hide';state.left=8;state.round=60;state.hunterMode='patrol';state.patrolTarget.set(10,0,-10);say('У тебя 8 секунд, чтобы спрятаться');}
 function finish(win){state.finished=true;state.running=false;player.visible=true;overlay.style.display='grid';document.querySelector('#title').innerHTML=win?'ТЫ ВЫЖИЛ!':'ТЕБЯ НАШЛИ';document.querySelector('#intro').textContent=win?'Отлично! Ты продержался до конца раунда.':'Охотник догнал тебя. Попробуй сменить маршрут и использовать укрытия.';document.querySelector('#start').textContent='ИГРАТЬ ЕЩЁ';}
 function clampPlayer(){player.position.x=THREE.MathUtils.clamp(player.position.x,-13.8,13.8);player.position.z=THREE.MathUtils.clamp(player.position.z,-13.8,13.8)}
-function moveCharacter(obj,dir,speed,dt){obj.position.addScaledVector(dir,speed*dt);obj.position.x=THREE.MathUtils.clamp(obj.position.x,-13.7,13.7);obj.position.z=THREE.MathUtils.clamp(obj.position.z,-13.7,13.7);if(dir.lengthSq()>.01)obj.rotation.y=Math.atan2(dir.x,dir.z)}
+function moveCharacter(obj,dir,speed,dt){const nx=THREE.MathUtils.clamp(obj.position.x+dir.x*speed*dt,-13.7,13.7),nz=THREE.MathUtils.clamp(obj.position.z+dir.z*speed*dt,-13.7,13.7);const blocked=(x,z)=>solids.some(s=>Math.hypot(x-s.x,z-s.z)<s.r+.48);if(!blocked(nx,obj.position.z))obj.position.x=nx;if(!blocked(obj.position.x,nz))obj.position.z=nz;if(dir.lengthSq()>.01)obj.rotation.y=Math.atan2(dir.x,dir.z)}
 function updateHud(){document.querySelector('#phase').textContent=state.phase==='hide'?'Подготовка':state.phase==='seek'?'Поиск':'Завершён';document.querySelector('#time').textContent=String(Math.ceil(state.phase==='hide'?state.left:state.round)).padStart(2,'0');document.querySelector('#danger').textContent=state.hunterMode==='chase'?'Преследует':state.hunterMode==='search'?'Ищет':'Не заметил';hideBtn.textContent=state.hidden?'ВЫЙТИ':'СПРЯТАТЬСЯ';hideBtn.disabled=!state.running}
 function inputVector(){let x=joy.x,y=joy.y;if(keys.KeyA||keys.ArrowLeft)x-=1;if(keys.KeyD||keys.ArrowRight)x+=1;if(keys.KeyW||keys.ArrowUp)y+=1;if(keys.KeyS||keys.ArrowDown)y-=1;const v=new THREE.Vector3(x,0,y);if(v.length()>1)v.normalize();return v}
 function updateGame(dt){if(!state.running)return;if(state.phase==='hide'){state.left-=dt;if(state.left<=0){state.phase='seek';say('Охотник начал поиск! Продержись 60 секунд')}}else{state.round-=dt;if(state.round<=0){finish(true);return}}
-const input=inputVector();if(!state.hidden&&input.lengthSq()>.01){const forward=new THREE.Vector3();camera.getWorldDirection(forward);forward.y=0;forward.normalize();const right=new THREE.Vector3().crossVectors(forward,new THREE.Vector3(0,1,0)).normalize();const dir=forward.multiplyScalar(input.z).add(right.multiplyScalar(input.x)).normalize();moveCharacter(player,dir,5.3,dt)}
+const input=inputVector();if(!state.hidden&&input.lengthSq()>.01){const forward=new THREE.Vector3();camera.getWorldDirection(forward);forward.y=0;forward.normalize();const right=new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0),forward).normalize();const dir=forward.multiplyScalar(input.z).add(right.multiplyScalar(input.x)).normalize();moveCharacter(player,dir,5.3,dt)}
 const distance=hunter.position.distanceTo(player.position);
 if(state.phase==='seek'&&!state.hidden&&distance<11){state.hunterMode='chase'}else if(state.hunterMode==='chase'&&distance>15){state.hunterMode='search'}
 if(state.hunterMode==='patrol'&&state.phase==='seek'){if(hunter.position.distanceTo(state.patrolTarget)<1.4)state.patrolTarget.set((Math.random()-.5)*23,0,(Math.random()-.5)*23)}
