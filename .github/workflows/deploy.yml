@@ -25,6 +25,31 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Validate web JavaScript
+        run: |
+          find web -name '*.js' -type f -print0 | while IFS= read -r -d '' file; do node --check "$file"; done
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          class InlineScripts(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.active = False
+                  self.parts = []
+              def handle_starttag(self, tag, attrs):
+                  if tag == "script" and not dict(attrs).get("src"):
+                      self.active = True
+              def handle_endtag(self, tag):
+                  if tag == "script":
+                      self.active = False
+              def handle_data(self, data):
+                  if self.active:
+                      self.parts.append(data)
+          parser = InlineScripts()
+          parser.feed(Path("web/driftline/index.html").read_text(encoding="utf-8"))
+          Path("/tmp/driftline-inline.js").write_text("\n".join(parser.parts), encoding="utf-8")
+          PY
+          node --check /tmp/driftline-inline.js
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
