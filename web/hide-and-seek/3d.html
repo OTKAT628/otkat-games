@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#101a2a">
+<title>OTKAT Hide & Seek — 3D Playtest</title>
+<style>
+:root{color-scheme:dark;--glass:#101b2bdc;--line:#ffffff25;--mint:#75e6d1;--gold:#ffc17b}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101a2a;color:#f4f7fb;font:14px system-ui,-apple-system,Segoe UI,sans-serif;overscroll-behavior:none}
+#game{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.hud{position:fixed;inset:0;pointer-events:none;padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom);display:flex;flex-direction:column;justify-content:space-between}
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding-top:12px}
+.brand,.stats,.actions{display:flex;gap:8px;align-items:center}
+.brand{flex-direction:column;align-items:flex-start;gap:2px;text-shadow:0 2px 8px #0008}
+.brand strong{font-size:18px;letter-spacing:.09em}.brand small{font-size:9px;letter-spacing:.2em;color:#c6d4e2}
+.pill{background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:9px 12px;backdrop-filter:blur(12px);font-size:12px;box-shadow:0 5px 20px #0002}
+.pill b{font-variant-numeric:tabular-nums}
+.actions{pointer-events:auto}
+.ui-btn{border:1px solid var(--line);background:var(--glass);color:white;border-radius:12px;padding:10px 12px;font-weight:700;backdrop-filter:blur(12px);touch-action:manipulation}
+.bottom{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:0 4px 18px}
+.hint{max-width:55%;background:var(--glass);border:1px solid var(--line);padding:10px 12px;border-radius:12px;color:#e0e9f2;font-size:11px;line-height:1.5;backdrop-filter:blur(12px)}
+.controls{display:flex;align-items:flex-end;gap:12px;pointer-events:auto}
+.stick{width:116px;height:116px;border-radius:50%;border:1px solid #ffffff45;background:#15263b9c;position:relative;touch-action:none;backdrop-filter:blur(8px)}
+.stick:before{content:"";position:absolute;inset:25px;border:1px dashed #ffffff35;border-radius:50%}
+.knob{position:absolute;width:48px;height:48px;left:34px;top:34px;border-radius:50%;background:#b5d8e9d9;border:2px solid white;box-shadow:0 4px 18px #0006;pointer-events:none}
+.hide-btn{width:78px;height:78px;border-radius:24px;border:1px solid #ffe0a8aa;background:#d58d48e8;color:#25180d;font-weight:900;font-size:12px;box-shadow:0 8px 25px #0004;touch-action:manipulation}
+.hide-btn:disabled{opacity:.4}
+.overlay{position:fixed;inset:0;display:grid;place-items:center;padding:20px;background:#07111dc9;backdrop-filter:blur(9px);z-index:5}
+.panel{width:min(440px,100%);padding:26px;border:1px solid #ffffff2b;border-radius:22px;background:linear-gradient(145deg,#1a2c43,#111b2b);box-shadow:0 25px 80px #0008}
+.eyebrow{color:var(--mint);font-size:10px;letter-spacing:.2em;font-weight:900}
+.panel h1{font-size:clamp(32px,8vw,48px);line-height:.98;letter-spacing:-.06em;margin:12px 0}
+.panel p{color:#b7c6d8;line-height:1.65;font-size:13px}
+.primary{width:100%;border:0;border-radius:12px;background:var(--mint);color:#09201e;padding:15px;font-weight:900;font-size:15px;margin-top:12px}
+.camera-note{font-size:11px!important;color:#8297ad!important}
+#message{position:fixed;left:50%;top:22%;transform:translateX(-50%);padding:10px 15px;border:1px solid var(--line);border-radius:30px;background:#101b2bdd;color:white;font-weight:700;font-size:12px;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none}
+@media(min-width:850px){.stick{width:0;height:0;display:none}.hide-btn{width:auto;height:auto;padding:14px 20px;border-radius:12px}.bottom{padding:0 22px 22px}.hint{max-width:none;font-size:12px}}
+@media(max-width:520px){.top{flex-wrap:wrap}.brand{width:100%;flex-direction:row;align-items:baseline;gap:9px}.brand strong{font-size:15px}.brand small{font-size:8px}.stats{gap:5px}.pill{padding:8px 9px;font-size:10px}.actions{margin-left:auto}.ui-btn{font-size:10px;padding:9px}.bottom{padding-bottom:max(14px,env(safe-area-inset-bottom));}.hint{font-size:10px;max-width:43%;padding:8px}.controls{gap:8px}.stick{width:104px;height:104px}.knob{left:28px;top:28px}.hide-btn{width:70px;height:70px;border-radius:21px}}
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div class="hud">
+ <div class="top">
+  <div class="brand"><strong>OTKAT · HIDE & SEEK</strong><small>3D MOBILE PLAYTEST · BUILD 0.1</small></div>
+  <div class="stats"><div class="pill">Фаза <b id="phase">Подготовка</b></div><div class="pill">Время <b id="time">08</b></div><div class="pill">Охотник <b id="danger">Рядом?</b></div></div>
+  <div class="actions"><button class="ui-btn" id="camera">Камера: 3-е лицо</button></div>
+ </div>
+ <div class="bottom">
+  <div class="hint" id="hint">Найди укрытие. Джойстик — движение · кнопка — спрятаться</div>
+  <div class="controls">
+   <div class="stick" id="stick"><div class="knob" id="knob"></div></div>
+   <button class="hide-btn" id="hide">СПРЯТАТЬСЯ</button>
+  </div>
+ </div>
+</div>
+<div id="message"></div>
+<div class="overlay" id="overlay"><div class="panel">
+ <div class="eyebrow">ПЕРВАЯ 3D-ВЕРСИЯ · STYLIZED</div>
+ <h1 id="title">HIDE<br>& SEEK</h1>
+ <p id="intro">Небольшая трёхмерная арена, охотник с простым ИИ и укрытия. Переживи раунд, не попавшись. Это ранний игровой прототип — пока без мультиплеера и финальных моделей.</p>
+ <p class="camera-note">Камера переключается между видом от третьего и первого лица. На телефоне используй виртуальный джойстик.</p>
+ <button class="primary" id="start">НАЧАТЬ РАУНД</button>
+</div></div>
+<script type="module">
+const overlay=document.querySelector('#overlay'),message=document.querySelector('#message');
+let THREE;
+try{THREE=await import('https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js')}catch(e){document.querySelector('#title').textContent='НЕТ СОЕДИНЕНИЯ';document.querySelector('#intro').textContent='Для загрузки 3D-движка требуется подключение к интернету. Проверь соединение и обнови страницу.';document.querySelector('#start').disabled=true;throw e}
+const scene=new THREE.Scene();scene.background=new THREE.Color('#9bc7d4');scene.fog=new THREE.Fog('#9bc7d4',24,72);
+const camera=new THREE.PerspectiveCamera(66,innerWidth/innerHeight,.1,130);
+const renderer=new THREE.WebGLRenderer({canvas:document.querySelector('#game'),antialias:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;
+scene.add(new THREE.HemisphereLight('#e9fbff','#496071',2.1));
+const sun=new THREE.DirectionalLight('#fff0d7',2.6);sun.position.set(-12,24,12);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-28;sun.shadow.camera.right=28;sun.shadow.camera.top=28;sun.shadow.camera.bottom=-28;scene.add(sun);
+const mat=(color,roughness=.85)=>new THREE.MeshStandardMaterial({color,roughness});
+const mats={grass:mat('#83b98d'),path:mat('#d9c39b'),wood:mat('#b97d50'),wood2:mat('#e4b77c'),roof:mat('#d97862'),wall:mat('#f1d6a7'),blue:mat('#5b9db5'),green:mat('#4e9478'),leaf:mat('#4c9875'),leaf2:mat('#78b987'),dark:mat('#29445a'),player:mat('#46c7bf'),hunter:mat('#d95f69'),skin:mat('#ffd0a1'),white:mat('#fff5dc'),black:mat('#243247'),gold:mat('#f5bd67')};
+function box(parent,x,y,z,sx,sy,sz,material,shadow=true){const m=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),material);m.position.set(x,y,z);m.castShadow=shadow;m.receiveShadow=true;parent.add(m);return m}
+function sphere(parent,x,y,z,r,material){const m=new THREE.Mesh(new THREE.SphereGeometry(r,16,12),material);m.position.set(x,y,z);m.castShadow=true;parent.add(m);return m}
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(100,100),mats.grass);floor.rotation.x=-Math.PI/2;floor.position.y=-.08;floor.receiveShadow=true;scene.add(floor);
+const arena= new THREE.Group();scene.add(arena);
+box(arena,0,.08,0,30,.16,30,mats.grass);
+box(arena,0,.13,0,5,.08,30,mats.path,false);box(arena,0,.14,0,30,.08,4,mats.path,false);
+for(let i=-14;i<=14;i+=2){box(arena,i,.19,-14,.09,.04,.09,mats.wood,false);box(arena,i,.19,14,.09,.04,.09,mats.wood,false)}
+// A small stylized courtyard with readable silhouettes and cover.
+function tree(x,z,scale=1){const g=new THREE.Group();g.position.set(x,0,z);arena.add(g);const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.18*scale,.28*scale,1.5*scale,7),mats.wood);trunk.position.y=.75*scale;trunk.castShadow=true;g.add(trunk);const crown=sphere(g,0,2*scale,0,.95*scale,mats.leaf);crown.scale.set(1,1.05,.95);sphere(g,-.48*scale,1.75*scale,.15*scale,.57*scale,mats.leaf2);sphere(g,.45*scale,1.8*scale,-.1*scale,.58*scale,mats.leaf);return g}
+function hut(x,z,color=mats.wall){const g=new THREE.Group();g.position.set(x,0,z);arena.add(g);box(g,0,1,0,3,2.0,2.6,color);const roof=new THREE.Mesh(new THREE.ConeGeometry(2.45,1.55,4),mats.roof);roof.position.y=2.75;roof.rotation.y=Math.PI/4;roof.castShadow=true;g.add(roof);box(g,0,.78,1.32,.72,1.5,.08,mats.wood);box(g,-1.1,.65,1.34,.65,.55,.1,mats.blue);return g}
+hut(-8,-7);hut(8,7,mats.blue);hut(8,-8,mats.wall);
+for(const p of [[-12,2,1],[-12,10,1],[-7,12,.9],[12,-2,1],[12,11,1],[-2,-12,.85],[3,12,.9],[-12,-10,.8]])tree(...p);
+function crate(x,z){const g=new THREE.Group();g.position.set(x,0,z);arena.add(g);box(g,0,.55,0,1.5,1.1,1.5,mats.wood);for(let i=-1;i<=1;i+=2){const b=box(g,i*.35,.56,.77,.12,.95,.05,mats.wood2);b.rotation.z=.35}box(g,0,.56,.78,1.35,.12,.06,mats.wood2);return g}
+crate(-4,5);crate(5,-3);crate(-10,5);crate(3,10);
+const coverDefs=[{x:-8,z:-7,r:2.6,label:'Домик'},{x:8,z:7,r:2.5,label:'Домик'},{x:8,z:-8,r:2.5,label:'Домик'},{x:-4,z:5,r:1.8,label:'Ящик'},{x:5,z:-3,r:1.8,label:'Ящик'}];
+for(const c of coverDefs){const ring=new THREE.Mesh(new THREE.RingGeometry(c.r-.08,c.r,.9),new THREE.MeshBasicMaterial({color:'#f6d18b',side:THREE.DoubleSide,transparent:true,opacity:.6}));ring.rotation.x=-Math.PI/2;ring.position.set(c.x,.025,c.z);arena.add(ring)}
+// Low boundary fences keep characters in the playable courtyard.
+for(let i=-14;i<=14;i+=2){box(arena,i,.55,-15,.18,1,.18,mats.wood);box(arena,i,.55,15,.18,1,.18,mats.wood);box(arena,-15,.55,i,.18,1,.18,mats.wood);box(arena,15,.55,i,.18,1,.18,mats.wood)}
+function character(bodyMat,isHunter=false){const g=new THREE.Group();const body=new THREE.Mesh(new THREE.CapsuleGeometry(.42,.8,4,8),bodyMat);body.position.y=1.0;body.castShadow=true;g.add(body);sphere(g,0,1.88,0,.39,mats.skin);sphere(g,-.14,1.95,.34,.055,mats.black);sphere(g,.14,1.95,.34,.055,mats.black);if(isHunter){const hood=new THREE.Mesh(new THREE.ConeGeometry(.52,.72,6),mats.dark);hood.position.set(0,2.35,-.03);hood.castShadow=true;g.add(hood);const glow=new THREE.PointLight('#ff6c72',.5,3);glow.position.set(0,1.6,0);g.add(glow)}else{const cap=new THREE.Mesh(new THREE.SphereGeometry(.43,12,8,0,Math.PI*2,0,Math.PI/2),mats.gold);cap.position.y=2.12;g.add(cap)}return g}
+const player=character(mats.player);scene.add(player);player.position.set(-11,0,11);
+const hunter=character(mats.hunter,true);scene.add(hunter);hunter.position.set(11,0,-11);
+const shadowDisc=new THREE.Mesh(new THREE.CircleGeometry(.65,20),new THREE.MeshBasicMaterial({color:'#102536',transparent:true,opacity:.2}));shadowDisc.rotation.x=-Math.PI/2;shadowDisc.position.y=.02;player.add(shadowDisc);
+const state={running:false,finished:false,hidden:false,phase:'hide',left:8,round:60,cam:'third',messageTimer:0,hunterMode:'patrol',patrolTarget:new THREE.Vector3(10,0,-10)};
+const keys={};let joy={x:0,y:0,pointer:null};
+const cameraBtn=document.querySelector('#camera'),hideBtn=document.querySelector('#hide'),stick=document.querySelector('#stick'),knob=document.querySelector('#knob');
+function say(s){message.textContent=s;message.style.opacity=1;state.messageTimer=1.7}
+function updateCamera(){cameraBtn.textContent=state.cam==='third'?'Камера: 3-е лицо':'Камера: 1-е лицо'}
+cameraBtn.onclick=()=>{state.cam=state.cam==='third'?'first':'third';updateCamera();say(state.cam==='first'?'Вид от первого лица':'Вид от третьего лица')};
+function nearestCover(){return coverDefs.find(c=>Math.hypot(player.position.x-c.x,player.position.z-c.z)<c.r)}
+function toggleHide(){if(!state.running||state.finished)return;if(state.hidden){state.hidden=false;player.visible=true;say('Ты вышел из укрытия');return}if(nearestCover()){state.hidden=true;player.visible=false;state.hunterMode='patrol';say('Ты спрятался — охотник потерял цель')}else say('Подойди ближе к домику или ящику')}
+hideBtn.onclick=toggleHide;
+document.querySelector('#start').onclick=()=>{overlay.style.display='none';resetGame()};
+function resetGame(){player.position.set(-11,0,11);player.rotation.y=0;player.visible=true;hunter.position.set(11,0,-11);state.running=true;state.finished=false;state.hidden=false;state.phase='hide';state.left=8;state.round=60;state.hunterMode='patrol';state.patrolTarget.set(10,0,-10);say('У тебя 8 секунд, чтобы спрятаться');}
+function finish(win){state.finished=true;state.running=false;player.visible=true;overlay.style.display='grid';document.querySelector('#title').innerHTML=win?'ТЫ ВЫЖИЛ!':'ТЕБЯ НАШЛИ';document.querySelector('#intro').textContent=win?'Отлично! Ты продержался до конца раунда.':'Охотник догнал тебя. Попробуй сменить маршрут и использовать укрытия.';document.querySelector('#start').textContent='ИГРАТЬ ЕЩЁ';}
+function clampPlayer(){player.position.x=THREE.MathUtils.clamp(player.position.x,-13.8,13.8);player.position.z=THREE.MathUtils.clamp(player.position.z,-13.8,13.8)}
+function moveCharacter(obj,dir,speed,dt){obj.position.addScaledVector(dir,speed*dt);obj.position.x=THREE.MathUtils.clamp(obj.position.x,-13.7,13.7);obj.position.z=THREE.MathUtils.clamp(obj.position.z,-13.7,13.7);if(dir.lengthSq()>.01)obj.rotation.y=Math.atan2(dir.x,dir.z)}
+function updateHud(){document.querySelector('#phase').textContent=state.phase==='hide'?'Подготовка':state.phase==='seek'?'Поиск':'Завершён';document.querySelector('#time').textContent=String(Math.ceil(state.phase==='hide'?state.left:state.round)).padStart(2,'0');document.querySelector('#danger').textContent=state.hunterMode==='chase'?'Преследует':state.hunterMode==='search'?'Ищет':'Не заметил';hideBtn.textContent=state.hidden?'ВЫЙТИ':'СПРЯТАТЬСЯ';hideBtn.disabled=!state.running}
+function inputVector(){let x=joy.x,y=joy.y;if(keys.KeyA||keys.ArrowLeft)x-=1;if(keys.KeyD||keys.ArrowRight)x+=1;if(keys.KeyW||keys.ArrowUp)y+=1;if(keys.KeyS||keys.ArrowDown)y-=1;const v=new THREE.Vector3(x,0,y);if(v.length()>1)v.normalize();return v}
+function updateGame(dt){if(!state.running)return;if(state.phase==='hide'){state.left-=dt;if(state.left<=0){state.phase='seek';say('Охотник начал поиск! Продержись 60 секунд')}}else{state.round-=dt;if(state.round<=0){finish(true);return}}
+const input=inputVector();if(!state.hidden&&input.lengthSq()>.01){const forward=new THREE.Vector3();camera.getWorldDirection(forward);forward.y=0;forward.normalize();const right=new THREE.Vector3().crossVectors(forward,new THREE.Vector3(0,1,0)).normalize();const dir=forward.multiplyScalar(input.z).add(right.multiplyScalar(input.x)).normalize();moveCharacter(player,dir,5.3,dt)}
+const distance=hunter.position.distanceTo(player.position);
+if(state.phase==='seek'&&!state.hidden&&distance<11){state.hunterMode='chase'}else if(state.hunterMode==='chase'&&distance>15){state.hunterMode='search'}
+if(state.hunterMode==='patrol'&&state.phase==='seek'){if(hunter.position.distanceTo(state.patrolTarget)<1.4)state.patrolTarget.set((Math.random()-.5)*23,0,(Math.random()-.5)*23)}
+let target=state.patrolTarget;if(state.hunterMode==='chase'&&!state.hidden)target=player.position;else if(state.hunterMode==='search')target=player.position.clone().add(new THREE.Vector3(3,0,3));
+if(state.phase==='seek'){const dir=new THREE.Vector3().subVectors(target,hunter.position);dir.y=0;if(dir.length()>.1)moveCharacter(hunter,dir.normalize(),state.hunterMode==='chase'?3.8:2.0,dt);if(!state.hidden&&distance<1.25){finish(false);return}}
+if(state.messageTimer>0){state.messageTimer-=dt;if(state.messageTimer<=0)message.style.opacity=0}
+updateHud()}
+function updateCameraFollow(){const target=new THREE.Vector3(player.position.x,player.position.y+1.55,player.position.z);if(state.cam==='first'){const look=new THREE.Vector3(Math.sin(player.rotation.y),.02,Math.cos(player.rotation.y));camera.position.copy(target).add(new THREE.Vector3(0,.1,0));camera.lookAt(target.clone().add(look.multiplyScalar(5)))}else{const behind=new THREE.Vector3(-Math.sin(player.rotation.y)*6,4.1,-Math.cos(player.rotation.y)*6);camera.position.lerp(target.clone().add(behind),.13);camera.lookAt(target)}}
+let prev=performance.now();function frame(now){requestAnimationFrame(frame);const dt=Math.min((now-prev)/1000,.04);prev=now;updateGame(dt);updateCameraFollow();renderer.render(scene,camera)}requestAnimationFrame(frame);
+function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.7))}addEventListener('resize',resize);
+addEventListener('keydown',e=>{keys[e.code]=true;if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();if(e.code==='KeyE'||e.code==='Space')toggleHide();if(e.code==='KeyC'){state.cam=state.cam==='third'?'first':'third';updateCamera()}});addEventListener('keyup',e=>keys[e.code]=false);
+function setStick(e){const r=stick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=e.clientX-cx,dy=e.clientY-cy;const max=34,l=Math.hypot(dx,dy);if(l>max){dx=dx/l*max;dy=dy/l*max}joy.x=dx/max;joy.y=-dy/max;knob.style.transform='translate('+dx+'px,'+dy+'px)'}
+stick.addEventListener('pointerdown',e=>{joy.pointer=e.pointerId;stick.setPointerCapture(e.pointerId);setStick(e)});stick.addEventListener('pointermove',e=>{if(joy.pointer===e.pointerId)setStick(e)});function release(e){if(joy.pointer===e.pointerId){joy.pointer=null;joy.x=0;joy.y=0;knob.style.transform='translate(0,0)'}}stick.addEventListener('pointerup',release);stick.addEventListener('pointercancel',release);
+updateCamera();updateHud();
+</script>
+</body>
+</html>
