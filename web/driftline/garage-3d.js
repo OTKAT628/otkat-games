@@ -152,6 +152,8 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.m
   }
 
   function setup() {
+    const activeSwatch = document.querySelector('.swatch.sel');
+    if (activeSwatch) selectedPaint = activeSwatch.style.backgroundColor || selectedPaint;
     const width = Math.max(280, host.clientWidth);
     const height = 260;
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
