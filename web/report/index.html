@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Отчёт о разработке — OTKAT Games</title>
+<meta name="description" content="Отчёт о ходе разработки OTKAT Games и OTKAT AI Team за 27 ноября 2026 года.">
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#0b1018;color:#e9eef8;font:16px/1.65 system-ui,sans-serif}main{max-width:900px;margin:auto;padding:48px 22px 72px}a{color:#8ed9ff;text-decoration:none}a:hover{text-decoration:underline}.eyebrow{color:#7ca5c5;letter-spacing:.14em;font-size:12px}h1{font-size:clamp(34px,7vw,56px);line-height:1.08;margin:10px 0 16px}h2{margin-top:38px;font-size:24px}.muted{color:#a5b2c4}.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:22px 0}.links a{display:block;padding:17px;background:#141f2d;border:1px solid #26384b;border-radius:14px}.links strong{display:block;color:#fff}.links small{color:#9eb0c4}.panel{background:#141f2d;border:1px solid #26384b;border-radius:14px;padding:20px;margin:14px 0}li{margin:8px 0}.status{color:#ffcf83}.back{display:inline-block;margin-top:28px}
+</style>
+</head>
+<body><main>
+<p class="eyebrow">OTKAT STUDIO · РАБОЧИЙ ЖУРНАЛ</p>
+<h1>Отчёт о разработке</h1>
+<p class="muted">Снимок состояния на 27 ноября 2026 года. Здесь ссылки на сайт, архив исходников и подробный отчёт для продолжения работы в новом чате.</p>
+<div class="links">
+<a href="../index.html"><strong>Сайт OTKAT Games</strong><small>Главная страница проектов</small></a>
+<a href="https://github.com/OTKAT628/otkat-games"><strong>GitHub · OTKAT Games</strong><small>Архив исходного кода</small></a>
+<a href="../games/index.html"><strong>Каталог игр</strong><small>10 игровых проектов</small></a>
+<a href="../apps/index.html"><strong>Каталог приложений</strong><small>5 сборников мини-игр</small></a>
+<a href="../driftline/index.html"><strong>Driftline</strong><small>Гоночный проект и 3D-гараж</small></a>
+<a href="https://github.com/OTKAT628/otkat-ai-team/blob/feature/android-chat-control-ui/docs/DAILY_HANDOFF_2026-11-27.md"><strong>Полный отчёт OTKAT AI Team</strong><small>Статус интеграций, Android, GitHub и план продолжения</small></a>
+<a href="https://github.com/OTKAT628/otkat-games/blob/main/docs/DAILY_REPORT_2026-11-27.md"><strong>Отчёт OTKAT Games в GitHub</strong><small>Сводка изменений по играм и сайту</small></a>
+<a href="https://github.com/OTKAT628/otkat-ai-team/actions"><strong>Сборки и проверки AI Team</strong><small>GitHub Actions</small></a>
+</div>
+<section class="panel"><h2>Что сделано сегодня</h2>
+<ul><li>В OTKAT AI Team добавлена первая версия раздела GitHub: выбор разрешённого репозитория, просмотр веток, создание веток, коммиты файлов и Pull Request.</li><li>Подготовлена серверная GitHub-интеграция с allowlist и инструкцией настройки токена. Для фактического подключения токен ещё нужно безопасно добавить на backend.</li><li>Обновлена Android-сборка: исправлена схема загрузки локального интерфейса через безопасный HTTPS asset origin. Итоговая APK-сборка ещё требует подтверждения.</li><li>В Driftline добавлен интерактивный 3D-гараж с двенадцатью вымышленными моделями автомобилей.</li><li>Проверка публикации сайта OTKAT Games завершилась успешно.</li></ul></section>
+<section class="panel"><h2>Что не следует считать готовым</h2>
+<ul><li>Реальные подключения ChatGPT/OpenAI, Claude, Grok, DeepSeek и Gemini ещё не проверены в работающем приложении с секретами владельца.</li><li>OTKAT ID, облачные сохранения, онлайн-мультиплеер, глобальные рейтинги, чат и донаты ещё не подключены.</li><li>Driftline пока не полноценная 3D-гонка: 3D реализован в гараже, а гонка остаётся top-down прототипом.</li><li>APK нельзя объявлять готовым, пока workflow не завершится успешно и артефакт не будет загружен и проверен.</li></ul></section>
+<h2>Основной план на следующий рабочий день</h2>
+<ol><li>Проверить актуальные CI и APK-сборки, исправить ошибки и подтвердить артефакт.</li><li>Проверить реальные подключения AI-провайдеров по одному.</li><li>Настроить GitHub token на закрытом backend и протестировать операции из приложения.</li><li>Подготовить защищённую авторизацию OTKAT ID и облачную инфраструктуру.</li><li>Развивать Hide and Seek, Survival, полноценную 3D-гонку Driftline и офлайн-сборники мини-игр.</li><li>Выбрать легальный платёжный сервис после уточнения страны и типа банковского счёта для выплат.</li></ol>
+<p class="muted status">Важно: платные сервисы, публикация за деньги, слияние PR, открытие публичного backend и изменения безопасности — только после отдельного согласования.</p>
+<a class="back" href="../index.html">← На главную OTKAT Games</a>
+</main></body></html>
