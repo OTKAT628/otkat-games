@@ -37,3 +37,7 @@ GitHub Actions workflow `.github/workflows/deploy.yml` публикует пап
 
 ## OTKAT ID and monetization
 See [docs/OTKAT_ID_AND_DONATIONS.md](docs/OTKAT_ID_AND_DONATIONS.md) for the recommended free-tier shared identity architecture, cloud save/leaderboard/social roadmap, and payment-provider constraints. OTKAT ID and payment processing are not implemented or connected yet.
+
+## Отчёт и передача проекта
+
+- [Сводный отчёт OTKAT и ссылки на сайт](docs/PROJECT_HANDOFF.md)
