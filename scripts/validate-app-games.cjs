@@ -33,7 +33,8 @@ for (const [dir,file,count,names] of collections) {
   if (!html.includes(file)) fail(`collection page does not load ${file}`);
   const entries=(js.match(/^\[/gm)||[]).length;
   for (const name of names) if (!js.includes(name)) fail(`missing ${name} in ${dir}`);
-  if (names.length!==count) fail(`bad expected count for ${dir}`);
+  const actualCount=(js.match(/^\\['[^']+'/gm)||[]).length;
+  if (names.length!==count || actualCount!==count) fail(`${dir} has ${actualCount} entries, expected ${count}`);
   if (entries===0 && !js.includes('const G=[') && !js.includes('const games=[')) fail(`game data not found in ${dir}`);
   pass(`${dir}: expected game names present`);
 }
@@ -43,7 +44,7 @@ if (!match) fail('Mobile 100 collection 04 data array not found');
 else {
   try {
     const data=JSON.parse(match[1]);
-    if (data.length!==55) fail(`collection 04 has ${data.length}, expected 55 challenges`);
+    if (data.length!==60) fail(`collection 04 has ${data.length}, expected 60 challenges`);
     if (new Set(data.map(x=>x.id)).size!==data.length) fail('collection 04 has duplicate IDs');
     if (new Set(data.map(x=>x.name)).size!==data.length) fail('collection 04 has duplicate names');
     pass(`collection 04: ${data.length} unique challenges`);
