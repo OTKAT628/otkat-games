@@ -8,11 +8,11 @@ const DATA={
 };
 const $=(s,r=document)=>r.querySelector(s),root=$('#app'),app=document.body.dataset.app,cfg=DATA[app];
 if(!root||!cfg)return;
-let difficulty='normal',timer=null,score=0,round=0,locked=false,seq=[],duo=[0,0],activeGame=null,timeout=null;
+let difficulty='normal',timer=null,clock=null,score=0,round=0,locked=false,seq=[],duo=[0,0],activeGame=null,timeout=null;
 const key='otkat-mini-'+app;
 let saved={best:{},total:0};try{saved=Object.assign(saved,JSON.parse(localStorage.getItem(key)||'{}'))}catch(e){}
 const persist=()=>{try{localStorage.setItem(key,JSON.stringify(saved))}catch(e){}};
-const stop=()=>{if(timer){clearInterval(timer);timer=null}if(timeout){clearTimeout(timeout);timeout=null}};
+const stop=()=>{if(timer){clearInterval(timer);timer=null}if(clock){clearInterval(clock);clock=null}if(timeout){clearTimeout(timeout);timeout=null}};
 const seconds=()=>difficulty==='easy'?35:difficulty==='hard'?18:25;
 const targetCount=()=>difficulty==='easy'?7:difficulty==='hard'?13:10;
 const styles='<style>.collection{max-width:980px;margin:auto}.collection .intro{max-width:760px}.gamegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:25px 0}.mini{background:#142238;border:1px solid #ffffff22;border-radius:12px;padding:20px}.mini h3{margin:0 0 8px}.mini p,.muted{color:#a4b2c4;line-height:1.6;font-size:13px}.playarea{margin:20px 0;padding:22px;background:#111e30;border:1px solid #ffffff22;border-radius:14px;min-height:250px}.playarea button{margin:6px;padding:13px 18px;border:1px solid #6ce5df88;background:#162d3c;color:#f5f7fb;border-radius:9px;font-weight:700}.playarea button:active{transform:scale(.97)}.playarea .target{font-size:26px;min-width:100px;min-height:70px}.stats{display:flex;gap:20px;flex-wrap:wrap;color:#6ce5df;margin:14px 0}.choice{font-size:24px;min-width:60px}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.two button{min-height:120px;font-size:20px}.statusline{min-height:28px;color:#ffcf79;margin:12px 0}.flash-number{font-size:42px;letter-spacing:5px;color:#6ce5df;text-align:center;padding:20px}.meter{height:34px;background:#27384d;border-radius:20px;position:relative;overflow:hidden;margin:22px 4px}.meter .safe{position:absolute;left:43%;width:14%;height:100%;background:#2d9b77}.meter .needle{position:absolute;left:0;top:0;height:100%;width:5px;background:#fff;box-shadow:0 0 12px #fff}.question{font-size:22px;font-weight:700;margin:20px 0}@media(max-width:650px){.gamegrid{grid-template-columns:1fr}.playarea{padding:14px}}</style>';
@@ -105,7 +105,7 @@ let pos=0,dir=1,attempts=0,hits=0,left=time;
 stage.innerHTML='<h2>'+g[0]+'</h2><p>'+g[1]+'</p><div class="stats">Попадания: <b id="s">0</b> · Попытки: <b id="a">0</b> / 5 · Время: <b id="t">'+left+'</b></div><div class="meter"><div class="safe"></div><div class="needle" id="needle"></div></div><button id="stop">СТОП</button><p id="msg" class="statusline">Останови маркер в зелёной зоне.</p>';
 timer=setInterval(()=>{pos+=dir*(difficulty==='hard'?3.1:2.1);if(pos>=98){pos=98;dir=-1}if(pos<=0){pos=0;dir=1}$('#needle').style.left=pos+'%'},30);
 $('#stop').onclick=()=>{if(attempts>=5)return;attempts++;if(pos>=43&&pos<=57){hits++;score+=20;$('#msg').textContent='Точно в цель!'}else{$('#msg').textContent='Мимо! Попробуй ещё.'}$('#s').textContent=hits;$('#a').textContent=attempts;if(attempts>=5)finish(score,'Попаданий в зелёную зону: '+hits+' из 5.')};
-const clock=setInterval(()=>{left--;if($('#t'))$('#t').textContent=left;if(left<=0){clearInterval(clock);finish(score,'Время вышло. Попаданий: '+hits+'.')}},1000);return;
+clock=setInterval(()=>{left--;if($('#t'))$('#t').textContent=left;if(left<=0)finish(score,'Время вышло. Попаданий: '+hits+'.')},1000);return;
 }
 if(type==='pairs'){
 const items=difficulty==='easy'?['🌷','🌻','🌼','🌹']:difficulty==='hard'?['🌷','🌻','🌼','🌹','🌺','🌸','🍀','🌱']:['🌷','🌻','🌼','🌹','🌺','🌸'];
