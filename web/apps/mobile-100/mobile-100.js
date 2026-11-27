@@ -16,7 +16,7 @@ const save=()=>{localStorage.setItem('otkat-mobile100-'+current,String(Math.max(
 function button(label,fn){const b=document.createElement('button');b.className='m100-action';b.textContent=label;b.onclick=fn;controls.append(b)}
 function cell(label,fn,disabled=false){const b=document.createElement('button');b.className='m100-cell';b.textContent=label;b.disabled=disabled;b.onclick=fn;board.append(b)}
 function status(t){$('status').textContent=t;$('progress').style.width=Math.min(100,done*10)+'%'}
-function choose(id){current=id;s={};score=0;done=0;board.innerHTML='';controls.innerHTML='';const g=games.find(x=>x[0]===id);$('title').textContent=g[1];$('desc').textContent=g[2];$('hint').textContent=g[3];status('Игра началась');setup()}
+function choose(id){if(s.tick)clearInterval(s.tick);current=id;s={};score=0;done=0;board.innerHTML='';controls.innerHTML='';const g=games.find(x=>x[0]===id);$('title').textContent=g[1];$('desc').textContent=g[2];$('hint').textContent=g[3];status('Игра началась');setup()}
 function win(t='Уровень пройден!'){done++;score+=10;save();status(t+' Рекорд: '+localStorage.getItem('otkat-mobile100-'+current));}
 function setup(){
  if(current==='pipe'){s.rot=[0,0,0,0,0,0];s.need=[1,2,0,3,1,2];s.names=['╋','┗','━','┏','┛','┓'];s.names.forEach((_,i)=>cell('Труба '+(i+1)+' ↻',()=>{s.rot[i]=(s.rot[i]+1)%4;renderPipe()}));button('Проверить соединение',()=>{if(s.rot.every((v,i)=>v===s.need[i]))win('Вода дошла до выхода!');else status('Путь пока разорван — проверь повороты')});}
