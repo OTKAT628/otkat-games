@@ -1,6 +1,6 @@
 # OTKAT Arcade Games
 
-Десять игровых проектов: девять 3D-приключений и новая гоночная игра Driftline: Apex Circuit.
+Пятнадцать игровых проектов: приключения, гонки, roguelite, аркады, стратегия и казуальные игры.
 
 ## Сайт
 - Главная: https://otkat628.github.io/otkat-games/
@@ -41,3 +41,14 @@ See [docs/OTKAT_ID_AND_DONATIONS.md](docs/OTKAT_ID_AND_DONATIONS.md) for the rec
 ## Отчёт и передача проекта
 
 - [Сводный отчёт OTKAT и ссылки на сайт](docs/PROJECT_HANDOFF.md)
+
+
+## Новые игровые проекты
+Пять дополнительных браузерных игр добавлены в каталог:
+- [Neon Depths](https://otkat628.github.io/otkat-games/depths/) — пошаговый roguelite-лабиринт.
+- [Last Stand: Swarm](https://otkat628.github.io/otkat-games/swarm/) — аркадное выживание с волнами врагов.
+- [Tiny Kingdoms](https://otkat628.github.io/otkat-games/kingdoms/) — пошаговая стратегия с экономикой и захватом территорий.
+- [Orbital Rush](https://otkat628.github.io/otkat-games/orbital/) — космический аркадный шутер.
+- [Cozy Valley](https://otkat628.github.io/otkat-games/cozy/) — казуальная ферма.
+
+Новые игры — самостоятельные HTML5 Canvas-прототипы с управлением, игровыми циклами и локальными рекордами. Это браузерные прототипы, не нативные Android/Windows-релизы; мобильное тестирование и дальнейшая балансировка нужны до заявления о production-ready статусе.
