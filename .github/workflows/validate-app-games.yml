@@ -4,13 +4,13 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - "web/apps/**"
+      - "web/**"
       - "web/sw.js"
       - ".github/workflows/validate-app-games.yml"
   push:
     branches: [feature/15-new-app-games]
     paths:
-      - "web/apps/**"
+      - "web/**"
       - "web/sw.js"
       - ".github/workflows/validate-app-games.yml"
   workflow_dispatch:
@@ -29,6 +29,8 @@ jobs:
       - name: JavaScript syntax
         run: |
           node --check web/apps/app-games.js
+          node --check scripts/validate-app-games.cjs
+          node --check scripts/smoke-app-games.cjs
           node --check web/apps/mobile-100/mobile-100.js
           node --check web/apps/mobile-100-02/mobile-100-02.js
           node --check web/apps/mobile-100-03/mobile-100-03.js
