@@ -1,4 +1,4 @@
-name: Validate 15 app games
+name: Validate OTKAT mobile game collections
 
 on:
   pull_request:
@@ -27,7 +27,9 @@ jobs:
         with:
           node-version: 22
       - name: JavaScript syntax
-        run: node --check web/apps/app-games.js
+        run: |
+          node --check web/apps/app-games.js
+          node --check web/apps/mobile-100/mobile-100.js
       - name: Verify all 15 pages
         run: |
           for slug in clockwork-courier lumen-garden cargo-zero mine-signal signal-siege pulse-runner inkbound deep-current rift-cartographer marble-foundry kitchen-sprint orbit-weaver skyhook frostline hex-frontier; do
@@ -38,3 +40,6 @@ jobs:
           test -s web/apps/app-games.js
           grep -q "clockwork-courier" web/apps/app-games.js
           grep -q "hex-frontier" web/apps/app-games.js
+          test -s web/apps/mobile-100/index.html
+          grep -q 'mobile-100.js' web/apps/mobile-100/index.html
+          grep -q 'Echo Sequence' web/apps/mobile-100/mobile-100.js
