@@ -29,7 +29,7 @@ jobs:
       - name: Prepare APK
         run: |
           mkdir -p release
-          cp android/app/build/outputs/apk/release/app-release-unsigned.apk release/OTKAT-Games-Android-v1.0.0.apk
+          cp android/app/build/outputs/apk/release/app-release.apk release/OTKAT-Games-Android-v1.0.0.apk
       - name: Install and launch on Android emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
