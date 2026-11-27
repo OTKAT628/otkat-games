@@ -58,7 +58,7 @@ const collections = [
     };
     await page.goto('http://127.0.0.1:4173/apps/lumen-garden/index.html',{waitUntil:'domcontentloaded'});
     for(const n of [2,3,6,7,8,9]) await page.getByRole('button',{name:'Зеркало '+n}).click();
-    if(!(await page.locator('#help').innerText()).includes('Свет достиг цветку')) throw new Error('Lumen Garden: solved mirror layout did not win');
+    if(!(await page.locator('#help').innerText()).includes('Свет достиг цветка')) throw new Error('Lumen Garden: solved mirror layout did not win');
     console.log('PASS Lumen Garden win condition');
     await page.goto('http://127.0.0.1:4173/apps/rift-cartographer/index.html',{waitUntil:'domcontentloaded'});
     for(const [x,y] of [[296,122],[360,122],[424,122],[488,122],[488,186],[488,250],[488,314],[488,378]]) await clickBoard(x,y);
