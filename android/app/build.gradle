@@ -13,4 +13,13 @@ android {
         versionCode 1
         versionName '1.0.0'
     }
+
+    // Initial installable test release. Use a protected persistent upload key
+    // for future upgrade-compatible production releases.
+    buildTypes {
+        release {
+            signingConfig signingConfigs.debug
+            minifyEnabled false
+        }
+    }
 }
