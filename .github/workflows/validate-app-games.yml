@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "web/**"
+      - "scripts/**"
       - "web/sw.js"
       - ".github/workflows/validate-app-games.yml"
   push:
