@@ -1,6 +1,11 @@
 name: Validate new game lineup
 
 on:
+  push:
+    branches: [feature/new-game-lineup]
+    paths:
+      - "web/**"
+      - ".github/workflows/validate-games.yml"
   pull_request:
     branches: [main]
     paths:
