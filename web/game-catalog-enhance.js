@@ -16,7 +16,7 @@ const DATA={
 "orbital":{en:"Orbital Rush",ru:"Орбитальный рывок",genre:"Космическая аркада · шутер",format:"HTML5 Canvas — браузерная игра",controls:"Стрелки / A-D — движение; пробел — огонь; экранные кнопки на телефоне",features:"Противники, снаряды, боссы, очки и локальный рекорд",platform:"Браузер; экранные кнопки предусмотрены",save:"Локально в браузере"},
 "cozy":{en:"Cozy Valley",ru:"Уютная долина",genre:"Казуальная игра · ферма",format:"HTML5 Canvas — браузерная игра",controls:"Нажатие или касание по грядкам; кнопка «Следующий день»",features:"Посадка семян, рост урожая, сбор, монеты и развитие фермы",platform:"Браузер; управление касанием предусмотрено",save:"Локально в браузере"}
 };
-const slug=location.pathname.split('/').filter(Boolean).pop()||'';
+const parts=location.pathname.split('/').filter(Boolean);if(parts[parts.length-1]==='index.html')parts.pop();const slug=parts.pop()||'';
 const d=DATA[slug];if(!d)return;
 const css=document.createElement('link');css.rel='stylesheet';css.href='../product-extra.css';document.head.appendChild(css);
 const main=document.querySelector('main');if(!main)return;

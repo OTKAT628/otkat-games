@@ -50,21 +50,6 @@ jobs:
           Path("/tmp/driftline-inline.js").write_text("\n".join(parser.parts), encoding="utf-8")
           PY
           node --check /tmp/driftline-inline.js
-      - name: Build per-game browser source downloads
-        run: python scripts/build-downloads.py
-
-      - name: Install Playwright for in-game screenshots
-        run: |
-          python -m pip install playwright
-          python -m playwright install --with-deps chromium
-
-      - name: Capture screenshots from running browser prototypes
-        run: |
-          python -m http.server 4173 --directory web >/tmp/otkat-http.log 2>&1 &
-          echo $! >/tmp/otkat-http.pid
-          sleep 2
-          python scripts/capture-screenshots.py
-
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
