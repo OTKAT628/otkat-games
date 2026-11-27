@@ -15,7 +15,7 @@ import android.graphics.Color;
 import android.view.Gravity;
 
 public class MainActivity extends Activity {
-    private static final String HOME = "https://otkat628.github.io/otkat-games/games/index.html";
+    private static final String HOME = "https://otkat628.github.io/otkat-games/apps/index.html";
     private WebView web;
     private TextView status;
 
