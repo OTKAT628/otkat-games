@@ -57,15 +57,15 @@ const collections = [
       await page.mouse.click(box.x+x*box.width/720,box.y+y*box.height/460);
     };
     await page.goto('http://127.0.0.1:4173/apps/lumen-garden/index.html',{waitUntil:'domcontentloaded'});
-    for(const n of [2,3,6,7,8]) await page.getByRole('button',{name:'Зеркало '+n}).click();
+    for(const n of [2,3,6,7,8,9]) await page.getByRole('button',{name:'Зеркало '+n}).click();
     if(!(await page.locator('#help').innerText()).includes('Свет достиг цветку')) throw new Error('Lumen Garden: solved mirror layout did not win');
     console.log('PASS Lumen Garden win condition');
     await page.goto('http://127.0.0.1:4173/apps/rift-cartographer/index.html',{waitUntil:'domcontentloaded'});
-    for(const [x,y] of [[296,122],[360,122],[424,122],[424,186],[424,250],[424,314],[424,378]]) await clickBoard(x,y);
+    for(const [x,y] of [[296,122],[360,122],[424,122],[488,122],[488,186],[488,250],[488,314],[488,378]]) await clickBoard(x,y);
     if(!(await page.locator('#help').innerText()).includes('Портал найден')) throw new Error('Rift Cartographer: valid route did not reach portal');
     console.log('PASS Rift Cartographer connected route');
     await page.goto('http://127.0.0.1:4173/apps/cargo-zero/index.html',{waitUntil:'domcontentloaded'});
-    for(const key of ['ArrowLeft','ArrowUp','ArrowRight','ArrowRight','ArrowRight','ArrowUp','ArrowUp','ArrowLeft','ArrowLeft','ArrowDown','ArrowLeft','ArrowDown','ArrowRight','ArrowRight','ArrowRight']) await page.keyboard.press(key);
+    for(const key of ['ArrowLeft','ArrowUp','ArrowRight','ArrowRight','ArrowRight','ArrowUp','ArrowUp','ArrowLeft','ArrowLeft','ArrowDown','ArrowDown','ArrowLeft','ArrowDown','ArrowRight','ArrowRight','ArrowRight']) await page.keyboard.press(key);
     if(!(await page.locator('#help').innerText()).includes('Оба ящика на местах')) throw new Error('Cargo Zero: solved warehouse did not win');
     console.log('PASS Cargo Zero box goals');
     await page.goto('http://127.0.0.1:4173/apps/kitchen-sprint/index.html',{waitUntil:'domcontentloaded'});
