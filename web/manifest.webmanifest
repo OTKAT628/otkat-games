@@ -1,1 +1,20 @@
-{"name":"OTKAT Games Mini Collections","short_name":"OTKAT Games","start_url":"./apps/index.html","display":"standalone","background_color":"#0a1220","theme_color":"#0b1220","description":"Коллекции мини-игр OTKAT Games"}
+{
+  "name": "OTKAT Games",
+  "short_name": "OTKAT Games",
+  "description": "Игры и коллекции мини-игр OTKAT Games",
+  "lang": "ru",
+  "start_url": "./apps/index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a1220",
+  "theme_color": "#0b1220",
+  "icons": [
+    {
+      "src": "./icons/otkat-icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

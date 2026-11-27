@@ -1,0 +1,68 @@
+name: Validate OTKAT mobile game collections
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "web/**"
+      - "scripts/**"
+      - "web/sw.js"
+      - ".github/workflows/validate-app-games.yml"
+  push:
+    branches: [feature/15-new-app-games]
+    paths:
+      - "web/**"
+      - "web/sw.js"
+      - ".github/workflows/validate-app-games.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: JavaScript syntax
+        run: |
+          node --check web/apps/app-games.js
+          node --check scripts/validate-app-games.cjs
+          node --check scripts/smoke-app-games.cjs
+          node --check web/apps/mobile-100/mobile-100.js
+          node --check web/apps/mobile-100-02/mobile-100-02.js
+          node --check web/apps/mobile-100-03/mobile-100-03.js
+          node --check web/apps/mobile-100-04/mobile-100-04.js
+      - name: Deep catalog, offline cache, and local-link checks
+        run: node scripts/validate-app-games.cjs
+      - name: Browser smoke tests on mobile viewport
+        run: |
+          npm install --no-save --no-package-lock playwright
+          npx playwright install --with-deps chromium
+          python3 -m http.server 4173 --directory web > /tmp/otkat-http.log 2>&1 &
+          node scripts/smoke-app-games.cjs
+      - name: Verify all 15 pages
+        run: |
+          for slug in clockwork-courier lumen-garden cargo-zero mine-signal signal-siege pulse-runner inkbound deep-current rift-cartographer marble-foundry kitchen-sprint orbit-weaver skyhook frostline hex-frontier; do
+            test -s "web/apps/$slug/index.html"
+            grep -q "data-app-game=\"$slug\"" "web/apps/$slug/index.html"
+            grep -q 'src="../app-games.js"' "web/apps/$slug/index.html"
+          done
+          test -s web/apps/app-games.js
+          grep -q "clockwork-courier" web/apps/app-games.js
+          grep -q "hex-frontier" web/apps/app-games.js
+          test -s web/apps/mobile-100/index.html
+          grep -q 'mobile-100.js' web/apps/mobile-100/index.html
+          grep -q 'Echo Sequence' web/apps/mobile-100/mobile-100.js
+          test -s web/apps/mobile-100-02/index.html
+          grep -q 'mobile-100-02.js' web/apps/mobile-100-02/index.html
+          grep -q 'Pendulum Balance' web/apps/mobile-100-02/mobile-100-02.js
+          test -s web/apps/mobile-100-03/index.html
+          grep -q 'mobile-100-03.js' web/apps/mobile-100-03/index.html
+          grep -q 'Dungeon Draft' web/apps/mobile-100-03/mobile-100-03.js
+          test -s web/apps/mobile-100-04/index.html
+          grep -q 'mobile-100-04.js' web/apps/mobile-100-04/index.html
+          grep -q 'Last Frequency' web/apps/mobile-100-04/mobile-100-04.js

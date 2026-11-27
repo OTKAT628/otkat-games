@@ -15,3 +15,24 @@ The full cross-project work report (including OTKAT AI Team, GitHub integration,
 - [OTKAT ID and donations plan](https://github.com/OTKAT628/otkat-games/blob/main/docs/OTKAT_ID_AND_DONATIONS.md)
 
 The website deployment was confirmed successful by [GitHub Actions run #45908399979](https://github.com/OTKAT628/otkat-games/actions/runs/45908399979).
+
+
+## Mobile 100 implementation update — 2026-11-27
+
+Work branch: `feature/15-new-app-games`.
+
+- 15 standalone browser-game prototypes are present.
+- Mobile 100 collections 01–03 contain 30 mini-games.
+- Mobile 100 collection 04 contains 60 short challenges across 12 base mechanics (five goal/configuration variants per mechanic).
+- Total catalog plan represented in this branch: 105 new game entries (15 standalone + 90 mini-game entries).
+- Updated apps catalog, offline service-worker cache, mechanic registry, and CI syntax/content checks.
+- The fourth collection uses a data-driven browser engine and local device records. It is a prototype collection, not a store-ready release.
+- Recent game-logic fixes include persistent Sokoban goals and win condition, connected tile routing and guaranteed artifact placement, timed tower-defense waves, recipe hit-testing and completion, mirror puzzle completion feedback, hex-grid edge checks, pinball lives, and cleanup of the fishing mini-game timer when switching games. A PWA manifest, icon, install prompt, and service-worker registration were added; native APK/EXE packages are not yet built.
+- Latest full gameplay/PWA regression run passed: [GitHub Actions #45983317421](https://github.com/OTKAT628/otkat-games/actions/runs/45983317421). It covers JavaScript syntax, catalogue/local-link/offline-cache validation, all 15 standalone pages, all four collection launchers, Lumen Garden win, Rift Cartographer connected route, Cargo Zero box goals, all three Kitchen Sprint recipes, Mobile 100 timer cleanup, and PWA manifest/icon checks.
+- Latest branch validation passed: [GitHub Actions run #45981719046](https://github.com/OTKAT628/otkat-games/actions/runs/45981719046) checked JavaScript syntax, all 15 standalone pages, collection content, local references, offline-cache entries, and mobile-browser smoke tests (canvas visibility, collection selection, runtime errors, and horizontal overflow).
+- Manual playtesting on real phones, accessibility, difficulty balancing, and bug fixing remain before publishing to `main`.
+
+Useful links:
+- [Apps catalog source](../web/apps/index.html)
+- [Mobile 100 collection 04](../web/apps/mobile-100-04/index.html)
+- [Mechanic registry](GAME_MECHANIC_REGISTRY.md)
