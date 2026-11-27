@@ -27,7 +27,7 @@ Work branch: `feature/15-new-app-games`.
 - Total catalog plan represented in this branch: 105 new game entries (15 standalone + 90 mini-game entries).
 - Updated apps catalog, offline service-worker cache, mechanic registry, and CI syntax/content checks.
 - The fourth collection uses a data-driven browser engine and local device records. It is a prototype collection, not a store-ready release.
-- Latest known branch commit after this handoff edit will need fresh CI verification. The GitHub connector did not return workflow/status records for the latest commits; this is not evidence of a passing build.
+- Latest branch validation passed: [GitHub Actions run #45981498500](https://github.com/OTKAT628/otkat-games/actions/runs/45981498500) checked JavaScript syntax, all 15 standalone pages, collection content, local references, and offline-cache entries.
 - Manual playtesting on real phones, accessibility, difficulty balancing, and bug fixing remain before publishing to `main`.
 
 Useful links:
