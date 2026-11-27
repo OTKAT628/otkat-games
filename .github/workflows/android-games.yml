@@ -14,6 +14,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -30,12 +31,22 @@ jobs:
         run: |
           mkdir -p release
           cp android/app/build/outputs/apk/release/app-release.apk release/OTKAT-Games-Android-v1.0.0.apk
+      - name: Upload installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: OTKAT-Games-Android-v1.0.0
+          path: release/OTKAT-Games-Android-v1.0.0.apk
+          if-no-files-found: error
+          retention-days: 90
       - name: Install and launch on Android emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
+          target: google_apis
           arch: x86_64
           profile: pixel_2
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          disable-animations: true
           script: |
             adb install release/OTKAT-Games-Android-v1.0.0.apk
             adb shell am start -n com.otkat.games/.MainActivity
@@ -47,13 +58,6 @@ jobs:
               exit 1
             fi
             adb shell dumpsys activity activities | grep -F "com.otkat.games/.MainActivity"
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: OTKAT-Games-Android-v1.0.0
-          path: release/OTKAT-Games-Android-v1.0.0.apk
-          if-no-files-found: error
-          retention-days: 90
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
@@ -64,6 +68,7 @@ jobs:
 
             Includes access to all 15 browser games through the official catalog.
             Requires an internet connection. This is a WebView wrapper; games remain browser-based experiences.
+            Touch controls are injected for 3D prototypes.
             Smoke-tested by installing and launching on an Android 15 emulator in CI.
           files: release/OTKAT-Games-Android-v1.0.0.apk
           make_latest: true
