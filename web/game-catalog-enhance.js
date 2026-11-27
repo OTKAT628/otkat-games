@@ -18,6 +18,7 @@ const DATA={
 };
 const slug=location.pathname.split('/').filter(Boolean).pop()||'';
 const d=DATA[slug];if(!d)return;
+const css=document.createElement('link');css.rel='stylesheet';css.href='../product-extra.css';document.head.appendChild(css);
 const main=document.querySelector('main');if(!main)return;
 const hero=main.querySelector('.detail-hero,.play-head,.hero')||main.firstElementChild;
 const h1=hero?.querySelector('h1');
