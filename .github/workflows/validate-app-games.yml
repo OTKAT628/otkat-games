@@ -31,6 +31,7 @@ jobs:
           node --check web/apps/app-games.js
           node --check web/apps/mobile-100/mobile-100.js
           node --check web/apps/mobile-100-02/mobile-100-02.js
+          node --check web/apps/mobile-100-03/mobile-100-03.js
       - name: Verify all 15 pages
         run: |
           for slug in clockwork-courier lumen-garden cargo-zero mine-signal signal-siege pulse-runner inkbound deep-current rift-cartographer marble-foundry kitchen-sprint orbit-weaver skyhook frostline hex-frontier; do
@@ -47,3 +48,6 @@ jobs:
           test -s web/apps/mobile-100-02/index.html
           grep -q 'mobile-100-02.js' web/apps/mobile-100-02/index.html
           grep -q 'Pendulum Balance' web/apps/mobile-100-02/mobile-100-02.js
+          test -s web/apps/mobile-100-03/index.html
+          grep -q 'mobile-100-03.js' web/apps/mobile-100-03/index.html
+          grep -q 'Dungeon Draft' web/apps/mobile-100-03/mobile-100-03.js
