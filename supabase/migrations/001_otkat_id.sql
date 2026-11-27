@@ -74,18 +74,13 @@ language plpgsql
 security definer
 set search_path = public
 as $$
-declare
-  requested_username text;
 begin
-  requested_username := coalesce(new.raw_user_meta_data ->> 'username', '');
-  if requested_username !~ '^[a-zA-Z0-9_]{3,24}$' then
-    requested_username := 'player_' || substr(replace(new.id::text, '-', ''), 1, 12);
-  end if;
-
+  -- Generate a unique default username so duplicate signup metadata cannot
+  -- cause the auth.users insert itself to fail. The player can edit it later.
   insert into public.profiles (user_id, username, display_name)
   values (
     new.id,
-    requested_username,
+    'player_' || substr(replace(new.id::text, '-', ''), 1, 12),
     coalesce(nullif(new.raw_user_meta_data ->> 'display_name', ''), 'Игрок')
   )
   on conflict (user_id) do nothing;
