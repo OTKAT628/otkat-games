@@ -64,11 +64,27 @@ Hide & Seek, Survival, Arena, Forgotten, Skyrun, Racing, Driftline, Space, Magic
 | Star Loom | построение фигуры маршрутом по точкам без повторов |
 | Dungeon Draft | выбор карт отряда с ограничением на число выборов |
 
+## Mobile 100 — коллекция 04 (55 испытаний)
+Коллекция содержит 55 самостоятельных коротких задач в 11 базовых механиках, по пять вариантов с отдельными целями и параметрами в каждой:
+| Направление | Испытания |
+|---|---|
+| Sort | Odd Parade, Prime Parade, Reverse River, Tiny Giants, Zero Heroes |
+| Memory | Fox Memory, Aurora Recall, Drum Code, Pixel Echo, Double Recall |
+| Route | Northbound, Zigzag Isle, Corner Quest, River Fork, Portal Path |
+| Timing | Pulse Window, Quiet Second, Redline, Moon Phase, Final Beat |
+| Math | Sum Forge, Subtraction Bay, Multiply Market, Fraction Fix, Number Bridge |
+| Spot | Mimic Hunt, Color Scout, Tiny Tracker, Wild Signal, Shadow Mark |
+| Resource | Water Share, Battery Plan, Fuel Convoy, Oxygen Crew, Seed Vault |
+| Word | Word Twist, Letter Dock, Forest Code, Orbit Word, Winter Note |
+| Pattern | Next Step, Twin Peaks, Square Yard, Fibo Trail, Alternator |
+| Strategy | Card Forge, Shield Wall, Risk Draft, Treasure Crew, Boss Breaker |
+| Balance / Code | Pendulum Zero, Thermal Control, Tide Gauge, Gyro Lab, Gravity Trim, Locksmith Junior, Beacon Keeper, Signal Vault, Deep Archive, Last Frequency |
+
 ## Правило против повторов
 До утверждения новой игры сверять её основной игровой цикл с этим реестром и списком существующих проектов. Новая тема/сюжет сами по себе не делают игру уникальной: должна отличаться главная механика, тип решений игрока и условие победы.
 
 ## Цель Mobile 100
-План: около 100 самостоятельных игровых циклов, выпускаемых партиями. Уже зарегистрировано 45 новых механик: 15 отдельных игр и 30 игр в трёх коллекциях Mobile 100. Следующие партии должны проходить проверку на пересечение механик по этому реестру.
+Цель: каталог из 100 новых игровых записей. Сейчас подготовлено 15 отдельных браузерных прототипов, 30 мини-игр в первых трёх коллекциях и 55 испытаний в четвёртой коллекции. Последние 55 — 11 базовых механик с пятью вариантами целей каждая, а не 55 полностью уникальных физических движков. Следующие этапы — ручная проверка, полировка и баланс.
 
 ## Текущий статус
-Добавлены отдельные HTML-страницы и общий Canvas-движок `web/apps/app-games.js`. Это браузерные прототипы, не готовые store-релизы. Нужны ручное тестирование, балансировка, проверка экранов победы/поражения и реальной работы offline-кэша на устройствах.
+Добавлены отдельные HTML-страницы, общий Canvas-движок `web/apps/app-games.js` и четыре самостоятельные страницы-коллекции Mobile 100. Это браузерные прототипы, не готовые store-релизы. Нужны ручное тестирование, балансировка, проверка экранов победы/поражения и реальной работы offline-кэша на устройствах.
