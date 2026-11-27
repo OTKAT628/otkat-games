@@ -51,6 +51,39 @@ const collections = [
       if(errors.length) throw new Error(item.path+': '+errors.join(' | '));
       console.log('PASS collection',item.path,'games='+item.count,'first='+title);
     }
+    // Functional regression checks for the newly repaired mechanics.
+    const clickBoard=async(x,y)=>{
+      const box=await page.locator('canvas').boundingBox();
+      await page.mouse.click(box.x+x*box.width/720,box.y+y*box.height/460);
+    };
+    await page.goto('http://127.0.0.1:4173/apps/lumen-garden/index.html',{waitUntil:'domcontentloaded'});
+    for(const n of [2,3,6,7,8]) await page.getByRole('button',{name:'Зеркало '+n}).click();
+    if(!(await page.locator('#help').innerText()).includes('Свет достиг цветку')) throw new Error('Lumen Garden: solved mirror layout did not win');
+    console.log('PASS Lumen Garden win condition');
+    await page.goto('http://127.0.0.1:4173/apps/rift-cartographer/index.html',{waitUntil:'domcontentloaded'});
+    for(const [x,y] of [[296,122],[360,122],[424,122],[424,186],[424,250],[424,314],[424,378]]) await clickBoard(x,y);
+    if(!(await page.locator('#help').innerText()).includes('Портал найден')) throw new Error('Rift Cartographer: valid route did not reach portal');
+    console.log('PASS Rift Cartographer connected route');
+    await page.goto('http://127.0.0.1:4173/apps/cargo-zero/index.html',{waitUntil:'domcontentloaded'});
+    for(const key of ['ArrowLeft','ArrowUp','ArrowRight','ArrowRight','ArrowRight','ArrowUp','ArrowUp','ArrowLeft','ArrowLeft','ArrowDown','ArrowLeft','ArrowDown','ArrowRight','ArrowRight','ArrowRight']) await page.keyboard.press(key);
+    if(!(await page.locator('#help').innerText()).includes('Оба ящика на местах')) throw new Error('Cargo Zero: solved warehouse did not win');
+    console.log('PASS Cargo Zero box goals');
+    await page.goto('http://127.0.0.1:4173/apps/kitchen-sprint/index.html',{waitUntil:'domcontentloaded'});
+    for(const [x,y] of [[105,147],[270,147],[435,147],[600,147],[105,222],[270,147],[270,222],[435,222],[600,222]]) await clickBoard(x,y);
+    if(!(await page.locator('#help').innerText()).includes('Все три заказа выполнены')) throw new Error('Kitchen Sprint: all correct recipes did not win');
+    console.log('PASS Kitchen Sprint three recipes');
+    await page.goto('http://127.0.0.1:4173/apps/mobile-100/index.html',{waitUntil:'domcontentloaded'});
+    await page.getByRole('button',{name:/Tide Fisher/}).click();
+    await page.waitForTimeout(180);
+    await page.getByRole('button',{name:/Pipe Tangle/}).click();
+    await page.waitForTimeout(350);
+    if(await page.locator('#board button').count()!==6) throw new Error('Mobile 100: old fishing timer overwrote the next game');
+    console.log('PASS Mobile 100 timer cleanup');
+    await page.goto('http://127.0.0.1:4173/index.html',{waitUntil:'domcontentloaded'});
+    if(!(await page.locator('link[rel="manifest"]').count())) throw new Error('PWA manifest link missing on home page');
+    const manifest=await page.evaluate(async()=>await (await fetch('/manifest.webmanifest')).json());
+    if(manifest.display!=='standalone') throw new Error('PWA manifest is not standalone');
+    console.log('PASS PWA install manifest');
     console.log('PASS mobile browser smoke tests');
   } finally {
     await browser.close();
