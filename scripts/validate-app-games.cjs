@@ -33,7 +33,7 @@ for (const [dir,file,count,names] of collections) {
   if (!html.includes(file)) fail(`collection page does not load ${file}`);
   const entries=(js.match(/^\[/gm)||[]).length;
   for (const name of names) if (!js.includes(name)) fail(`missing ${name} in ${dir}`);
-  const actualCount=(js.match(/^\\['[^']+'/gm)||[]).length;
+  const actualCount=(js.match(/^\['[^']+'/gm)||[]).length;
   if (names.length!==count || actualCount!==count) fail(`${dir} has ${actualCount} entries, expected ${count}`);
   if (entries===0 && !js.includes('const G=[') && !js.includes('const games=[')) fail(`game data not found in ${dir}`);
   pass(`${dir}: expected game names present`);
