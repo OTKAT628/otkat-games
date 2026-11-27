@@ -33,6 +33,8 @@ jobs:
           node --check web/apps/mobile-100-02/mobile-100-02.js
           node --check web/apps/mobile-100-03/mobile-100-03.js
           node --check web/apps/mobile-100-04/mobile-100-04.js
+      - name: Deep catalog, offline cache, and local-link checks
+        run: node scripts/validate-app-games.cjs
       - name: Verify all 15 pages
         run: |
           for slug in clockwork-courier lumen-garden cargo-zero mine-signal signal-siege pulse-runner inkbound deep-current rift-cartographer marble-foundry kitchen-sprint orbit-weaver skyhook frostline hex-frontier; do
