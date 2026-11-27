@@ -13,6 +13,8 @@ Use one Supabase project as the shared identity and data layer for the OTKAT Gam
 - Supabase Realtime for presence, chat and lobby events only after moderation, rate limits and abuse controls exist.
 - Never put the Supabase service-role key in a browser, game build or Android APK. Client uses the public anon/publishable key with RLS.
 
+The initial SQL migration is now prepared at [supabase/migrations/001_otkat_id.sql](../supabase/migrations/001_otkat_id.sql): it creates profiles, private per-user cloud saves and a public-read leaderboard table. Profile creation on signup is automatic. Leaderboard writes are deliberately denied to clients until a server/Edge Function validates scores. The migration has **not** yet been applied to a live Supabase project and has not been tested against a project.
+
 Current published Free plan lists two active projects, 50,000 monthly active users, 500 MB database, 1 GB file storage and 5 GB egress. Free projects may pause after a week of inactivity. This is suitable for an MVP, not a guaranteed always-on production service. Keep backups/export procedures and expect to upgrade if users depend on it.
 
 Official pricing: https://supabase.com/pricing
@@ -59,6 +61,6 @@ Do not route payments through another person's account or misstate country/resid
 
 ## Current status
 
-- OTKAT ID is not implemented yet; this document records the recommended architecture, not a live identity service.
+- OTKAT ID database migration is prepared in this branch; no Supabase project has been created, the migration has not been applied, and no Auth flow/client integration has been tested. It is not yet a live identity service.
 - No payment account, merchant profile, payout card or donation page has been connected.
 - Existing Driftline is still a 2D top-down browser prototype. A 3D garage/model viewer is the next concrete milestone; it must not be described as a complete 3D racing game until driving, physics, tracks and camera are 3D too.
