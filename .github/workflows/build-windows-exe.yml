@@ -2,7 +2,7 @@ name: Build OTKAT Games Windows installer
 
 on:
   push:
-    branches: [feature/android-apk-windows-exe]
+    branches: [feature/android-apk-windows-exe, feature/15-new-app-games]
     paths: ["web/**", "windows/**", ".github/workflows/build-windows-exe.yml"]
   pull_request:
     branches: [main]
