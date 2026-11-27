@@ -50,6 +50,12 @@ else {
     pass(`collection 04: ${data.length} unique challenges`);
   } catch (error) { fail('collection 04 data is not valid JSON: '+error.message); }
 }
+const manifest=JSON.parse(read('web/manifest.webmanifest'));
+if(manifest.start_url!=='./apps/index.html'||manifest.scope!=='./'||manifest.display!=='standalone') fail('PWA manifest has invalid start URL, scope, or display mode');
+if(!fs.existsSync('web/icons/otkat-icon.svg')) fail('PWA icon is missing');
+if(!read('web/index.html').includes('rel="manifest"')) fail('home page is missing PWA manifest link');
+if(!read('web/index.html').includes('beforeinstallprompt')) fail('home page is missing PWA install prompt');
+pass('PWA manifest, install entry point, and icon');
 const sw=read('web/sw.js');
 const cacheMatch=sw.match(/const CORE=(\[[\s\S]*?\]);/);
 if (!cacheMatch) fail('service worker CORE cache list not found');
@@ -57,6 +63,7 @@ else {
   try {
     const cache=JSON.parse(cacheMatch[1]);
     const required=[
+      './icons/otkat-icon.svg',
       ...standalone.map(x=>`./apps/${x}/index.html`),
       ...['mobile-100','mobile-100-02','mobile-100-03','mobile-100-04'].flatMap(x=>[`./apps/${x}/index.html`,`./apps/${x}/${x}.js`])
     ];
