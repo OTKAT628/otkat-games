@@ -62,3 +62,24 @@ Do not route payments through another person's account or misstate country/resid
 - OTKAT ID is not implemented yet; this document records the recommended architecture, not a live identity service.
 - No payment account, merchant profile, payout card or donation page has been connected.
 - Existing Driftline is still a 2D top-down browser prototype. A 3D garage/model viewer is the next concrete milestone; it must not be described as a complete 3D racing game until driving, physics, tracks and camera are 3D too.
+
+
+## First Supabase migration
+
+The initial SQL migration is maintained in `supabase/migrations/001_otkat_id.sql`:
+[Open the migration on GitHub](https://github.com/OTKAT628/otkat-games/blob/feature/otkat-id-migration-mini-game-fixes/supabase/migrations/001_otkat_id.sql).
+
+For the existing `otkat-id` project, open SQL Editor, create a new query, paste the **entire** migration, and run it once. A successful DDL query may say `Success. No rows returned`; that is expected for table/trigger/policy creation. Then check Table Editor for `profiles`, `leaderboard_entries`, and `cloud_saves`.
+
+If Supabase reports a connection/network error, do not interpret it as a SQL failure and do not repeatedly submit the script. Restore the dashboard connection first, then verify the tables with:
+
+```sql
+select table_name
+from information_schema.tables
+where table_schema = 'public'
+  and table_type = 'BASE TABLE'
+  and table_name in ('profiles', 'leaderboard_entries', 'cloud_saves')
+order by table_name;
+```
+
+The migration creates the database schema and RLS policies; it does not create a Supabase project, connect the website/app client, or configure email/OAuth providers. Those are separate setup steps. The current client-write leaderboard policy is suitable only for an MVP: it does not prevent score cheating. Use server-side score validation before competitive ranked launch.
