@@ -1,6 +1,6 @@
 (()=>{'use strict';
 const root=document.querySelector('[data-app-game]');if(!root)return;
-const id=root.dataset.appGame,canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d'),status=document.querySelector('#status'),help=document.querySelector('#help'),controls=document.querySelector('#controls'),W=720,H=460;
+if('serviceWorker'in navigator)navigator.serviceWorker.register('../../sw.js').catch(()=>{});const id=root.dataset.appGame,canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d'),status=document.querySelector('#status'),help=document.querySelector('#help'),controls=document.querySelector('#controls'),W=720,H=460;
 let score=0,turn=0,over=false,state={},timer=0,raf=0,keys={};
 const titles={"clockwork-courier":"Clockwork Courier","lumen-garden":"Lumen Garden","cargo-zero":"Cargo Zero","mine-signal":"Mine Signal","signal-siege":"Signal Siege","pulse-runner":"Pulse Runner","inkbound":"Inkbound","deep-current":"Deep Current","rift-cartographer":"Rift Cartographer","marble-foundry":"Marble Foundry","kitchen-sprint":"Kitchen Sprint","orbit-weaver":"Orbit Weaver","skyhook":"Skyhook","frostline":"Frostline","hex-frontier":"Hex Frontier"};
 const say=s=>help.textContent=s,btn=(s,fn)=>{let b=document.createElement('button');b.textContent=s;b.onclick=fn;controls.append(b);return b},save=()=>{let k='otkat-app-'+id,v=+(localStorage.getItem(k)||0);if(score>v)localStorage.setItem(k,score);status.textContent='Очки '+score+' · Рекорд '+Math.max(score,v)};
