@@ -35,6 +35,12 @@ jobs:
           node --check web/apps/mobile-100-04/mobile-100-04.js
       - name: Deep catalog, offline cache, and local-link checks
         run: node scripts/validate-app-games.cjs
+      - name: Browser smoke tests on mobile viewport
+        run: |
+          npm install --no-save --no-package-lock playwright
+          npx playwright install --with-deps chromium
+          python3 -m http.server 4173 --directory web > /tmp/otkat-http.log 2>&1 &
+          node scripts/smoke-app-games.cjs
       - name: Verify all 15 pages
         run: |
           for slug in clockwork-courier lumen-garden cargo-zero mine-signal signal-siege pulse-runner inkbound deep-current rift-cartographer marble-foundry kitchen-sprint orbit-weaver skyhook frostline hex-frontier; do
