@@ -30,12 +30,12 @@ jobs:
       - name: Prepare APK
         run: |
           mkdir -p release
-          cp android/app/build/outputs/apk/release/app-release.apk release/OTKAT-Games-Android-v1.0.0.apk
+          cp android/app/build/outputs/apk/release/app-release.apk release/OTKAT-Games-Android-v1.1.0.apk
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
-          name: OTKAT-Games-Android-v1.0.0
-          path: release/OTKAT-Games-Android-v1.0.0.apk
+          name: OTKAT-Games-Android-v1.1.0
+          path: release/OTKAT-Games-Android-v1.1.0.apk
           if-no-files-found: error
           retention-days: 90
       - name: Install and launch on Android emulator
@@ -48,7 +48,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           disable-animations: true
           script: |
-            adb install release/OTKAT-Games-Android-v1.0.0.apk
+            adb install release/OTKAT-Games-Android-v1.1.0.apk
             adb shell am start -n com.otkat.games/.MainActivity
             sleep 25
             adb shell pidof com.otkat.games
@@ -61,14 +61,14 @@ jobs:
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: android-v1.0.0
-          name: OTKAT Games Android v1.0.0
+          tag_name: android-v1.1.0
+          name: OTKAT Games Android v1.1.0
           body: |
-            First Android launcher for the OTKAT Games catalog.
+            Android launcher for the expanded OTKAT Games catalog.
 
-            Includes access to all 15 browser games through the official catalog.
-            Requires an internet connection. This is a WebView wrapper; games remain browser-based experiences.
+            Includes access to the 15 standalone browser games and 90 Mobile 100 mini-game challenges through the official applications catalog.
+            Requires an internet connection; the games are web experiences hosted by OTKAT Games, not separate native APKs. This is a WebView wrapper; games remain browser-based experiences.
             Touch controls are injected for 3D prototypes.
             Smoke-tested by installing and launching on an Android 15 emulator in CI.
-          files: release/OTKAT-Games-Android-v1.0.0.apk
+          files: release/OTKAT-Games-Android-v1.1.0.apk
           make_latest: true
