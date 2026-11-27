@@ -27,6 +27,7 @@ Work branch: `feature/15-new-app-games`.
 - Total catalog plan represented in this branch: 105 new game entries (15 standalone + 90 mini-game entries).
 - Updated apps catalog, offline service-worker cache, mechanic registry, and CI syntax/content checks.
 - The fourth collection uses a data-driven browser engine and local device records. It is a prototype collection, not a store-ready release.
+- Recent game-logic fixes include persistent Sokoban goals and win condition, connected tile routing and guaranteed artifact placement, timed tower-defense waves, recipe hit-testing and completion, mirror puzzle completion feedback, hex-grid edge checks, pinball lives, and cleanup of the fishing mini-game timer when switching games. A PWA manifest, icon, install prompt, and service-worker registration were added; native APK/EXE packages are not yet built.
 - Latest branch validation passed: [GitHub Actions run #45981719046](https://github.com/OTKAT628/otkat-games/actions/runs/45981719046) checked JavaScript syntax, all 15 standalone pages, collection content, local references, offline-cache entries, and mobile-browser smoke tests (canvas visibility, collection selection, runtime errors, and horizontal overflow).
 - Manual playtesting on real phones, accessibility, difficulty balancing, and bug fixing remain before publishing to `main`.
 
