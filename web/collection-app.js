@@ -50,8 +50,8 @@ if(type==='memoryduo'){
 const symbols=['●','◆','▲','★'];let player=0,level=0,step=0,pattern=[];
 stage.innerHTML='<h2>'+g[0]+'</h2><p>'+g[1]+'</p><p id="msg" class="statusline"></p><div id="pad"></div><p>Игрок 1: <b id="p1s">0</b> · Игрок 2: <b id="p2s">0</b></p>';
 function nextTurn(){
-if(level>=3){finish(duo[0]*10+duo[1]*10,'Игрок 1: '+duo[0]+' очков · Игрок 2: '+duo[1]+' очков. '+(duo[0]===duo[1]?'Ничья!':duo[0]>duo[1]?'Победил игрок 1!':'Победил игрок 2!'));return}
-player=level%2;step=0;pattern=Array.from({length:3+level},()=>Math.floor(Math.random()*4));
+if(level>=6){finish(duo[0]*10+duo[1]*10,'Игрок 1: '+duo[0]+' очков · Игрок 2: '+duo[1]+' очков. '+(duo[0]===duo[1]?'Ничья!':duo[0]>duo[1]?'Победил игрок 1!':'Победил игрок 2!'));return}
+player=level%2;step=0;pattern=Array.from({length:3+Math.floor(level/2)},()=>Math.floor(Math.random()*4));
 $('#msg').textContent='Ход игрока '+(player+1)+'. Запомни: '+pattern.map(n=>symbols[n]).join(' ');
 $('#pad').innerHTML='';
 timeout=setTimeout(()=>{$('#msg').textContent='Игрок '+(player+1)+': повтори последовательность';$('#pad').innerHTML=symbols.map((s,n)=>'<button class="choice" data-n="'+n+'">'+s+'</button>').join('');$('#pad').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(locked)return;const n=+b.dataset.n;if(n!==pattern[step]){$('#msg').textContent='Ошибка игрока '+(player+1)+'. Очко не начислено.';level++;timeout=setTimeout(nextTurn,850);return}step++;if(step===pattern.length){duo[player]+=pattern.length;$('#p1s').textContent=duo[0];$('#p2s').textContent=duo[1];level++;timeout=setTimeout(nextTurn,650)}})},1800);
