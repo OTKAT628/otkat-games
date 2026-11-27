@@ -5,7 +5,7 @@ on:
     branches: [feature/android-apk-windows-exe, feature/15-new-app-games]
     paths: ["web/**", "windows/**", ".github/workflows/build-windows-exe.yml"]
   pull_request:
-    branches: [main]
+    branches: [main, feature/15-new-app-games]
     paths: ["web/**", "windows/**", ".github/workflows/build-windows-exe.yml"]
   workflow_dispatch:
 
