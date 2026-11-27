@@ -30,7 +30,7 @@ jobs:
           for slug in depths swarm kingdoms orbital cozy; do
             test -s "web/$slug/index.html"
             grep -q 'data-game="'$slug'"' "web/$slug/index.html"
-            grep -q 'src="new-games.js"' "web/$slug/index.html"
+            grep -q 'src="../new-games.js"' "web/$slug/index.html"
           done
           test -s web/new-games.js
           grep -q 'Neon Depths' web/games/index.html
