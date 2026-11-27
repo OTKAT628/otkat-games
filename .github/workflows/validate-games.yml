@@ -1,0 +1,40 @@
+name: Validate new game lineup
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "web/**"
+      - ".github/workflows/validate-games.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check JavaScript syntax
+        run: |
+          find web -name '*.js' -type f -print0 | while IFS= read -r -d '' file; do
+            echo "Checking $file"
+            node --check "$file"
+          done
+      - name: Check new game pages and shared engine
+        run: |
+          for slug in depths swarm kingdoms orbital cozy; do
+            test -s "web/$slug/index.html"
+            grep -q 'data-game="'$slug'"' "web/$slug/index.html"
+            grep -q 'src="new-games.js"' "web/$slug/index.html"
+          done
+          test -s web/new-games.js
+          grep -q 'Neon Depths' web/games/index.html
+          grep -q 'Last Stand: Swarm' web/games/index.html
+          grep -q 'Tiny Kingdoms' web/games/index.html
+          grep -q 'Orbital Rush' web/games/index.html
+          grep -q 'Cozy Valley' web/games/index.html
