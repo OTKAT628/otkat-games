@@ -46,3 +46,4 @@ function farm(){
 window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault()},{passive:false});
 start();
 })();
+(()=>{const s=document.createElement('script');s.src='../game-catalog-enhance.js';document.body.appendChild(s)})();

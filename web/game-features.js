@@ -12,3 +12,4 @@ $('#otSave').onclick=save;$('#otClear').onclick=()=>{tiles=Array(64).fill(false)
 function ranks(){let a=[];try{a=JSON.parse(localStorage.getItem(rankKey)||'[]')}catch(e){}$('#otRanks').innerHTML=a.length?a.slice(0,10).map((r,i)=>'<p style="display:flex;justify-content:space-between;border-bottom:1px solid #ffffff22;padding:7px 0"><span>#'+(i+1)+' · '+r.date+'</span><b>'+r.score+' очков</b></p>').join(''):'<p class="muted">Пока нет результатов. Заверши раунд в 3D-прототипе.</p>'}
 ranks();window.addEventListener('storage',e=>{if(e.key===rankKey)ranks()});
 })();
+(()=>{const s=document.createElement('script');s.src='../game-catalog-enhance.js';document.body.appendChild(s)})();
