@@ -1,9 +1,9 @@
-; Engine configuration file.
+; OTKAT Hide & Seek — separate 2D menu and 3D waiting lobby
 config_version=5
 
 [application]
 config/name="OTKAT Hide & Seek"
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://scenes/menu_2d.tscn"
 
 [display]
 window/size/viewport_width=1280
