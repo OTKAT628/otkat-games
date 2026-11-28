@@ -14,6 +14,7 @@ var phase_left := HIDE_LENGTH
 var round_left := ROUND_LENGTH
 var finished := false
 var won := false
+var remote_players: Dictionary = {}
 
 var timer_label: Label
 var message_label: Label
@@ -166,6 +167,11 @@ func _draw() -> void:
 		draw_circle(player_position, 16.0, Color("#65e5df"))
 		draw_circle(player_position + Vector2(-5, -4), 3.0, Color("#102b3d"))
 		draw_circle(player_position + Vector2(5, -4), 3.0, Color("#102b3d"))
+	for peer_id in remote_players:
+		var remote_position: Vector2 = remote_players[peer_id]
+		draw_circle(remote_position, 15.0, Color("#f2a65a"))
+		draw_circle(remote_position + Vector2(-5, -4), 3.0, Color("#3d2414"))
+		draw_circle(remote_position + Vector2(5, -4), 3.0, Color("#3d2414"))
 	if finished:
 		draw_rect(Rect2(290, 285, 700, 120), Color(0.02, 0.05, 0.09, 0.9))
 		draw_string(ThemeDB.fallback_font, Vector2(420, 355), "ПОБЕДА!" if won else "ТЕБЯ НАШЛИ!", HORIZONTAL_ALIGNMENT_LEFT, 450, 36, Color.WHITE)
