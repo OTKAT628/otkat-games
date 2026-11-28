@@ -282,7 +282,10 @@ func _use_ability(ability_id: String) -> void:
 	if not round_active or finished or round_phase != "hunt":
 		hud_status.text = "Способности доступны только во время охоты."
 		return
-	abilities.global_position = player.global_position
+	var ability_position := player.global_position - player.global_transform.basis.z * 4.0
+	if player.disguised:
+		ability_position += Vector3.UP * 0.5
+	abilities.global_position = ability_position
 	abilities.use_ability(ability_id, hunter)
 
 func _on_player_noise(point: Vector3, radius: float) -> void:
@@ -291,23 +294,18 @@ func _on_player_noise(point: Vector3, radius: float) -> void:
 
 func _on_decoy_created(point: Vector3, duration: float) -> void:
 	hunter.investigate_position(point, duration)
-	var marker := MeshInstance3D.new()
-	marker.name = "DecoyEcho"
-	var mesh := SphereMesh.new()
-	mesh.radius = 0.42
-	mesh.height = 0.84
-	marker.mesh = mesh
-	var material := StandardMaterial3D.new()
-	material.albedo_color = Color("#d7b54d")
-	material.emission_enabled = true
-	material.emission = Color("#a47a25")
-	material.emission_energy_multiplier = 0.65
-	marker.material_override = material
-	marker.position = point + Vector3.UP * 0.55
-	add_child(marker)
+	var decoy: Node3D
+	if player.disguised and is_instance_valid(disguise_visual):
+		decoy = disguise_visual.duplicate() as Node3D
+		decoy.global_position = point
+	else:
+		decoy = player.body_visual.duplicate() as Node3D
+		decoy.global_position = point + Vector3.UP * 0.9
+	decoy.name = "DecoyEcho"
+	add_child(decoy)
 	await get_tree().create_timer(duration).timeout
-	if is_instance_valid(marker):
-		marker.queue_free()
+	if is_instance_valid(decoy):
+		decoy.queue_free()
 
 func _on_hunter_frozen(duration: float) -> void:
 	hunter.apply_freeze(duration)
