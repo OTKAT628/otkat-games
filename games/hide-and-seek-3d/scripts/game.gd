@@ -22,6 +22,7 @@ var mall: AbandonedMallBuilder
 var ability_buttons: Array[Button] = []
 var weapon_buttons: Array[Button] = []
 var ammo_label: Label
+var hunter_health_label: Label
 var victory_message := "Ты пережил всю охоту и выбрался из торгового центра."
 var round_phase := "prepare"
 var phase_time := PREP_TIME
@@ -78,6 +79,7 @@ func _spawn_characters() -> void:
 	player.fire_callback = Callable(self, "_fire_weapon")
 	weapon_runtime.target_hit.connect(_on_weapon_hit)
 	weapon_runtime.ammo_changed.connect(_on_ammo_changed)
+	weapon_runtime.weapon_blocked.connect(_on_weapon_blocked)
 	weapon_runtime.equip("realistic", "re_sentinel", "re_sentinel_graphite")
 
 	abilities = AbilityManager.new()
@@ -129,6 +131,11 @@ func _build_hud() -> void:
 	ammo_label.add_theme_font_size_override("font_size", 15)
 	ammo_label.add_theme_color_override("font_color", Color("#e6c36a"))
 	column.add_child(ammo_label)
+
+	hunter_health_label = Label.new()
+	hunter_health_label.add_theme_font_size_override("font_size", 15)
+	hunter_health_label.add_theme_color_override("font_color", Color("#e58b7b"))
+	column.add_child(hunter_health_label)
 
 	var ability_row := HBoxContainer.new()
 	ability_row.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
@@ -380,6 +387,9 @@ func _on_ammo_changed(current: int, reserve: int) -> void:
 	if is_instance_valid(ammo_label):
 		ammo_label.text = "ПАТРОНЫ  %02d / %02d" % [current, reserve]
 
+func _on_weapon_blocked(reason: String) -> void:
+	hud_status.text = reason
+
 func _on_weapon_hit(target: Object, weapon_id: String) -> void:
 	if target == hunter:
 		var weapon_data := ArsenalRegistry.get_weapon("realistic", weapon_id)
@@ -594,3 +604,5 @@ func _update_hud() -> void:
 	hud_timer.text = "%s  •  %03d" % [prefix, int(ceil(maxf(phase_time, 0.0)))]
 	if is_instance_valid(stamina_label):
 		stamina_label.text = "ВЫНОСЛИВОСТЬ  %d%%" % int(round(player.stamina))
+	if is_instance_valid(hunter_health_label):
+		hunter_health_label.text = "ОХОТНИК  %d%%" % hunter.health
