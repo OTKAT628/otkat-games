@@ -249,7 +249,7 @@ func toggle_camera_mode() -> void:
 		camera.position = Vector3.ZERO
 		camera.rotation = Vector3.ZERO
 	else:
-		_update_third_person_camera()
+		camera.rotation = Vector3(-0.12, 0, 0)
 
 func _update_third_person_camera() -> void:
 	if not third_person:
