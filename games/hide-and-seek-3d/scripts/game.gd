@@ -242,16 +242,18 @@ func _nearest_disguise_index() -> int:
 func _make_prop_part(parent: Node3D, part_name: String, size: Vector3, local_pos: Vector3, color: Color, cylinder: bool = false) -> void:
 	var visual := MeshInstance3D.new()
 	visual.name = part_name
+	var mesh: Mesh
 	if cylinder:
-		var mesh := CylinderMesh.new()
-		mesh.top_radius = size.x * 0.5
-		mesh.bottom_radius = size.x * 0.5
-		mesh.height = size.y
-		visual.mesh = mesh
+		var cylinder_mesh := CylinderMesh.new()
+		cylinder_mesh.top_radius = size.x * 0.5
+		cylinder_mesh.bottom_radius = size.x * 0.5
+		cylinder_mesh.height = size.y
+		mesh = cylinder_mesh
 	else:
-		var mesh := BoxMesh.new()
-		mesh.size = size
-		visual.mesh = mesh
+		var box_mesh := BoxMesh.new()
+		box_mesh.size = size
+		mesh = box_mesh
+	visual.mesh = mesh
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
 	material.roughness = 0.82
