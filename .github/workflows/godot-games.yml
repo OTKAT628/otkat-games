@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "games-godot/**"
+      - "games/hide-and-seek/**"
       - ".github/workflows/godot-games.yml"
   push:
     branches: [feature/godot-mobile100-consolidation]
@@ -43,6 +44,7 @@ jobs:
           for project in party-circuit mindforge wild-frontier world-detective; do
             godot --headless --editor --path "games-godot/$project" --quit
           done
+          godot --headless --editor --path games/hide-and-seek --quit
 
   export-world-detective-android:
     runs-on: ubuntu-latest
