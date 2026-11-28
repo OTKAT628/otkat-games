@@ -1,0 +1,39 @@
+name: OTKAT Hide & Seek Godot Smoke Test
+
+on:
+  pull_request:
+    paths:
+      - "games/hide-and-seek-3d/**"
+      - ".github/workflows/hide-and-seek-godot-check.yml"
+  push:
+    branches:
+      - "feature/hide-and-seek-native-3d"
+    paths:
+      - "games/hide-and-seek-3d/**"
+      - ".github/workflows/hide-and-seek-godot-check.yml"
+  workflow_dispatch:
+
+jobs:
+  godot-smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Godot 4.7.2
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.7.2
+          use-dotnet: false
+
+      - name: Verify engine version
+        run: godot --version
+
+      - name: Import project and parse scripts
+        run: godot --headless --path games/hide-and-seek-3d --editor --quit
+
+      - name: Run gameplay smoke tests
+        run: godot --headless --path games/hide-and-seek-3d --script res://tests/smoke_test.gd
+
+      - name: Launch main scene headlessly
+        run: godot --headless --path games/hide-and-seek-3d --quit-after 5
