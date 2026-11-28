@@ -68,6 +68,10 @@ func _physics_process(delta: float) -> void:
 		state = "investigate"
 		search_time = 4.0
 
+	if target.disguised and distance <= 1.45:
+		caught_survivor.emit()
+		return
+
 	match state:
 		"chase":
 			_move_toward(target_pos, HUNT_SPEED, delta)
