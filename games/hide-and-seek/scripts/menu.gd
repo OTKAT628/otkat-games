@@ -124,19 +124,21 @@ func _show_create_world() -> void:
 
 func _show_join_world() -> void:
     _clear_page("ПОДКЛЮЧИТЬСЯ", "Введи адрес комнаты в формате IP:порт и пароль")
-    var name_field := _add_field("Твоё имя", player_name)
-    var code_field := _add_field("Код мира (IP:порт)", "")
+    var player_field := _add_field("Твоё имя", player_name)
+    var world_field := _add_field("Имя мира", "")
+    var code_field := _add_field("Код подключения (IP:порт)", "")
     var password_field := _add_field("Пароль мира", "", true)
     _add_button("Подключиться", func():
-        player_name = name_field.text.strip_edges()
+        player_name = player_field.text.strip_edges()
+        var expected_world := world_field.text.strip_edges()
         var parts := code_field.text.strip_edges().split(":")
         if parts.size() != 2 or not parts[1].is_valid_int():
             _add_status("Код должен выглядеть как 192.168.1.10:27015.")
             return
-        if player_name.is_empty():
-            _add_status("Укажи имя игрока.")
+        if player_name.is_empty() or expected_world.is_empty():
+            _add_status("Укажи имя игрока и имя мира.")
             return
-        _join_world(parts[0], int(parts[1]), password_field.text)
+        _join_world(parts[0], int(parts[1]), password_field.text, expected_world)
     )
     _add_button("Назад", _show_multiplayer_menu)
 
@@ -184,7 +186,7 @@ func _host_world() -> void:
             break
     _show_room_code("%s:%d" % [address, DEFAULT_PORT], is_public)
 
-func _join_world(address: String, port: int, password: String) -> void:
+func _join_world(address: String, port: int, password: String, expected_world: String) -> void:
     var peer := ENetMultiplayerPeer.new()
     var error := peer.create_client(address, port)
     if error != OK:
@@ -192,7 +194,7 @@ func _join_world(address: String, port: int, password: String) -> void:
         return
     multiplayer.multiplayer_peer = peer
     multiplayer.connected_to_server.connect(func():
-        rpc_id(1, "_request_join", player_name, password)
+        rpc_id(1, "_request_join", player_name, password, expected_world)
     , CONNECT_ONE_SHOT)
     multiplayer.connection_failed.connect(func():
         _show_multiplayer_menu()
@@ -245,12 +247,12 @@ func _process(delta: float) -> void:
         rpc_id(1, "_sync_position", position)
 
 @rpc("any_peer", "call_remote", "reliable")
-func _request_join(name: String, password: String) -> void:
+func _request_join(name: String, password: String, expected_world: String) -> void:
     if not multiplayer.is_server():
         return
     var peer_id := multiplayer.get_remote_sender_id()
-    if (not is_public and password != server_password) or name.strip_edges().is_empty():
-        rpc_id(peer_id, "_join_result", false, "Неверный пароль или имя игрока.")
+    if (expected_world.strip_edges().to_lower() != world_name.to_lower() or (not is_public and password != server_password) or name.strip_edges().is_empty()):
+        rpc_id(peer_id, "_join_result", false, "Имя мира, пароль или имя игрока указаны неверно.")
         multiplayer.multiplayer_peer.disconnect_peer(peer_id)
         return
     authenticated[peer_id] = true
