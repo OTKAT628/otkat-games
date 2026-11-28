@@ -35,10 +35,11 @@ jobs:
           dotnet build games-godot/party-circuit/OTKAT.PartyCircuit.csproj --configuration Release
           dotnet build games-godot/mindforge/OTKAT.Mindforge.csproj --configuration Release
           dotnet build games-godot/wild-frontier/OTKAT.WildFrontier.csproj --configuration Release
+          dotnet build games-godot/world-detective/OTKAT.WorldDetective.csproj --configuration Release
       - name: Validate Godot project imports
         shell: bash
         run: |
           set -euo pipefail
-          for project in party-circuit mindforge wild-frontier; do
+          for project in party-circuit mindforge wild-frontier world-detective; do
             godot --headless --editor --path "games-godot/$project" --quit
           done
