@@ -84,16 +84,16 @@ public partial class Main : Node2D
     {
         var snapshot = new SavedGame(_player.X, _player.Y, _wood, _stone, _food, _health, _day, _hunger,
             _resources.Select(r => new SavedResource(r.Pos.X, r.Pos.Y, r.Kind)).ToList());
-        using var file = FileAccess.Open("user://wild-frontier-save.json", FileAccess.ModeFlags.Write);
+        using var file = Godot.FileAccess.Open("user://wild-frontier-save.json", Godot.FileAccess.ModeFlags.Write);
         file?.StoreString(JsonSerializer.Serialize(snapshot));
     }
 
     private bool LoadProgress()
     {
-        if (!FileAccess.FileExists("user://wild-frontier-save.json")) return false;
+        if (!Godot.FileAccess.FileExists("user://wild-frontier-save.json")) return false;
         try
         {
-            var snapshot = JsonSerializer.Deserialize<SavedGame>(FileAccess.GetFileAsString("user://wild-frontier-save.json"));
+            var snapshot = JsonSerializer.Deserialize<SavedGame>(Godot.FileAccess.GetFileAsString("user://wild-frontier-save.json"));
             if (snapshot is null) return false;
             _player = new Vector2I(Math.Clamp(snapshot.X, 0, MapW - 1), Math.Clamp(snapshot.Y, 0, MapH - 1));
             _wood = Math.Max(0, snapshot.Wood); _stone = Math.Max(0, snapshot.Stone); _food = Math.Max(0, snapshot.Food);
