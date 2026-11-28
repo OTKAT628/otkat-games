@@ -34,13 +34,14 @@ func _build_world() -> void:
 func _spawn_characters() -> void:
 	player = PlayerController.new()
 	player.name = "Survivor"
-	player.position = Vector3(-23.0, 0.2, 17.0)
+	player.position = Vector3(-23.0, 0.1, 17.0)
 	player.interact_callback = Callable(self, "_toggle_disguise")
 	add_child(player)
 
 	hunter = HunterController.new()
 	hunter.name = "MallHunter"
-	hunter.position = Vector3(23.0, 0.2, -17.0)
+	hunter.position = Vector3(23.0, 0.1, -17.0)
+	hunter.set_physics_process(false)
 	hunter.target = player
 	hunter.caught_survivor.connect(_on_player_caught)
 	add_child(hunter)
@@ -80,6 +81,7 @@ func _process(delta: float) -> void:
 	if round_phase == "prepare" and phase_time <= 0.0:
 		round_phase = "hunt"
 		phase_time = ROUND_TIME
+		hunter.set_physics_process(true)
 		hud_status.text = "Охотник вышел на поиски. Продержись до конца!"
 	elif round_phase == "hunt" and phase_time <= 0.0:
 		_finish(true)
@@ -136,6 +138,8 @@ func _on_player_caught() -> void:
 
 func _finish(won: bool) -> void:
 	finished = true
+	player.set_physics_process(false)
+	hunter.set_physics_process(false)
 	hud_status.text = "ПОБЕДА! Ты пережил охоту." if won else "ТЕБЯ НАШЛИ! Попробуй другую тактику."
 	hud_hint.text = "Раунд завершён. Перезапуск — кнопка R."
 
