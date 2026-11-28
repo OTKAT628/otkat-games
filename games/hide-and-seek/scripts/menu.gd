@@ -207,8 +207,10 @@ func _show_room_code(code: String, public_room: bool) -> void:
     code_label.add_theme_font_size_override("font_size", 24)
     code_label.add_theme_color_override("font_color", Color("#8fe5dc"))
     page.add_child(code_label)
+    ui.visible = true
     _add_status("Передай игрокам IP:порт и пароль, если мир закрытый. Для подключения через интернет может понадобиться проброс UDP-порта 27015 на роутере.")
-    _add_button("Открыть игру", func(): _launch_game("Мир: %s" % world_name))
+    _add_button("Скрыть код и играть", func(): ui.visible = false)
+    _add_button("Скопировать код", func(): DisplayServer.clipboard_set(code))
     _add_button("В меню", _disconnect_to_menu)
 
 func _launch_game(label: String) -> void:
@@ -238,7 +240,6 @@ func _process(delta: float) -> void:
     sync_elapsed = 0.0
     var position: Vector2 = game_node.get("player_position")
     if multiplayer.is_server():
-        remote_positions[1] = position
         rpc("_relay_position", 1, position, player_name)
     else:
         rpc_id(1, "_sync_position", position)
@@ -262,6 +263,7 @@ func _join_result(success: bool, result: String) -> void:
     if success:
         _launch_game("Мир: %s" % result)
     else:
+        multiplayer.multiplayer_peer = null
         _show_multiplayer_menu()
         _add_status(result)
 
@@ -285,3 +287,7 @@ func _relay_position(peer_id: int, position: Vector2, name: String) -> void:
     remote_names[peer_id] = name
     if game_node:
         game_node.set("remote_players", remote_positions.duplicate())
+
+func _unhandled_key_input(event: InputEvent) -> void:
+    if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
+        _disconnect_to_menu()
