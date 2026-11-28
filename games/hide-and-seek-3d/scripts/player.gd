@@ -242,7 +242,7 @@ func _is_touch_ui_position(position: Vector2, viewport_size: Vector2) -> bool:
 		return true
 	if position.x >= viewport_size.x - 180.0 and position.y >= viewport_size.y - 190.0:
 		return true
-	if position.y <= 190.0 and position.x >= viewport_size.x - 340.0:
+	if position.y <= 250.0 and position.x >= viewport_size.x - 340.0:
 		return true
 	return false
 
