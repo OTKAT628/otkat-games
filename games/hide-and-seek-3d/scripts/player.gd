@@ -39,6 +39,8 @@ var is_sprinting := false
 var is_crouching := false
 var noise_timer := 0.0
 var interact_callback: Callable
+var fire_callback: Callable
+var weapon_mount: Node3D
 var position_before_disguise := Vector3.ZERO
 var saved_collision_layer := 1
 var saved_collision_mask := 1
@@ -224,6 +226,9 @@ func _input(event: InputEvent) -> void:
 			touch_move.y = -touch_move.y
 		elif event.index == look_touch_id:
 			_rotate_view(event.relative, touch_look_sensitivity)
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if fire_callback.is_valid():
+			fire_callback.call()
 	elif event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_E:
 			_on_interact_pressed()
@@ -245,6 +250,8 @@ func toggle_camera_mode() -> void:
 	third_person = not third_person
 	if is_instance_valid(camera_mode_button):
 		camera_mode_button.text = "КАМЕРА: 3-Е ЛИЦО" if third_person else "КАМЕРА: 1-Е ЛИЦО"
+	if is_instance_valid(weapon_mount):
+		weapon_mount.visible = not third_person
 	if not third_person:
 		camera.position = Vector3.ZERO
 		camera.rotation = Vector3.ZERO
