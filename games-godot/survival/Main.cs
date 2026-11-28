@@ -19,7 +19,8 @@ public partial class Main : Node3D
         BuildWorld();
         BuildPlayer();
         BuildHud();
-        if (!LoadSave()) PopulateResources();
+        LoadSave();
+        PopulateResources();
         UpdateHud();
     }
 
