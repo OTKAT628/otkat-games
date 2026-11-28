@@ -5,7 +5,7 @@ Godot 4.7.2, GDScript. Main startup scene is a conventional 2D menu. The dedicat
 ## Current structure
 - `scenes/menu_2d.tscn`: ordinary 2D main menu, solo/multiplayer, create room, join entry point, quick-match entry point, skins, map catalogue, match settings.
 - `scenes/lobby_3d.tscn`: separate 3D waiting area with avatar, map/item portals, skin changing, player/invite panel, round settings, and free-camera fly mode.
-- The selected skin and room settings are handed from the 2D menu to the 3D lobby through scene metadata.
+- The selected skin and room settings are stored before the scene transition and handed from the 2D menu to the 3D lobby through scene metadata. The lobby's free camera supports continuous WASD movement, mouse look, vertical movement, sprint and exit via F/Esc.
 
 ## Prototype status / honest limitations
 - Lobby art is procedural blockout geometry, not final production character models or high-end environment assets.
