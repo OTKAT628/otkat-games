@@ -7,6 +7,10 @@ const AbilityManager = preload("res://scripts/prop_abilities.gd")
 
 const PREP_TIME := 12.0
 const ROUND_TIME := 150.0
+const SENSITIVITY_STEPS := [0.0016, 0.0024, 0.0032, 0.004]
+const FOV_STEPS := [70.0, 78.0, 88.0]
+var sensitivity_index := 1
+var fov_index := 1
 
 var player: HideAndSeekPlayer
 var hunter: MallHunter
@@ -136,7 +140,9 @@ func _build_main_menu() -> void:
 		"ЗАБРОШЕННЫЙ ТОРГОВЫЙ ЦЕНТР\n\nТы — выживший. У тебя 12 секунд, чтобы спрятаться среди предметов. Затем охотник начнёт патрулировать и искать тебя. Продержись 150 секунд!",
 		[
 			{"text": "НАЧАТЬ ИГРУ", "action": Callable(self, "_start_round")},
-			{"text": "КАК ИГРАТЬ", "action": Callable(self, "_show_controls_help")}
+			{"text": "КАК ИГРАТЬ", "action": Callable(self, "_show_controls_help")},
+			{"text": "НАСТРОЙКИ", "action": Callable(self, "_show_settings")},
+			{"text": "ВЫХОД", "action": Callable(self, "_exit_game")}
 		]
 	)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -199,6 +205,31 @@ func _show_screen(title_text: String, body_text: String, buttons: Array) -> void
 		button.add_theme_font_size_override("font_size", 18)
 		button.pressed.connect(item["action"])
 		column.add_child(button)
+
+func _show_settings() -> void:
+	_show_screen(
+		"НАСТРОЙКИ",
+		"Настрой управление и обзор под себя. Значения применяются сразу.",
+		[
+			{"text": "ЧУВСТВИТЕЛЬНОСТЬ: %.1f" % (player.mouse_sensitivity * 1000.0), "action": Callable(self, "_cycle_sensitivity")},
+			{"text": "ПОЛЕ ЗРЕНИЯ: %d°" % int(player.camera.fov), "action": Callable(self, "_cycle_fov")},
+			{"text": "НАЗАД", "action": Callable(self, "_build_main_menu")}
+		]
+	)
+
+func _cycle_sensitivity() -> void:
+	sensitivity_index = (sensitivity_index + 1) % SENSITIVITY_STEPS.size()
+	player.mouse_sensitivity = SENSITIVITY_STEPS[sensitivity_index]
+	player.touch_look_sensitivity = player.mouse_sensitivity * 1.65
+	_show_settings()
+
+func _cycle_fov() -> void:
+	fov_index = (fov_index + 1) % FOV_STEPS.size()
+	player.camera.fov = FOV_STEPS[fov_index]
+	_show_settings()
+
+func _exit_game() -> void:
+	get_tree().quit()
 
 func _show_controls_help() -> void:
 	_show_screen(
