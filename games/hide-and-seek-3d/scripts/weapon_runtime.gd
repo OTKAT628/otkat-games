@@ -23,6 +23,7 @@ var reserve_ammo := 0
 var cooldown_left := 0.0
 var is_reloading := false
 var weapon_visual: Node3D
+var shooter: CollisionObject3D
 
 func _process(delta: float) -> void:
 	cooldown_left = maxf(0.0, cooldown_left - delta)
@@ -66,6 +67,8 @@ func try_fire(origin: Vector3, direction: Vector3) -> bool:
 
 	var reach := float(weapon_data.get("range", 20.0))
 	var query := PhysicsRayQueryParameters3D.create(origin, origin + direction.normalized() * reach)
+	if is_instance_valid(shooter):
+		query.exclude = [shooter.get_rid()]
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
 	if not hit.is_empty():
 		target_hit.emit(hit.get("collider"), str(weapon_data.id))
