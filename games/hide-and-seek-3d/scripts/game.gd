@@ -619,8 +619,8 @@ func _create_disguise_visual(anchor: Vector3, kind: int) -> void:
 			_make_prop_part(disguise_visual, "PlanterPot", Vector3(1.25, 0.72, 1.25), Vector3(0, -0.08, 0), Color("#5d5548"), true)
 			_make_prop_part(disguise_visual, "PlanterFoliage", Vector3(0.95, 0.55, 0.95), Vector3(0, 0.48, 0), Color("#435b42"), true)
 		_:
-			_make_prop_part(disguise_visual, "SuitcaseBody", Vector3(0.85, 0.55, 0.48), Vector3(0, 0, 0), Color("#806448"))
-			_make_prop_part(disguise_visual, "SuitcaseHandle", Vector3(0.32, 0.12, 0.08), Vector3(0, 0.34, 0), Color("#343638"))
+			_make_prop_part(disguise_visual, "SuitcaseBody", Vector3(0.85, 0.55, 0.48), Vector3(0, -0.22, 0), Color("#806448"))
+			_make_prop_part(disguise_visual, "SuitcaseHandle", Vector3(0.32, 0.12, 0.08), Vector3(0, 0.12, 0), Color("#343638"))
 
 func _on_player_caught() -> void:
 	_finish(false)
