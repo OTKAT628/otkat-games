@@ -386,6 +386,9 @@ func _fire_weapon() -> void:
 	if not round_active or finished or round_phase != "hunt":
 		hud_status.text = "Стрелять можно только во время охоты."
 		return
+	if player.disguised:
+		hud_status.text = "Нельзя стрелять, пока ты замаскирован."
+		return
 	pending_fire = true
 
 func _reload_weapon() -> void:
