@@ -4,6 +4,7 @@ class_name OtkatPropAbilities
 
 signal decoy_created(position: Vector3, duration: float)
 signal hunter_bagged(duration: float)
+signal hunter_frozen(duration: float)
 signal ability_used(ability_id: String, cooldown: float)
 signal ability_blocked(reason: String)
 
@@ -35,19 +36,14 @@ func use_ability(ability_id: String, hunter: Node3D = null) -> bool:
 
 	var data: Dictionary = ABILITIES[ability_id]
 	var duration := float(data.duration)
+	var cooldown := float(data.cooldown)
+	cooldowns[ability_id] = cooldown
+	ability_used.emit(ability_id, cooldown)
 	match ability_id:
 		"decoy":
 			decoy_created.emit(global_position, duration)
 		"freeze":
-			var was_processing := hunter.is_physics_processing()
-			hunter.set_physics_process(false)
-			await get_tree().create_timer(duration).timeout
-			if is_instance_valid(hunter):
-				hunter.set_physics_process(was_processing)
+			hunter_frozen.emit(duration)
 		"bag":
 			hunter_bagged.emit(duration)
-
-	var cooldown := float(data.cooldown)
-	cooldowns[ability_id] = cooldown
-	ability_used.emit(ability_id, cooldown)
 	return true
