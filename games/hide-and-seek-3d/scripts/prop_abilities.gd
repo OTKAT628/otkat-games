@@ -1,4 +1,4 @@
-extends Node
+extends Node3D
 class_name OtkatPropAbilities
 ## Prototype abilities for the survivor/prop role. Visual/audio feedback is provided by signals.
 
