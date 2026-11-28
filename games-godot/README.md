@@ -1,6 +1,15 @@
 # OTKAT Godot game consolidation
 
-All 90 legacy Mobile 100 mini-game/challenge entries are being consolidated as internal modes and level content in three standalone Godot 4 projects. They are no longer presented as separate products in the Apps catalogue.
+Public product taxonomy:
+- Games catalogue: standalone playable games only.
+- Apps catalogue: standalone utility/service applications only.
+- No browser mini-games, embedded HTML games, modes, levels or prototypes are listed as independent products.
+
+The legacy Mobile 100 mechanics are being consolidated as internal modes and level content in three standalone Godot projects. They are not separate products.
+
+## Engine and language standard
+
+Godot 4 .NET with C# is the preferred implementation for the majority of new OTKAT games. Target native builds first: Windows and Android, then Linux/macOS/iOS where QA and platform requirements allow. Godot 4 C# currently has no Web export support; Android/iOS support is documented as experimental, so native device testing is mandatory. Do not promise a web build for a C# game. If a browser build is required, use a separate compatible implementation or choose GDScript for that specific project.
 
 ## Project A — OTKAT Party Circuit
 Local party play for 2–4 people. Planned mode families: reaction, rhythm/timing, memory, dice/card risk, quick challenges and cooperative/competitive rounds.
@@ -11,7 +20,7 @@ Legacy mechanics to migrate:
 - Pixel Echo, Northbound, Zigzag Isle, Corner Quest, River Fork, Portal Path, Moon Phase, Wild Signal, Shadow Mark, Twin Peaks
 
 ## Project B — OTKAT Mindforge
-A solo logic campaign with puzzle families, progression, hints and score.
+A solo logic campaign with puzzle families, progression, hints and score. **C# migration pilot:** the first 30-step campaign has been ported from GDScript to Godot .NET/C#. This is an initial gameplay slice, not a finished game.
 
 Legacy mechanics to migrate:
 - Pipe Tangle, Bridge Budget, Prism Sort, Knot Escape, Paper Fold, Color Alchemy, Odd One Out, Glyph Cipher, Vault Dial, Star Loom
@@ -28,11 +37,9 @@ Legacy mechanics to migrate:
 
 ## Current implementation status
 
-The first source slices are present:
-- Party Circuit: local 2–4 player round/score loop with reaction, arithmetic, memory and attention rounds.
-- Mindforge: 30-step generated logic campaign with answers, hints and scoring.
-- Wild Frontier: movement, resource gathering, hunger, health, day progression and basic shelter crafting.
-
-This is not yet a complete port of all 90 legacy mechanics. The list above is the migration map, not a claim that every mechanic is already playable. The old HTML files are temporarily retained as migration references until each replacement mode is implemented and verified. They are no longer listed as standalone apps or games in the public catalog.
-
-Godot runtime/export validation and Windows/Android builds are still required. Do not mark the projects production-ready before those checks pass.
+- Party Circuit: first GDScript gameplay slice; planned C# migration.
+- Mindforge: initial 30-step campaign migrated to C#/.NET.
+- Wild Frontier: first GDScript gameplay slice; planned C# migration.
+- The 90 legacy mechanics above are a migration inventory, not a claim that every mechanic is playable.
+- Old HTML sources remain temporarily as migration references; do not present them as products or delete them until replacement modes are implemented and verified.
+- Native Windows/Android export and real-device QA are required before calling any project release-ready.
