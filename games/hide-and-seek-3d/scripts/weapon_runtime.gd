@@ -9,6 +9,7 @@ signal weapon_blocked(reason: String)
 signal ammo_changed(current: int, reserve: int)
 
 const Registry = preload("res://scripts/arsenal_registry.gd")
+const WeaponVisual = preload("res://scripts/weapon_visual.gd")
 const MAGAZINE_SIZES := {
 	"shotgun": 6, "pump_shotgun": 6, "sidearm": 12, "service_sidearm": 12,
 	"toy_blaster": 16, "launcher": 4, "energy_sidearm": 10, "energy_blade": 0,
@@ -21,11 +22,12 @@ var ammo_in_magazine := 0
 var reserve_ammo := 0
 var cooldown_left := 0.0
 var is_reloading := false
+var weapon_visual: OtkatWeaponVisual
 
 func _process(delta: float) -> void:
 	cooldown_left = maxf(0.0, cooldown_left - delta)
 
-func equip(world: String, weapon_id: String) -> bool:
+func equip(world: String, weapon_id: String, skin_id: String = "") -> bool:
 	var candidate := Registry.get_weapon(world, weapon_id)
 	if candidate.is_empty():
 		weapon_blocked.emit("Оружие не найдено в коллекции этого мира.")
@@ -36,6 +38,12 @@ func equip(world: String, weapon_id: String) -> bool:
 	ammo_in_magazine = magazine_size
 	reserve_ammo = magazine_size * 4
 	is_reloading = false
+	if is_instance_valid(weapon_visual):
+		weapon_visual.queue_free()
+	weapon_visual = WeaponVisual.new()
+	weapon_visual.name = "WeaponVisual"
+	add_child(weapon_visual)
+	weapon_visual.build(str(candidate.type), skin_id)
 	ammo_changed.emit(ammo_in_magazine, reserve_ammo)
 	return true
 
