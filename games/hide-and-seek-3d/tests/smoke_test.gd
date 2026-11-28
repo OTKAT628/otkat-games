@@ -46,8 +46,14 @@ func _run_smoke_test() -> void:
 		_fail("Third-person camera mode did not activate.")
 		return
 	game.player.toggle_camera_mode()
-	if game.player.third_person:
-		_fail("First-person camera mode did not restore.")
+	if game.player.third_person or game.player.weapon_mount.visible == false:
+		_fail("First-person camera mode did not restore the weapon view.")
+		return
+
+	var initial_hunter_health := game.hunter.health
+	game.call("_on_weapon_hit", game.hunter, "re_sentinel")
+	if game.hunter.health >= initial_hunter_health:
+		_fail("Weapon hit did not damage the hunter.")
 		return
 
 	game.round_phase = "hunt"
