@@ -22,7 +22,7 @@ var ammo_in_magazine := 0
 var reserve_ammo := 0
 var cooldown_left := 0.0
 var is_reloading := false
-var weapon_visual: OtkatWeaponVisual
+var weapon_visual: Node3D
 
 func _process(delta: float) -> void:
 	cooldown_left = maxf(0.0, cooldown_left - delta)
