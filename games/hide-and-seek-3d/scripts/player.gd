@@ -10,8 +10,8 @@ const SPRINT_SPEED := 7.4
 const CROUCH_SPEED := 2.8
 const STAMINA_DRAIN := 24.0
 const STAMINA_REGEN := 16.0
-const MOUSE_SENSITIVITY := 0.0024
-const TOUCH_LOOK_SENSITIVITY := 0.004
+var mouse_sensitivity := 0.0024
+var touch_look_sensitivity := 0.004
 const GRAVITY := 18.0
 
 var camera_pivot: Node3D
@@ -198,7 +198,7 @@ func _build_mobile_controls() -> void:
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		_rotate_view(event.relative, MOUSE_SENSITIVITY)
+		_rotate_view(event.relative, mouse_sensitivity)
 	elif event is InputEventScreenTouch:
 		var viewport_size := get_viewport().get_visible_rect().size
 		var width := viewport_size.x
@@ -223,7 +223,7 @@ func _input(event: InputEvent) -> void:
 			touch_move = (event.position - move_touch_origin).limit_length(90.0) / 90.0
 			touch_move.y = -touch_move.y
 		elif event.index == look_touch_id:
-			_rotate_view(event.relative, TOUCH_LOOK_SENSITIVITY)
+			_rotate_view(event.relative, touch_look_sensitivity)
 	elif event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_E:
 			_on_interact_pressed()
