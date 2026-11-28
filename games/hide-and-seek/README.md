@@ -1,23 +1,17 @@
-# OTKAT Hide & Seek — network foundation prototype
+# OTKAT Hide & Seek — separate 2D menu / 3D lobby foundation
 
-Engine: Godot 4.7.2, GDScript.
+Godot 4.7.2, GDScript. Main startup scene is a conventional 2D menu. The dedicated 3D waiting lobby is loaded only after choosing to create a room or start solo mode.
 
-## Menu and room flow
-- Main menu: solo, multiplayer, settings, exit.
-- Multiplayer: create world, join by code, quick match.
-- Host: world name, open/private mode, password for private rooms, UDP port 27015 and displayed IP:port.
-- Join: player name, world name, IP:port and room password.
-- Direct ENet connection and player-position relay are implemented as the first networking slice.
-- Escape returns to the main menu.
+## Current structure
+- `scenes/menu_2d.tscn`: ordinary 2D main menu, solo/multiplayer, create room, join entry point, quick-match entry point, skins, map catalogue, match settings.
+- `scenes/lobby_3d.tscn`: separate 3D waiting area with avatar, map/item portals, skin changing, player/invite panel, round settings, and free-camera fly mode.
+- The selected skin and room settings are handed from the 2D menu to the 3D lobby through scene metadata.
 
-## Important current limits
-- The arena and hide/seeker mechanics are still the earlier 2D prototype. The planned cooperative release target is 3D; this menu/network shell is not the final visual/gameplay version.
-- Quick match currently shows the public-room discovery entry point, but a central public lobby/server directory has not been built. Open rooms can currently be joined only when players know the host's reachable IP:port.
-- Internet hosting may require UDP port forwarding; no NAT traversal or relay service is included.
-- Network movement is an early peer-position sync. Authoritative round state, synchronized hunter logic, reconnect handling, moderation, anti-cheat, server discovery, and real-device/network testing remain.
-- No installable APK/EXE is published until the 3D game and networking are tested.
+## Prototype status / honest limitations
+- Lobby art is procedural blockout geometry, not final production character models or high-end environment assets.
+- Skin choices currently recolor a shared placeholder model; unique character meshes, rigs, animations, unlocks and cosmetic inventory remain to be made.
+- The player list is currently a local placeholder. Real room hosting/joining, server-authoritative player synchronization, invite codes, public matchmaking and round start orchestration are not complete in this revision.
+- Portal catalogue screens are navigation/preview placeholders; map previews and full 20–60 per-map prop galleries are still to be implemented.
+- Do not publish as a finished game until native builds, smoke tests and multiplayer device tests pass.
 
-## Run locally
-1. Open `project.godot` in Godot 4.7.2.
-2. Run the project.
-3. Solo mode uses WASD/arrow keys; E hides/unhides; R restarts.
+Map themes are original genre-inspired directions, not copied proprietary assets. External community maps should be separately installable packages, with licensing and compatibility validation before inclusion.
