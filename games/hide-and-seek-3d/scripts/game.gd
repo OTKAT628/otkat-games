@@ -24,6 +24,7 @@ var weapon_buttons: Array[Button] = []
 var ammo_label: Label
 var hunter_health_label: Label
 var victory_message := "Ты пережил всю охоту и выбрался из торгового центра."
+var pending_fire := false
 var round_phase := "prepare"
 var phase_time := PREP_TIME
 var finished := false
@@ -81,6 +82,7 @@ func _spawn_characters() -> void:
 	weapon_runtime.ammo_changed.connect(_on_ammo_changed)
 	weapon_runtime.weapon_blocked.connect(_on_weapon_blocked)
 	weapon_runtime.equip("realistic", "re_sentinel", "re_sentinel_graphite")
+	weapon_runtime.set_process(false)
 
 	abilities = AbilityManager.new()
 	abilities.name = "PropAbilities"
@@ -308,7 +310,9 @@ func _start_round() -> void:
 	player._set_crouch_pose(false)
 	abilities.cooldowns.clear()
 	abilities.set_process(true)
+	weapon_runtime.set_process(true)
 	weapon_runtime.equip("realistic", "re_sentinel", "re_sentinel_graphite")
+	pending_fire = false
 	victory_message = "Ты пережил всю охоту и выбрался из торгового центра."
 	player.set_physics_process(true)
 	player.set_process_input(true)
@@ -332,6 +336,12 @@ func _start_round() -> void:
 	_update_hud()
 	if not OS.has_feature("mobile"):
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+func _physics_process(_delta: float) -> void:
+	if pending_fire:
+		pending_fire = false
+		if round_active and not finished and round_phase == "hunt":
+			weapon_runtime.try_fire(player.camera.global_position, player.get_camera_direction())
 
 func _process(delta: float) -> void:
 	if not round_active or finished:
@@ -376,7 +386,7 @@ func _fire_weapon() -> void:
 	if not round_active or finished or round_phase != "hunt":
 		hud_status.text = "Стрелять можно только во время охоты."
 		return
-	weapon_runtime.try_fire(player.camera.global_position, player.get_camera_direction())
+	pending_fire = true
 
 func _reload_weapon() -> void:
 	if not round_active or finished:
@@ -514,6 +524,8 @@ func _finish(won: bool) -> void:
 	player.set_process_input(false)
 	hunter.set_physics_process(false)
 	abilities.set_process(false)
+	weapon_runtime.set_process(false)
+	pending_fire = false
 	var touch_controls := player.get_node_or_null("TouchControls")
 	if touch_controls:
 		touch_controls.visible = false
@@ -541,6 +553,8 @@ func _pause_round() -> void:
 	player.set_process_input(false)
 	hunter.set_physics_process(false)
 	abilities.set_process(false)
+	weapon_runtime.set_process(false)
+	pending_fire = false
 	var touch_controls := player.get_node_or_null("TouchControls")
 	if touch_controls:
 		touch_controls.visible = false
@@ -565,6 +579,7 @@ func _resume_round() -> void:
 	screen_layer = null
 	round_active = true
 	abilities.set_process(true)
+	weapon_runtime.set_process(true)
 	player.set_physics_process(true)
 	player.set_process_input(true)
 	hunter.set_physics_process(round_phase == "hunt")
