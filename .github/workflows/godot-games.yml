@@ -43,3 +43,35 @@ jobs:
           for project in party-circuit mindforge wild-frontier world-detective; do
             godot --headless --editor --path "games-godot/$project" --quit
           done
+
+  export-world-detective-android:
+    runs-on: ubuntu-latest
+    needs: validate-native
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: android-actions/setup-android@v3
+      - uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.4.1
+          use-dotnet: true
+          include-templates: true
+      - name: Install Android SDK packages
+        run: sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+      - name: Build and export Android APK
+        run: |
+          set -euo pipefail
+          dotnet build games-godot/world-detective/OTKAT.WorldDetective.csproj --configuration Release
+          mkdir -p artifacts
+          godot --headless --path games-godot/world-detective --export-debug "Android" artifacts/otkat-world-detective-debug.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: otkat-world-detective-android-debug
+          path: artifacts/otkat-world-detective-debug.apk
+          if-no-files-found: error
