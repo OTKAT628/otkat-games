@@ -22,6 +22,7 @@ var disguise_visual: Node3D
 var hud_timer: Label
 var hud_status: Label
 var hud_hint: Label
+var stamina_label: Label
 var screen_layer: CanvasLayer
 
 func _ready() -> void:
@@ -41,6 +42,7 @@ func _spawn_characters() -> void:
 	player.name = "Survivor"
 	player.position = Vector3(-23.0, 0.1, 17.0)
 	player.interact_callback = Callable(self, "_toggle_disguise")
+	player.noise_emitted.connect(_on_player_noise)
 	add_child(player)
 	player.set_physics_process(false)
 	player.set_process_input(false)
@@ -95,9 +97,14 @@ func _build_hud() -> void:
 	hud_hint.add_theme_color_override("font_color", Color("#aeb8b8"))
 	column.add_child(hud_hint)
 
+	stamina_label = Label.new()
+	stamina_label.add_theme_font_size_override("font_size", 15)
+	stamina_label.add_theme_color_override("font_color", Color("#8fd2a0"))
+	column.add_child(stamina_label)
+
 	var ability_row := HBoxContainer.new()
-	ability_row.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
-	ability_row.position = Vector2(-330, -92)
+	ability_row.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	ability_row.position = Vector2(-330, 18)
 	ability_row.add_theme_constant_override("separation", 8)
 	layer.add_child(ability_row)
 	for ability in [
@@ -212,6 +219,8 @@ func _start_round() -> void:
 		disguise_visual.queue_free()
 	player.set_disguised(false)
 	player.global_position = Vector3(-23.0, 0.1, 17.0)
+	player.stamina = 100.0
+	player.noise_timer = 0.0
 	player.set_physics_process(true)
 	player.set_process_input(true)
 	var touch_controls := player.get_node_or_null("TouchControls")
@@ -267,6 +276,10 @@ func _use_ability(ability_id: String) -> void:
 		return
 	abilities.global_position = player.global_position
 	abilities.use_ability(ability_id, hunter)
+
+func _on_player_noise(point: Vector3, radius: float) -> void:
+	if round_phase == "hunt" and not player.disguised:
+		hunter.hear_noise(point, radius)
 
 func _on_decoy_created(point: Vector3, duration: float) -> void:
 	hunter.investigate_position(point, duration)
@@ -454,3 +467,5 @@ func _update_hud() -> void:
 		return
 	var prefix := "ПОДГОТОВКА" if round_phase == "prepare" else "ОХОТА"
 	hud_timer.text = "%s  •  %03d" % [prefix, int(ceil(maxf(phase_time, 0.0)))]
+	if is_instance_valid(stamina_label):
+		stamina_label.text = "ВЫНОСЛИВОСТЬ  %d%%" % int(round(player.stamina))
