@@ -1,109 +1,16 @@
 <!doctype html>
-<html lang="ru">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#08090f">
-  <title>Загрузки OTKAT — игры и приложения</title>
-  <link rel="stylesheet" href="../styles.css">
-  <style>
-    .download-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-    .download-item{background:#101827;border:1px solid #293447;border-radius:18px;padding:18px}
-    .download-item h3{margin:8px 0}.download-item p{color:#aab5c7;font-size:.92rem;line-height:1.5}
-    .download-item a{display:inline-block;margin-top:8px;color:#f4e34b;font-weight:700}
-    .download-note{border-left:3px solid #f4e34b;padding:12px 16px;background:#111827;border-radius:0 12px 12px 0;color:#c4ccda;line-height:1.55}
-    .tag{font-size:.72rem;letter-spacing:.08em;color:#aab5c7}
-  </style>
-</head>
-<body>
-<header class="nav">
-  <a class="logo" href="../index.html">OTKAT<span>GAMES</span></a>
-  <nav><a href="../index.html">Главная</a><a href="../games/index.html">Каталог игр</a><a href="../apps/index.html">Приложения</a></nav>
-</header>
-<main>
-  <section class="info-hero">
-    <p class="eyebrow">OTKAT DOWNLOAD CENTER</p>
-    <h1>Игры и сборки.<br><em>В одном месте.</em></h1>
-    <p class="intro">Играй в браузере, устанавливай каталог как PWA или скачивай ZIP с исходными файлами отдельных игровых прототипов.</p>
-    <div class="hero-actions">
-      <a class="button" href="../apps/index.html">Открыть каталог 105 игр ↗</a>
-      <a class="button secondary" href="../games/index.html">Все игровые проекты ↗</a>
-    </div>
-  </section>
-
-  <section class="section">
-    <p class="eyebrow">БЫСТРЫЙ ЗАПУСК</p>
-    <h2>Каталог OTKAT Games</h2>
-    <div class="download-grid">
-      <article class="download-item">
-        <span class="tag">PWA · ANDROID · WINDOWS · БРАУЗЕР</span>
-        <h3>105 игровых записей</h3>
-        <p>Пятнадцать самостоятельных браузерных игр, коллекции Mobile 100 и игровые приложения. Каталог можно установить через Chrome или Edge как веб-приложение.</p>
-        <a href="../apps/index.html">Открыть и установить каталог ↗</a>
-      </article>
-      <article class="download-item">
-        <span class="tag">БРАУЗЕРНЫЕ ПРОТОТИПЫ</span>
-        <h3>Каталог игр</h3>
-        <p>Открой отдельные игровые страницы и запускай игры прямо на сайте. Прогресс и рекорды в поддерживаемых проектах хранятся локально.</p>
-        <a href="../games/index.html">Перейти к играм ↗</a>
-      </article>
-      <article class="download-item">
-        <span class="tag">ANDROID APK · TEST BUILD</span>
-        <h3>OTKAT Games launcher v1.0.0</h3>
-        <p>Установочный APK каталога игр. Тестовая сборка с debug-подписью, не релиз Google Play. Для загрузки игр и каталога требуется интернет.</p>
-        <a href="https://github.com/OTKAT628/otkat-games/releases/download/otkat-games-android-v1.0.0-test/app-debug.apk">Скачать Android APK ↗</a>
-      </article>
-      <article class="download-item">
-        <span class="tag">WINDOWS EXE · TEST BUILD</span>
-        <h3>OTKAT Games desktop v1.0.0</h3>
-        <p>Установщик Windows x64. Тестовая неподписанная сборка — Windows SmartScreen может показать предупреждение. Игры запускаются в приложении через браузерные файлы.</p>
-        <a href="https://github.com/OTKAT628/otkat-games/releases/download/otkat-games-windows-v1.0.0-test/OTKAT.Games.Setup.1.0.0.exe">Скачать Windows EXE ↗</a>
-      </article>
-      <article class="download-item" id="app-otkat-vpn">
-        <span class="tag">ANDROID APK · OTKAT VPN 1.3.1</span>
-        <h3>OTKAT VPN</h3>
-        <p>Подписанная тестовая сборка Android-клиента. В версии 1.3.0 есть интерфейс экспериментального локального SOCKS5. Обновлённая сборка 1.3.1 исправляет разрешение Android для проверки сетевого состояния и проходит повторную проверку.</p>
-        <a href="https://github.com/OTKAT628/OTKAT-games-VPN/releases/download/otkat-vpn-v1.3.1-test/OTKAT-games-VPN-v1.3.1.apk">Скачать OTKAT VPN APK ↗</a>
-      </article>
-      <article class="download-item" id="app-vpn-check">
-        <span class="tag">ANDROID APK · VPN CHECK 1.0.7</span>
-        <h3>OTKAT VPN Check</h3>
-        <p>Подписанная тестовая сборка с новой вкладкой сканирования активного VPN. Сохраняет доступные сетевые сведения, но не извлекает секретные ключи и полную конфигурацию чужого VPN.</p>
-        <a href="https://github.com/OTKAT628/OTKAT-games-VPN/releases/download/otkat-vpncheck-v1.0.7-test/OTKAT-VPN-Check-v1.0.7.apk">Скачать VPN Check APK ↗</a>
-      </article>
-    </div>
-  </section>
-
-  <section class="section">
-    <p class="eyebrow">ZIP · ИСХОДНЫЕ ФАЙЛЫ</p>
-    <h2>Скачать отдельные проекты</h2>
-    <p class="intro">Архивы содержат исходные файлы браузерных прототипов и инструкции по запуску через локальный веб-сервер. Это не готовые APK или EXE-установщики.</p>
-    <div class="download-grid">
-      <article class="download-item"><span class="tag">3D-ПРОТОТИП</span><h3>Hide & Seek</h3><p>Игровой проект и общий 3D-прототип.</p><a href="packages/hide-and-seek-browser-source.zip">Скачать ZIP ↗</a></article>
-      <article class="download-item"><span class="tag">3D-ПРОТОТИП</span><h3>Survival</h3><p>Игровой проект и общий 3D-прототип.</p><a href="packages/survival-browser-source.zip">Скачать ZIP ↗</a></article>
-      <article class="download-item"><span class="tag">3D-ПРОТОТИП</span><h3>Arena</h3><p>Игровой проект и общий 3D-прототип.</p><a href="packages/arena-browser-source.zip">Скачать ZIP ↗</a></article>
-      <article class="download-item"><span class="tag">3D-ПРОТОТИП</span><h3>Forgotten</h3><p>Игровой проект и общий 3D-прототип.</p><a href="packages/forgotten-browser-source.zip">Скачать ZIP ↗</a></article>
-      <article class="download-item"><span class="tag">3D-ПРОТОТИП</span><h3>Skyrun</h3><p>Игровой проект и общий 3D-прототип.</p><a href="packages/skyrun-browser-source.zip">Скачать ZIP ↗</a></article>
-      <article class="download-item"><span class="tag">3D-ПРОТОТИП</span><h3>Racing</h3><p>Игровой проект и общий 3D-прототип.</p><a href="packages/racing-browser-source.zip">Скачать ZIP ↗</a></article>
-      <article class="download-item"><span class="tag">3D-ПРОТОТИП</span><h3>Space</h3><p>Игровой проект и общий 3D-прототип.</p><a href="packages/space-browser-source.zip">Скачать ZIP ↗</a></article>
-      <article class="download-item"><span class="tag">3D-ПРОТОТИП</span><h3>Magic</h3><p>Игровой проект и общий 3D-прототип.</p><a href="packages/magic-browser-source.zip">Скачать ZIP ↗</a></article>
-      <article class="download-item"><span class="tag">3D-ПРОТОТИП</span><h3>Prehistoric</h3><p>Игровой проект и общий 3D-прототип.</p><a href="packages/prehistoric-browser-source.zip">Скачать ZIP ↗</a></article>
-      <article class="download-item"><span class="tag">CANVAS-ПРОТОТИП</span><h3>Neon Depths</h3><p>Самостоятельный браузерный roguelite.</p><a href="packages/depths-browser-source.zip">Скачать ZIP ↗</a></article>
-      <article class="download-item"><span class="tag">CANVAS-ПРОТОТИП</span><h3>Last Stand: Swarm</h3><p>Аркадное выживание с волнами врагов.</p><a href="packages/swarm-browser-source.zip">Скачать ZIP ↗</a></article>
-      <article class="download-item"><span class="tag">CANVAS-ПРОТОТИП</span><h3>Tiny Kingdoms</h3><p>Пошаговая стратегия с экономикой.</p><a href="packages/kingdoms-browser-source.zip">Скачать ZIP ↗</a></article>
-      <article class="download-item"><span class="tag">CANVAS-ПРОТОТИП</span><h3>Orbital Rush</h3><p>Космическая аркада.</p><a href="packages/orbital-browser-source.zip">Скачать ZIP ↗</a></article>
-      <article class="download-item"><span class="tag">CANVAS-ПРОТОТИП</span><h3>Cozy Valley</h3><p>Казуальная ферма.</p><a href="packages/cozy-browser-source.zip">Скачать ZIP ↗</a></article>
-      <article class="download-item"><span class="tag">ГОНОЧНЫЙ ПРОТОТИП</span><h3>Driftline: Apex Circuit</h3><p>Гонки, гараж, локальные режимы и рекорды.</p><a href="packages/driftline-browser-source.zip">Скачать ZIP ↗</a></article>
-      <article class="download-item"><span class="tag">GODOT · ИСХОДНЫЙ ПРОЕКТ</span><h3>Hide & Seek — Godot</h3><p>Редактируемый проект для Godot 4.7.2, не установщик.</p><a href="packages/hide-and-seek-godot-source.zip">Скачать ZIP ↗</a></article>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="download-note">
-      <strong>О статусе установщиков.</strong> Для игр доступны браузерный каталог и 15 ZIP-архивов исходников, которые собираются при публикации сайта. Это не отдельные APK/EXE для каждой игры. Android launcher и Windows desktop test build доступны выше. OTKAT VPN 1.3.1 и VPN Check 1.0.7 — подписанные тестовые APK. В OTKAT VPN 1.3.1 уже есть интерфейс локального Telegram SOCKS5; рабочую проверку этой функции планируем после сборки 1.3.1 с исправлением разрешения Android.
-    </div>
-  </section>
-</main>
-<footer><a class="logo" href="../index.html">OTKAT<span>GAMES</span></a><p>© 2026 OTKAT</p><span>Официальный центр загрузок</span></footer>
-</body>
-</html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#08090f"><title>Загрузки OTKAT</title><link rel="stylesheet" href="../styles.css">
+<style>.download-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}.download-item{background:#101827;border:1px solid #293447;border-radius:18px;padding:18px}.download-item h3{margin:8px 0}.download-item p{color:#aab5c7;font-size:.92rem;line-height:1.5}.download-item a{display:inline-block;margin-top:8px;color:#f4e34b;font-weight:700}.download-note{border-left:3px solid #f4e34b;padding:12px 16px;background:#111827;border-radius:0 12px 12px 0;color:#c4ccda;line-height:1.55}.tag{font-size:.72rem;letter-spacing:.08em;color:#aab5c7}</style></head>
+<body><header class="nav"><a class="logo" href="../index.html">OTKAT<span>COMPANY</span></a><nav><a href="../index.html">Главная</a><a href="../games/index.html">Игры</a><a href="../apps/index.html">Приложения</a><a href="index.html">Загрузки</a></nav></header>
+<main><section class="info-hero"><p class="eyebrow">OTKAT DOWNLOAD CENTER</p><h1>Загрузки<br><em>игр и приложений.</em></h1><p class="intro">У каждого продукта своя информационная страница. Установочные файлы публикуются только после сборки и проверки соответствующей версии.</p><div class="hero-actions"><a class="button" href="../games/index.html">Каталог игр ↗</a><a class="button secondary" href="../apps/index.html">Каталог приложений ↗</a></div></section>
+<section class="section"><p class="eyebrow">GODOT · ANDROID / WINDOWS</p><h2>Игры OTKAT Games</h2><div class="download-grid">
+<article class="download-item"><span class="tag">GODOT 4 · ПЕРВАЯ ИГРОВАЯ ВЕРСИЯ</span><h3>OTKAT Party Circuit</h3><p>Локальная party-игра для 2–4 участников. Android/Windows установщики ещё собираются и тестируются.</p><a href="../games/party-circuit/index.html">Описание игры и статус установки ↗</a></article>
+<article class="download-item"><span class="tag">GODOT 4 · ПЕРВАЯ ИГРОВАЯ ВЕРСИЯ</span><h3>OTKAT Mindforge</h3><p>Логическая кампания с задачами, подсказками и прогрессом. Android/Windows установщики ещё собираются и тестируются.</p><a href="../games/mindforge/index.html">Описание игры и статус установки ↗</a></article>
+<article class="download-item"><span class="tag">GODOT 4 · ПЕРВАЯ ИГРОВАЯ ВЕРСИЯ</span><h3>OTKAT Wild Frontier</h3><p>Survival-приключение с исследованием, ресурсами и крафтом. Android/Windows установщики ещё собираются и тестируются.</p><a href="../games/wild-frontier/index.html">Описание игры и статус установки ↗</a></article>
+</div><p class="download-note"><strong>Важно:</strong> на данный момент для этих трёх игр ещё нет готовых APK/EXE. CI проверяет импорт проектов и экспорт веб-срезов Godot; это не заменяет сборку Android/Windows и тестирование на реальных устройствах. Старые HTML-игры и мини-игры здесь не предлагаются.</p></section>
+<section class="section"><p class="eyebrow">ANDROID · TEST BUILDS</p><h2>Приложения OTKAT</h2><div class="download-grid">
+<article class="download-item"><span class="tag">ANDROID APK · TEST BUILD</span><h3>OTKAT VPN 1.3.1</h3><p>Предыдущая тестовая сборка. Она не содержит последних незавершённых изменений PR #13.</p><a href="https://github.com/OTKAT628/OTKAT-games-VPN/releases/download/otkat-vpn-v1.3.1-test/OTKAT-games-VPN-v1.3.1.apk">Скачать тестовый APK ↗</a></article>
+<article class="download-item"><span class="tag">ANDROID APK · TEST BUILD</span><h3>OTKAT VPN Check 1.0.7</h3><p>Предыдущая тестовая сборка диагностического приложения. Не включает последние незавершённые изменения.</p><a href="https://github.com/OTKAT628/OTKAT-games-VPN/releases/download/otkat-vpncheck-v1.0.7-test/OTKAT-VPN-Check-v1.0.7.apk">Скачать тестовый APK ↗</a></article>
+</div></section>
+<section class="section"><div class="download-note"><strong>OTKAT Stream и OTKAT Library.</strong> Сейчас доступны их информационные веб-страницы и каталоги источников. Нативные Android/Windows приложения, встроенное воспроизведение и полноценная читалка будут опубликованы отдельно после реализации и проверки.</div></section></main>
+<footer><a class="logo" href="../index.html">OTKAT<span>COMPANY</span></a><p>© 2026 OTKAT</p><span>Официальный центр загрузок</span></footer></body></html>
