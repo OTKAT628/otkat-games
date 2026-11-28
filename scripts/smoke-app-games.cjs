@@ -1,4 +1,6 @@
 'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
 const { chromium } = require('playwright');
 const standalone = [
   'clockwork-courier','lumen-garden','cargo-zero','mine-signal','signal-siege',
@@ -51,6 +53,22 @@ const collections = [
       if(errors.length) throw new Error(item.path+': '+errors.join(' | '));
       console.log('PASS collection',item.path,'games='+item.count,'first='+title);
     }
+    // Every one of the 90 Mobile 100 entries must launch as its own downloadable page.
+    const individualRoot='web/apps/individual-games';
+    const individualPages=fs.readdirSync(individualRoot).filter(slug=>fs.existsSync(path.join(individualRoot,slug,'index.html')));
+    if(individualPages.length!==90) throw new Error('Expected 90 individual game pages, found '+individualPages.length);
+    for(const slug of individualPages){
+      errors.length=0;
+      await page.goto('http://127.0.0.1:4173/apps/individual-games/'+slug+'/index.html',{waitUntil:'domcontentloaded'});
+      await page.locator('h1').first().waitFor();
+      const title=(await page.locator('h1').first().innerText()).trim();
+      if(!title) throw new Error(slug+': missing game title');
+      if(await page.locator('a[download]').count()!==1) throw new Error(slug+': missing standalone download link');
+      await page.waitForTimeout(60);
+      await checkWidth(slug);
+      if(errors.length) throw new Error(slug+': '+errors.join(' | '));
+    }
+    console.log('PASS 90 individual Mobile 100 game pages and downloads');
     // Functional regression checks for the newly repaired mechanics.
     const clickBoard=async(x,y)=>{
       const box=await page.locator('canvas').boundingBox();
