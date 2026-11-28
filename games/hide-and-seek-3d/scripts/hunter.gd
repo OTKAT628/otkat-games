@@ -16,6 +16,10 @@ var patrol_index := 0
 var search_position := Vector3.ZERO
 var search_time := 0.0
 var avoid_direction := 1.0
+var frozen_time := 0.0
+var bagged_time := 0.0
+var lure_time := 0.0
+var lure_position := Vector3.ZERO
 
 func _ready() -> void:
 	_build_hunter()
@@ -49,6 +53,20 @@ func _build_hunter() -> void:
 	add_child(eye)
 
 func _physics_process(delta: float) -> void:
+	frozen_time = maxf(0.0, frozen_time - delta)
+	bagged_time = maxf(0.0, bagged_time - delta)
+	lure_time = maxf(0.0, lure_time - delta)
+	if frozen_time > 0.0:
+		velocity = Vector3.ZERO
+		return
+	if lure_time > 0.0:
+		_move_toward(lure_position, PATROL_SPEED * 1.25, delta)
+		if global_position.distance_to(lure_position) < 1.1:
+			lure_time = 0.0
+			state = "investigate"
+			search_position = lure_position
+			search_time = 2.5
+		return
 	if not is_instance_valid(target):
 		return
 	var target_pos := target.global_position
@@ -74,7 +92,8 @@ func _physics_process(delta: float) -> void:
 
 	match state:
 		"chase":
-			_move_toward(target_pos, HUNT_SPEED, delta)
+			var speed := HUNT_SPEED * (0.55 if bagged_time > 0.0 else 1.0)
+			_move_toward(target_pos, speed, delta)
 			if distance <= CATCH_RANGE:
 				caught_survivor.emit()
 		"investigate":
@@ -84,6 +103,17 @@ func _physics_process(delta: float) -> void:
 				state = "patrol"
 		_:
 			_patrol(delta)
+
+func investigate_position(point: Vector3, duration: float) -> void:
+	lure_position = point
+	lure_time = duration
+	state = "investigate"
+
+func apply_freeze(duration: float) -> void:
+	frozen_time = maxf(frozen_time, duration)
+
+func apply_bag(duration: float) -> void:
+	bagged_time = maxf(bagged_time, duration)
 
 func _can_see_target() -> bool:
 	var origin := global_position + Vector3.UP * 1.15
