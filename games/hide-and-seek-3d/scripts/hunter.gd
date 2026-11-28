@@ -79,7 +79,12 @@ func _physics_process(delta: float) -> void:
 		else:
 			_patrol(delta)
 			return
-	elif distance <= DETECTION_RANGE and _can_see_target():
+	var effective_detection_range := DETECTION_RANGE
+	if target.is_crouching:
+		effective_detection_range = 10.0
+	elif target.is_sprinting:
+		effective_detection_range = 25.0
+	if not target.disguised and distance <= effective_detection_range and _can_see_target():
 		state = "chase"
 		search_position = target_pos
 	elif state == "chase":
@@ -123,7 +128,8 @@ func apply_bag(duration: float) -> void:
 
 func _can_see_target() -> bool:
 	var origin := global_position + Vector3.UP * 1.15
-	var destination := target.global_position + Vector3.UP * 1.0
+	var target_height := 0.72 if target.is_crouching else 1.0
+	var destination := target.global_position + Vector3.UP * target_height
 	var query := PhysicsRayQueryParameters3D.create(origin, destination)
 	query.exclude = [get_rid()]
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
