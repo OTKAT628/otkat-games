@@ -3,14 +3,14 @@ class_name OtkatPropAbilities
 ## Prototype abilities for the survivor/prop role. Visual/audio feedback is provided by signals.
 
 signal decoy_created(position: Vector3, duration: float)
-signal hunter_blinded(duration: float)
+signal hunter_bagged(duration: float)
 signal ability_used(ability_id: String, cooldown: float)
 signal ability_blocked(reason: String)
 
 const ABILITIES := {
 	"decoy": {"cooldown": 24.0, "duration": 7.0},
 	"freeze": {"cooldown": 32.0, "duration": 2.4},
-	"blind": {"cooldown": 38.0, "duration": 3.0}
+	"bag": {"cooldown": 38.0, "duration": 3.0}
 }
 
 var cooldowns: Dictionary = {}
@@ -44,8 +44,8 @@ func use_ability(ability_id: String, hunter: Node3D = null) -> bool:
 			await get_tree().create_timer(duration).timeout
 			if is_instance_valid(hunter):
 				hunter.set_physics_process(was_processing)
-		"blind":
-			hunter_blinded.emit(duration)
+		"bag":
+			hunter_bagged.emit(duration)
 
 	var cooldown := float(data.cooldown)
 	cooldowns[ability_id] = cooldown
