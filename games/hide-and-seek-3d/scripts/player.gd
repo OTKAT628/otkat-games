@@ -359,6 +359,8 @@ func set_disguised(active: bool, anchor: Vector3 = Vector3.ZERO) -> void:
 	disguised = active
 	if body_visual:
 		body_visual.visible = not active
+	if is_instance_valid(weapon_mount):
+		weapon_mount.visible = not active and not third_person
 	disguise_changed.emit(active)
 
 func get_camera_direction() -> Vector3:
