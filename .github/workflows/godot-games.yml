@@ -1,8 +1,13 @@
-name: Validate and export Godot game slices
+name: Validate Godot native game projects
 
 on:
   pull_request:
     branches: [main]
+    paths:
+      - "games-godot/**"
+      - ".github/workflows/godot-games.yml"
+  push:
+    branches: [feature/godot-mobile100-consolidation]
     paths:
       - "games-godot/**"
       - ".github/workflows/godot-games.yml"
@@ -12,34 +17,24 @@ permissions:
   contents: read
 
 jobs:
-  export-web:
+  validate-native:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
       - uses: chickensoft-games/setup-godot@v2
         with:
           version: 4.4.1
-          use-dotnet: false
-          include-templates: true
-      - name: Validate projects and export web builds
+          use-dotnet: true
+          include-templates: false
+      - name: Build C# Mindforge project
+        run: dotnet build games-godot/mindforge/OTKAT.Mindforge.csproj --configuration Release
+      - name: Validate Godot project imports
         shell: bash
         run: |
           set -euo pipefail
           for project in party-circuit mindforge wild-frontier; do
-            path="games-godot/$project"
-            echo "Importing $path"
-            godot --headless --editor --path "$path" --quit
-            mkdir -p "$path/build"
-            echo "Exporting $project for Web"
-            godot --headless --path "$path" --export-release "Web" "build/index.html"
-            test -s "$path/build/index.html"
+            godot --headless --editor --path "games-godot/$project" --quit
           done
-      - name: Upload Godot web builds
-        uses: actions/upload-artifact@v4
-        with:
-          name: otkat-godot-web-slices
-          path: |
-            games-godot/party-circuit/build/
-            games-godot/mindforge/build/
-            games-godot/wild-frontier/build/
-          if-no-files-found: error
