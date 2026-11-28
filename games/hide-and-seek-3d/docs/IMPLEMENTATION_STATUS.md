@@ -1,18 +1,32 @@
 # OTKAT Hide & Seek — implementation status
 
-## Native project baseline
-- Engine: Godot 4.7.2 target.
-- Project path: `games/hide-and-seek-3d/`.
-- First vertical slice: abandoned shopping mall, first-person movement, touchscreen look/move, disguise interaction, basic hunter AI, prep/hunt timer and round outcome.
+## Native project
+- Engine target: Godot 4.7.2.
+- Project: `games/hide-and-seek-3d/`.
+- Main scene: `scenes/main.tscn`.
+- Renderer: Compatibility, intended to support Android and desktop.
 
-## Added in the current development branch\n- Darker abandoned-mall dressing: procedural mold patches, hanging vines, broken-glass shards, fallen ceiling frames and atmospheric fog.\n- Six-world original weapon catalog: two prototype weapons per world, each with separate base rarity/value and three independently rated skins.\n- Local cosmetic inventory prototype: ownership IDs, skin equip validation and local credit persistence.\n- Details and limitations: `docs/ARSENAL_AND_COSMETICS.md`.\n\n## Explicitly not complete
-The six world themes and 72-map minimum remain a production target, not completed content. Multiplayer room hosting, authoritative server validation, 12-player and 30-player modes, final hunter/survivor models, weapon meshes/textures/animations, armory UI, live combat integration, achievements, authoritative online inventory, persistent progression and OTKAT ID integration remain unimplemented. The new catalog and local inventory are a data-layer prototype, not a finished in-match feature.
+## Implemented in the current source branch
+- Procedural abandoned shopping mall with atrium, closed shop fronts, columns, debris, damaged fixtures, mold, hanging vines, broken glass and fog.
+- First-person survivor controller with keyboard/mouse and two-zone touchscreen movement/look.
+- Start menu, controls screen, preparation phase, timed hunt phase, pause/resume, result screen, replay and return-to-menu.
+- Five matching disguise prop forms: cart, barrel, shop display, planter and suitcase.
+- Basic hunter patrol, chase and investigation; close-range discovery of a disguised survivor ends the round.
+- Weapon/cosmetic data registry and local inventory prototype; these are not yet fully integrated into the match.
+- GitHub Actions smoke-test workflow for Godot 4.7.2 import and headless main-scene launch: `.github/workflows/hide-and-seek-godot-check.yml`.
 
-## Next development gates
-1. Run/import the project in Godot 4.7.2 and fix all parser/runtime issues.
-2. Replace procedural blockout props with authored optimized assets and improve lighting/material quality.
-3. Build map data registry and production layouts for all 72 maps.
-4. Implement proper prop selection/settling, hide spots and hunter perception/search.
-5. Add multiplayer transport, authoritative match server, room codes, quick join and reconnect.
-6. Implement combat, progression, customization, achievements and save integration.
-7. Only after game-complete criteria and device testing: create Android / Windows packages.
+## Not yet verified
+The assistant environment does not have Godot installed, so no local Godot parser or runtime test has been performed. The new GitHub Actions workflow must complete successfully, followed by an actual Android device test. No APK/EXE is being presented as ready.
+
+## Still not complete
+- Online multiplayer, room codes, Quick Join, reconnect and authoritative server validation.
+- Six finished worlds and the 72-map target.
+- Final authored survivor/hunter models, animations, optimized production props and final materials.
+- Complete weapon combat, armory UI, ability effects and in-match cosmetic integration.
+- Progression, achievements, persistent online inventory and OTKAT ID integration.
+
+## Next gates
+1. Fix every parser/runtime issue reported by the Godot smoke test.
+2. Test touch controls, camera, collisions, hunter navigation and round completion on Android.
+3. Replace blockout character/prop art with original production-quality assets.
+4. Complete the single-player game loop and its content before starting online multiplayer or packaging.
