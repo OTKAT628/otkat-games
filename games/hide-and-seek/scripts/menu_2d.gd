@@ -158,10 +158,6 @@ func _open_lobby(solo: bool) -> void:
  if lobby == null:
   _notice("Сцена 3D-лобби пока недоступна.")
   return
- var err := get_tree().change_scene_to_packed(lobby)
- if err != OK:
-  _notice("Не удалось открыть 3D-лобби: %s" % err)
-  return
  get_tree().set_meta("otkat_lobby_config", {
   "room_name": room_name,
   "password": room_password,
@@ -171,6 +167,10 @@ func _open_lobby(solo: bool) -> void:
   "skin_index": skin_index,
   "solo": solo
  })
+ var err := get_tree().change_scene_to_packed(lobby)
+ if err != OK:
+  get_tree().set_meta("otkat_lobby_config", {})
+  _notice("Не удалось открыть 3D-лобби: %s" % err)
 
 func _notice(message: String) -> void:
  var l := Label.new()
