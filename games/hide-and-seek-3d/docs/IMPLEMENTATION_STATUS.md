@@ -5,8 +5,8 @@
 - Project path: `games/hide-and-seek-3d/`.
 - First vertical slice: abandoned shopping mall, first-person movement, touchscreen look/move, disguise interaction, basic hunter AI, prep/hunt timer and round outcome.
 
-## Explicitly not complete
-The six world themes and 72-map minimum remain a production target, not completed content. Multiplayer room hosting, authoritative server validation, 12-player and 30-player modes, final hunter/survivor models, animation, weapon systems, customization, achievements, persistent progression and OTKAT ID integration remain unimplemented.
+## Added in the current development branch\n- Darker abandoned-mall dressing: procedural mold patches, hanging vines, broken-glass shards, fallen ceiling frames and atmospheric fog.\n- Six-world original weapon catalog: two prototype weapons per world, each with separate base rarity/value and three independently rated skins.\n- Local cosmetic inventory prototype: ownership IDs, skin equip validation and local credit persistence.\n- Details and limitations: `docs/ARSENAL_AND_COSMETICS.md`.\n\n## Explicitly not complete
+The six world themes and 72-map minimum remain a production target, not completed content. Multiplayer room hosting, authoritative server validation, 12-player and 30-player modes, final hunter/survivor models, weapon meshes/textures/animations, armory UI, live combat integration, achievements, authoritative online inventory, persistent progression and OTKAT ID integration remain unimplemented. The new catalog and local inventory are a data-layer prototype, not a finished in-match feature.
 
 ## Next development gates
 1. Run/import the project in Godot 4.7.2 and fix all parser/runtime issues.
