@@ -1,0 +1,45 @@
+name: Validate and export Godot game slices
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "games-godot/**"
+      - ".github/workflows/godot-games.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.4.1
+          use-dotnet: false
+          include-templates: true
+      - name: Validate projects and export web builds
+        shell: bash
+        run: |
+          set -euo pipefail
+          for project in party-circuit mindforge wild-frontier; do
+            path="games-godot/$project"
+            echo "Importing $path"
+            godot --headless --editor --path "$path" --quit
+            mkdir -p "$path/build"
+            echo "Exporting $project for Web"
+            godot --headless --path "$path" --export-release "Web" "$path/build/index.html"
+            test -s "$path/build/index.html"
+          done
+      - name: Upload Godot web builds
+        uses: actions/upload-artifact@v4
+        with:
+          name: otkat-godot-web-slices
+          path: |
+            games-godot/party-circuit/build/
+            games-godot/mindforge/build/
+            games-godot/wild-frontier/build/
+          if-no-files-found: error
