@@ -71,6 +71,57 @@ func _build_body() -> void:
 	body_visual.position.y = 0.9
 	body_visual.name = "SurvivorVisual"
 	add_child(body_visual)
+	_add_detail_box("FieldVest", Vector3(0.72, 0.72, 0.42), Vector3(0, 0.02, -0.015), Color("#b28a3d"))
+	_add_detail_box("LeftShoulderPad", Vector3(0.28, 0.24, 0.42), Vector3(-0.34, 0.25, 0), Color("#d5b34e"))
+	_add_detail_box("RightShoulderPad", Vector3(0.28, 0.24, 0.42), Vector3(0.34, 0.25, 0), Color("#d5b34e"))
+	_add_detail_capsule("LeftArm", 0.13, 0.68, Vector3(-0.48, -0.03, 0), Color("#3f4947"))
+	_add_detail_capsule("RightArm", 0.13, 0.68, Vector3(0.48, -0.03, 0), Color("#3f4947"))
+	_add_detail_sphere("Head", 0.235, Vector3(0, 0.62, 0), Color("#b88d6b"))
+	_add_detail_sphere("Helmet", 0.29, Vector3(0, 0.76, 0.015), Color("#d3ae42"))
+	_add_detail_box("HelmetVisor", Vector3(0.34, 0.12, 0.035), Vector3(0, 0.67, -0.235), Color("#273c42"))
+	_add_detail_box("Backpack", Vector3(0.46, 0.58, 0.24), Vector3(0, 0.04, 0.29), Color("#37433d"))
+	_add_detail_box("ChestPatch", Vector3(0.22, 0.16, 0.025), Vector3(0, 0.2, -0.235), Color("#f0d56d"))
+
+func _add_detail_box(part_name: String, size: Vector3, local_pos: Vector3, color: Color) -> void:
+	var visual := MeshInstance3D.new()
+	visual.name = part_name
+	var mesh := BoxMesh.new()
+	mesh.size = size
+	visual.mesh = mesh
+	var material := StandardMaterial3D.new()
+	material.albedo_color = color
+	material.roughness = 0.78
+	visual.material_override = material
+	visual.position = local_pos
+	body_visual.add_child(visual)
+
+func _add_detail_sphere(part_name: String, radius: float, local_pos: Vector3, color: Color) -> void:
+	var visual := MeshInstance3D.new()
+	visual.name = part_name
+	var mesh := SphereMesh.new()
+	mesh.radius = radius
+	mesh.height = radius * 2.0
+	visual.mesh = mesh
+	var material := StandardMaterial3D.new()
+	material.albedo_color = color
+	material.roughness = 0.82
+	visual.material_override = material
+	visual.position = local_pos
+	body_visual.add_child(visual)
+
+func _add_detail_capsule(part_name: String, radius: float, height: float, local_pos: Vector3, color: Color) -> void:
+	var visual := MeshInstance3D.new()
+	visual.name = part_name
+	var mesh := CapsuleMesh.new()
+	mesh.radius = radius
+	mesh.height = height
+	visual.mesh = mesh
+	var material := StandardMaterial3D.new()
+	material.albedo_color = color
+	material.roughness = 0.86
+	visual.material_override = material
+	visual.position = local_pos
+	body_visual.add_child(visual)
 
 func _build_camera() -> void:
 	camera_pivot = Node3D.new()
@@ -262,7 +313,7 @@ func _set_crouch_pose(active: bool) -> void:
 	var capsule_height := 1.05 if active else 1.75
 	body_capsule.height = capsule_height
 	body_collision.position.y = capsule_height * 0.5
-	visual_capsule.height = capsule_height
+	body_visual.scale.y = capsule_height / 1.7
 	body_visual.position.y = capsule_height * 0.5
 	camera_pivot.position.y = 1.05 if active else 1.58
 
