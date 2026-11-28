@@ -169,11 +169,27 @@ func _build_props() -> void:
 		_material(Color("#92714f")), _material(Color("#65716b"))
 	]
 	for i in range(30):
-		var x := rng.randf_range(-27.0, 27.0)
-		var z := rng.randf_range(-20.0, 20.0)
-		if absf(x) < 7.0 and absf(z) < 5.0:
-			x += 10.0 if x >= 0.0 else -10.0
-		var pos := Vector3(x, 0.0, z)
+		var pos := Vector3.ZERO
+		var found_position := false
+		for attempt in range(36):
+			var x := rng.randf_range(-27.0, 27.0)
+			var z := rng.randf_range(-20.0, 20.0)
+			if absf(x) < 7.0 and absf(z) < 5.0:
+				z = 9.0 if z >= 0.0 else -9.0
+			if x > 10.0 and x < 18.0 and z > -2.0 and z < 12.0:
+				z = 14.0 if z >= 5.0 else -6.0
+			var candidate := Vector3(x, 0.0, z)
+			var overlaps_existing := false
+			for existing in disguise_points:
+				if candidate.distance_to(existing) < 2.4:
+					overlaps_existing = true
+					break
+			if not overlaps_existing:
+				pos = candidate
+				found_position = true
+				break
+		if not found_position:
+			pos = Vector3(-26.0 + float(i % 6) * 10.0, 0.0, -18.0 + float(i / 6) * 7.0)
 		var kind := i % 5
 		match kind:
 			0:
