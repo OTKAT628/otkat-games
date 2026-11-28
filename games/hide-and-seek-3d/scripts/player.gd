@@ -16,6 +16,8 @@ const GRAVITY := 18.0
 
 var camera_pivot: Node3D
 var camera: Camera3D
+var camera_mode_button: Button
+var third_person := false
 var body_collision: CollisionShape3D
 var body_capsule: CapsuleShape3D
 var body_visual: MeshInstance3D
@@ -132,6 +134,17 @@ func _build_mobile_controls() -> void:
 	crouch_button.button_up.connect(_on_crouch_up)
 	layer.add_child(crouch_button)
 
+	camera_mode_button = Button.new()
+	camera_mode_button.text = "КАМЕРА  [V]"
+	camera_mode_button.custom_minimum_size = Vector2(142, 48)
+	camera_mode_button.anchor_left = 1.0
+	camera_mode_button.anchor_top = 1.0
+	camera_mode_button.anchor_right = 1.0
+	camera_mode_button.anchor_bottom = 1.0
+	camera_mode_button.position = Vector2(-152, -170)
+	camera_mode_button.pressed.connect(toggle_camera_mode)
+	layer.add_child(camera_mode_button)
+
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		_rotate_view(event.relative, MOUSE_SENSITIVITY)
@@ -163,6 +176,8 @@ func _input(event: InputEvent) -> void:
 	elif event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_E:
 			_on_interact_pressed()
+		elif event.keycode == KEY_V:
+			toggle_camera_mode()
 		elif event.keycode == KEY_ESCAPE:
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
@@ -173,6 +188,29 @@ func _is_touch_ui_position(position: Vector2, viewport_size: Vector2) -> bool:
 	if position.y <= 190.0 and position.x >= viewport_size.x - 340.0:
 		return true
 	return false
+
+func toggle_camera_mode() -> void:
+	third_person = not third_person
+	if not third_person:
+		camera.position = Vector3.ZERO
+		camera.rotation = Vector3.ZERO
+	else:
+		_update_third_person_camera()
+
+func _update_third_person_camera() -> void:
+	if not third_person:
+		return
+	var desired_local := Vector3(0, 0.3, 4.2)
+	var from := camera_pivot.global_position
+	var to := camera_pivot.to_global(desired_local)
+	var query := PhysicsRayQueryParameters3D.create(from, to)
+	query.exclude = [get_rid()]
+	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	if hit.is_empty():
+		camera.position = desired_local
+	else:
+		camera.global_position = hit.position + hit.normal * 0.18
+	camera.rotation = Vector3(-0.12, 0, 0)
 
 func _rotate_view(delta: Vector2, sensitivity: float) -> void:
 	rotate_y(-delta.x * sensitivity)
@@ -218,6 +256,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.y = -0.2
 	move_and_slide()
+	_update_third_person_camera()
 
 func _set_crouch_pose(active: bool) -> void:
 	var capsule_height := 1.05 if active else 1.75
