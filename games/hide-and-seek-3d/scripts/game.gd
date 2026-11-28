@@ -60,6 +60,8 @@ func _spawn_characters() -> void:
 	abilities.name = "PropAbilities"
 	add_child(abilities)
 	abilities.decoy_created.connect(_on_decoy_created)
+	abilities.hunter_frozen.connect(_on_hunter_frozen)
+	abilities.hunter_bagged.connect(_on_hunter_bagged)
 	abilities.ability_used.connect(_on_ability_used)
 	abilities.ability_blocked.connect(_on_ability_blocked)
 
@@ -70,8 +72,9 @@ func _build_hud() -> void:
 	add_child(layer)
 
 	var panel := PanelContainer.new()
-	panel.position = Vector2(22, 18)
-	panel.custom_minimum_size = Vector2(420, 116)
+	panel.position = Vector2(14, 14)
+	var viewport_size := get_viewport().get_visible_rect().size
+	panel.custom_minimum_size = Vector2(minf(420.0, viewport_size.x - 28.0), 116.0)
 	layer.add_child(panel)
 	var column := VBoxContainer.new()
 	panel.add_child(column)
@@ -284,6 +287,14 @@ func _on_decoy_created(point: Vector3, duration: float) -> void:
 	await get_tree().create_timer(duration).timeout
 	if is_instance_valid(marker):
 		marker.queue_free()
+
+func _on_hunter_frozen(duration: float) -> void:
+	hunter.apply_freeze(duration)
+	hud_status.text = "Охотник заморожен на %.1f сек." % duration
+
+func _on_hunter_bagged(duration: float) -> void:
+	hunter.apply_bag(duration)
+	hud_status.text = "Охотник замедлен на %.1f сек." % duration
 
 func _on_ability_used(ability_id: String, cooldown: float) -> void:
 	var names := {"decoy": "Обман", "freeze": "Заморозка", "bag": "Мешок"}
