@@ -20,6 +20,9 @@ var look_touch_id := -1
 var last_look_position := Vector2.ZERO
 var mobile_button: Button
 var interact_callback: Callable
+var position_before_disguise := Vector3.ZERO
+var saved_collision_layer := 1
+var saved_collision_mask := 1
 
 func _ready() -> void:
 	_build_body()
@@ -74,6 +77,7 @@ func _build_mobile_controls() -> void:
 	hint.anchor_bottom = 1.0
 	hint.position = Vector2(26, -48)
 	layer.add_child(hint)
+	layer.visible = OS.has_feature("mobile")
 
 	mobile_button = Button.new()
 	mobile_button.text = "МАСКИРОВКА  [E]"
@@ -151,13 +155,22 @@ func _on_interact_pressed() -> void:
 		interact_callback.call()
 
 func set_disguised(active: bool, anchor: Vector3 = Vector3.ZERO) -> void:
+	if active and not disguised:
+		position_before_disguise = global_position
+		saved_collision_layer = collision_layer
+		saved_collision_mask = collision_mask
+		disguise_anchor = anchor
+		global_position = anchor - Vector3.UP * 0.5
+		collision_layer = 0
+		collision_mask = 0
+	elif not active and disguised:
+		global_position = position_before_disguise
+		collision_layer = saved_collision_layer
+		collision_mask = saved_collision_mask
 	disguised = active
-	disguise_anchor = anchor
 	var visual := get_node_or_null("SurvivorVisual") as MeshInstance3D
 	if visual:
 		visual.visible = not active
-	if active:
-		global_position = anchor
 	disguise_changed.emit(active)
 
 func get_camera_direction() -> Vector3:
