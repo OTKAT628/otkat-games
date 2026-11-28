@@ -12,6 +12,7 @@ var rerolls := 2
 var page: VBoxContainer
 
 func _ready() -> void:
+ page = $Center/Panel as VBoxContainer
  _show_main()
 
 func _clear(title: String, subtitle := "") -> void:
