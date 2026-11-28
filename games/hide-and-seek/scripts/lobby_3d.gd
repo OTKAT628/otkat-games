@@ -9,6 +9,7 @@ var fly_mode := false
 var fly_camera: Camera3D
 var yaw := 0.0
 var pitch := -0.15
+var fly_sensitivity := 0.0025
 
 func _ready() -> void:
  config = get_tree().get_meta("otkat_lobby_config", {})
@@ -82,6 +83,20 @@ func _build_world() -> void:
  camera.look_at(Vector3(0,1,0),Vector3.UP)
  avatar.add_child(camera)
  camera.current = true
+
+func _process(delta: float) -> void:
+ if not fly_mode or not is_instance_valid(fly_camera):
+  return
+ var direction := Vector3.ZERO
+ if Input.is_key_pressed(KEY_W): direction -= fly_camera.global_basis.z
+ if Input.is_key_pressed(KEY_S): direction += fly_camera.global_basis.z
+ if Input.is_key_pressed(KEY_A): direction -= fly_camera.global_basis.x
+ if Input.is_key_pressed(KEY_D): direction += fly_camera.global_basis.x
+ if Input.is_key_pressed(KEY_SPACE): direction += Vector3.UP
+ if Input.is_key_pressed(KEY_CTRL): direction -= Vector3.UP
+ var speed := 12.0 if Input.is_key_pressed(KEY_SHIFT) else 6.0
+ if direction.length_squared() > 0.0:
+  fly_camera.global_position += direction.normalized() * speed * delta
 
 func _portal(pos: Vector3, color: Color, label: String) -> void:
  var ring := MeshInstance3D.new()
@@ -193,9 +208,15 @@ func _toggle_fly() -> void:
   fly_camera.position = Vector3(0,12,20)
   fly_camera.current = true
   add_child(fly_camera)
-  _clear("СВОБОДНАЯ КАМЕРА","WASD — движение · мышь — обзор · F — выйти из полёта")
+  fly_camera.global_position = global_position + Vector3(0,12,20)
+  yaw = 0.0
+  pitch = -0.25
+  fly_camera.rotation = Vector3(pitch,yaw,0)
+  Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+  _clear("СВОБОДНАЯ КАМЕРА","WASD — движение · мышь — обзор · Shift — ускорение · Space/Ctrl — высота · F/Esc — выход")
   _button("Вернуться в лобби",_toggle_fly)
  else:
+  Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
   if is_instance_valid(fly_camera):
    fly_camera.queue_free()
   var camera := avatar.get_node_or_null("Camera3D") as Camera3D
@@ -210,11 +231,12 @@ func _back_to_menu() -> void:
  get_tree().change_scene_to_file("res://scenes/menu_2d.tscn")
 
 func _unhandled_input(event: InputEvent) -> void:
- if fly_mode and event is InputEventKey and event.pressed:
-  var move := Vector3.ZERO
-  if event.keycode == KEY_W: move.z -= 1
-  if event.keycode == KEY_S: move.z += 1
-  if event.keycode == KEY_A: move.x -= 1
-  if event.keycode == KEY_D: move.x += 1
-  fly_camera.position += move * 0.8
-  if event.keycode == KEY_F: _toggle_fly()
+ if not fly_mode:
+  return
+ if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+  yaw -= event.relative.x * fly_sensitivity
+  pitch = clampf(pitch - event.relative.y * fly_sensitivity, -1.45, 1.45)
+  fly_camera.rotation = Vector3(pitch,yaw,0)
+ elif event is InputEventKey and event.pressed and not event.echo:
+  if event.keycode == KEY_F or event.keycode == KEY_ESCAPE:
+   _toggle_fly()
