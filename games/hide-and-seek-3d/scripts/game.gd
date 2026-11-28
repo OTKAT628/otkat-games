@@ -3,13 +3,16 @@ extends Node3D
 const MallBuilder = preload("res://scripts/mall_builder.gd")
 const PlayerController = preload("res://scripts/player.gd")
 const HunterController = preload("res://scripts/hunter.gd")
+const AbilityManager = preload("res://scripts/prop_abilities.gd")
 
 const PREP_TIME := 12.0
 const ROUND_TIME := 150.0
 
 var player: HideAndSeekPlayer
 var hunter: MallHunter
+var abilities: OtkatPropAbilities
 var mall: AbandonedMallBuilder
+var ability_buttons: Array[Button] = []
 var round_phase := "prepare"
 var phase_time := PREP_TIME
 var finished := false
@@ -53,6 +56,13 @@ func _spawn_characters() -> void:
 	hunter.caught_survivor.connect(_on_player_caught)
 	add_child(hunter)
 
+	abilities = AbilityManager.new()
+	abilities.name = "PropAbilities"
+	add_child(abilities)
+	abilities.decoy_created.connect(_on_decoy_created)
+	abilities.ability_used.connect(_on_ability_used)
+	abilities.ability_blocked.connect(_on_ability_blocked)
+
 func _build_hud() -> void:
 	var layer := CanvasLayer.new()
 	layer.name = "GameHUD"
@@ -81,6 +91,25 @@ func _build_hud() -> void:
 	hud_hint.add_theme_font_size_override("font_size", 14)
 	hud_hint.add_theme_color_override("font_color", Color("#aeb8b8"))
 	column.add_child(hud_hint)
+
+	var ability_row := HBoxContainer.new()
+	ability_row.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
+	ability_row.position = Vector2(-330, -92)
+	ability_row.add_theme_constant_override("separation", 8)
+	layer.add_child(ability_row)
+	for ability in [
+		{"id": "decoy", "label": "Q  ОБМАН"},
+		{"id": "freeze", "label": "F  ЗАМОРОЗКА"},
+		{"id": "bag", "label": "G  МЕШОК"}
+	]:
+		var ability_button := Button.new()
+		ability_button.text = str(ability.label)
+		ability_button.custom_minimum_size = Vector2(104, 48)
+		ability_button.add_theme_font_size_override("font_size", 13)
+		ability_button.pressed.connect(_use_ability.bind(str(ability.id)))
+		ability_row.add_child(ability_button)
+		ability_buttons.append(ability_button)
+	ability_row.visible = OS.has_feature("mobile")
 
 	var crosshair := Label.new()
 	crosshair.text = "+"
@@ -116,8 +145,10 @@ func _show_screen(title_text: String, body_text: String, buttons: Array) -> void
 
 	var panel := PanelContainer.new()
 	panel.set_anchors_preset(Control.PRESET_CENTER)
-	panel.position = Vector2(-260, -220)
-	panel.custom_minimum_size = Vector2(520, 440)
+	var viewport_size := get_viewport().get_visible_rect().size
+	var panel_size := Vector2(minf(520.0, viewport_size.x - 28.0), minf(440.0, viewport_size.y - 28.0))
+	panel.position = -panel_size * 0.5
+	panel.custom_minimum_size = panel_size
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = Color("#171d22")
 	panel_style.border_color = Color("#d7ae42")
@@ -176,14 +207,19 @@ func _start_round() -> void:
 	disguised = false
 	if is_instance_valid(disguise_visual):
 		disguise_visual.queue_free()
-	player.global_position = Vector3(-23.0, 0.1, 17.0)
 	player.set_disguised(false)
+	player.global_position = Vector3(-23.0, 0.1, 17.0)
 	player.set_physics_process(true)
 	player.set_process_input(true)
 	var touch_controls := player.get_node_or_null("TouchControls")
 	if touch_controls:
-		touch_controls.visible = true
+		touch_controls.visible = OS.has_feature("mobile")
+	for button in ability_buttons:
+		button.get_parent().visible = OS.has_feature("mobile")
 	hunter.global_position = Vector3(23.0, 0.1, -17.0)
+	hunter.frozen_time = 0.0
+	hunter.bagged_time = 0.0
+	hunter.lure_time = 0.0
 	hunter.state = "patrol"
 	hunter.patrol_index = 0
 	hunter.set_physics_process(false)
@@ -221,6 +257,40 @@ func _toggle_disguise() -> void:
 	player.set_disguised(true, anchor)
 	_create_disguise_visual(anchor, point_index % 5)
 	hud_status.text = "Ты замаскировался. Не двигайся и следи за охотником."
+
+func _use_ability(ability_id: String) -> void:
+	if not round_active or finished or round_phase != "hunt":
+		hud_status.text = "Способности доступны только во время охоты."
+		return
+	abilities.global_position = player.global_position
+	abilities.use_ability(ability_id, hunter)
+
+func _on_decoy_created(point: Vector3, duration: float) -> void:
+	hunter.investigate_position(point, duration)
+	var marker := MeshInstance3D.new()
+	marker.name = "DecoyEcho"
+	var mesh := SphereMesh.new()
+	mesh.radius = 0.42
+	mesh.height = 0.84
+	marker.mesh = mesh
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color("#d7b54d")
+	material.emission_enabled = true
+	material.emission = Color("#a47a25")
+	material.emission_energy_multiplier = 0.65
+	marker.material_override = material
+	marker.position = point + Vector3.UP * 0.55
+	add_child(marker)
+	await get_tree().create_timer(duration).timeout
+	if is_instance_valid(marker):
+		marker.queue_free()
+
+func _on_ability_used(ability_id: String, cooldown: float) -> void:
+	var names := {"decoy": "Обман", "freeze": "Заморозка", "bag": "Мешок"}
+	hud_status.text = "%s активирована. Перезарядка: %d сек." % [names.get(ability_id, ability_id), int(cooldown)]
+
+func _on_ability_blocked(reason: String) -> void:
+	hud_status.text = reason
 
 func _leave_disguise() -> void:
 	disguised = false
@@ -303,6 +373,8 @@ func _finish(won: bool) -> void:
 	var touch_controls := player.get_node_or_null("TouchControls")
 	if touch_controls:
 		touch_controls.visible = false
+	for button in ability_buttons:
+		button.get_parent().visible = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	var result_title := "ПОБЕДА!" if won else "ТЕБЯ НАШЛИ"
 	var result_body := "Ты пережил всю охоту и выбрался из торгового центра." if won else "Охотник обнаружил твою маскировку. Попробуй другую точку и следи за его маршрутом."
@@ -343,7 +415,9 @@ func _resume_round() -> void:
 	hunter.set_physics_process(round_phase == "hunt")
 	var touch_controls := player.get_node_or_null("TouchControls")
 	if touch_controls:
-		touch_controls.visible = true
+		touch_controls.visible = OS.has_feature("mobile")
+	for button in ability_buttons:
+		button.get_parent().visible = OS.has_feature("mobile")
 	if not OS.has_feature("mobile"):
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
@@ -357,6 +431,12 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 		elif event.keycode == KEY_R and finished:
 			_start_round()
+		elif event.keycode == KEY_Q:
+			_use_ability("decoy")
+		elif event.keycode == KEY_F:
+			_use_ability("freeze")
+		elif event.keycode == KEY_G:
+			_use_ability("bag")
 
 func _update_hud() -> void:
 	if not is_instance_valid(hud_timer) or not round_active:
