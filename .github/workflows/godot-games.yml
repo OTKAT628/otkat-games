@@ -47,6 +47,13 @@ jobs:
           done
           godot --headless --editor --path games/hide-and-seek --quit
           godot --headless --editor --path games-godot/world-detective-mobile --quit
+      - name: Run headless gameplay smoke tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path games/hide-and-seek --quit-after 10
+          godot --headless --path games-godot/world-detective-mobile --quit-after 10
+          godot --headless --path games-godot/survival --quit-after 10
 
   export-world-detective-android:
     runs-on: ubuntu-latest
