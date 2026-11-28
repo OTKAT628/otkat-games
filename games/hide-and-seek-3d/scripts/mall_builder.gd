@@ -65,7 +65,8 @@ func _cylinder(name: String, radius: float, height: float, pos: Vector3, mat: Ma
 func _build_lighting() -> void:
 	var world := WorldEnvironment.new()
 	var env := Environment.new()
-	env.background_mode = Environment.BG_SKY
+	env.background_mode = Environment.BG_COLOR
+	env.background_color = Color(0.055, 0.075, 0.09)
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color(0.22, 0.27, 0.31)
 	env.ambient_light_energy = 0.55
@@ -180,4 +181,4 @@ func _build_props() -> void:
 				_cylinder("LargePlanter", 0.7, 0.75, pos + Vector3(0, 0.38, 0), colors[i % colors.size()])
 			4:
 				_box("LostSuitcase", Vector3(0.85, 0.55, 0.48), pos + Vector3(0, 0.28, 0), colors[i % colors.size()])
-		disguise_points.append(pos + Vector3(0, 0.9, 0))
+		disguise_points.append(pos + Vector3(0, 0.5, 0))
