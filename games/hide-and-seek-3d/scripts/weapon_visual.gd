@@ -16,7 +16,7 @@ const SKIN_FINISHES := {
 	"default": {"base":"#41494b","secondary":"#20272a","metal":"#687174","roughness":0.68,"accent":"#d1ad61"}
 }
 
-var finish: Dictionary = SKIN_FINISHES.default
+var finish: Dictionary = SKIN_FINISHES["default"]
 var root: Node3D
 
 func build(weapon_type: String, skin_id: String = "") -> void:
@@ -53,7 +53,7 @@ func _finish_for_skin(skin_id: String) -> Dictionary:
 		return {"base":"#5d354e","secondary":"#29202c","metal":"#a77b9b","roughness":0.4,"accent":"#e8a9c7"}
 	if id.contains("circuit") or id.contains("singularity"):
 		return {"base":"#1b3b48","secondary":"#111a27","metal":"#4c9ca8","roughness":0.26,"accent":"#55e6d7"}
-	return SKIN_FINISHES.default
+	return SKIN_FINISHES["default"]
 
 func _mat(color_hex: String, roughness: float, metallic: float) -> StandardMaterial3D:
 	var m := StandardMaterial3D.new()
