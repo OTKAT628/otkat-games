@@ -11,6 +11,7 @@ on:
     branches: [feature/godot-mobile100-consolidation]
     paths:
       - "games-godot/**"
+      - "games/hide-and-seek/**"
       - ".github/workflows/godot-games.yml"
   workflow_dispatch:
 
