@@ -22,11 +22,32 @@ for (const slug of standalone) {
   else {
     const html=read(file);
     if (!html.includes(`data-app-game="${slug}"`)) fail(`missing game root: ${slug}`);
-    if (!html.includes('src="../app-games.js"')) fail(`missing shared engine: ${slug}`);
+    const hasExternalEngine = html.includes('src="../app-games.js"');
+    const hasInlineEngine = html.includes("const root=document.querySelector('[data-app-game]')");
+    if (!hasExternalEngine && !hasInlineEngine) fail(`missing game engine: ${slug}`);
+    if (!html.includes('download=')) fail(`missing standalone download link: ${slug}`);
     if (!engine.includes(`"${slug}"`)) fail(`game not registered in shared engine: ${slug}`);
   }
 }
 pass(`${standalone.length} standalone pages and registrations`);
+const slugify = value => value.toLowerCase().normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const mobileRows = [
+  ...[...read('web/apps/mobile-100/mobile-100.js').matchAll(/\\['[^']*','([^']*)'/g)].slice(0,10).map(m=>m[1]),
+  ...[...read('web/apps/mobile-100-02/mobile-100-02.js').matchAll(/\\['[^']*','([^']*)'/g)].slice(0,10).map(m=>m[1]),
+  ...[...read('web/apps/mobile-100-03/mobile-100-03.js').matchAll(/\\['[^']*','([^']*)'/g)].slice(0,10).map(m=>m[1]),
+  ...JSON.parse(read('web/apps/mobile-100-04/mobile-100-04.js').match(/const G=(\\[[\\s\\S]*?\\]);const \\$=/)[1]).map(x=>x.name)
+];
+if (mobileRows.length !== 90) fail(`expected 90 individual Mobile 100 entries, found ${mobileRows.length}`);
+for (const name of mobileRows) {
+  const slug = slugify(name);
+  const file = `web/apps/individual-games/${slug}/index.html`;
+  if (!fs.existsSync(file)) fail(`missing individual game page: ${name}`);
+  else {
+    const html = read(file);
+    if (!html.includes('download=')) fail(`missing individual download link: ${name}`);
+  }
+}
+if (!process.exitCode) pass('90 individual Mobile 100 pages and download links');
 for (const [dir,file,count,names] of collections) {
   const html=read(`web/apps/${dir}/index.html`);
   const js=read(`web/apps/${dir}/${file}`);
@@ -65,6 +86,7 @@ else {
     const required=[
       './icons/otkat-icon.svg',
       ...standalone.map(x=>`./apps/${x}/index.html`),
+      ...mobileRows.map(x=>`./apps/individual-games/${slugify(x)}/index.html`),
       ...['mobile-100','mobile-100-02','mobile-100-03','mobile-100-04'].flatMap(x=>[`./apps/${x}/index.html`,`./apps/${x}/${x}.js`])
     ];
     for (const item of required) if (!cache.includes(item)) fail('missing offline cache entry: '+item);
