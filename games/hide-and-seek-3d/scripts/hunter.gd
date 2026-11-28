@@ -88,7 +88,8 @@ func _physics_process(delta: float) -> void:
 func _can_see_target() -> bool:
 	var origin := global_position + Vector3.UP * 1.15
 	var destination := target.global_position + Vector3.UP * 1.0
-	var query := PhysicsRayQueryParameters3D.create(origin, destination, [self])
+	var query := PhysicsRayQueryParameters3D.create(origin, destination)
+	query.exclude = [get_rid()]
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
 	return not hit.is_empty() and hit.get("collider") == target
 
@@ -108,7 +109,8 @@ func _move_toward(point: Vector3, speed: float, delta: float) -> void:
 	else:
 		var direction := flat.normalized()
 		var origin := global_position + Vector3.UP * 0.9
-		var query := PhysicsRayQueryParameters3D.create(origin, origin + direction * 1.6, [self])
+		var query := PhysicsRayQueryParameters3D.create(origin, origin + direction * 1.6)
+		query.exclude = [get_rid()]
 		var hit := get_world_3d().direct_space_state.intersect_ray(query)
 		if not hit.is_empty():
 			direction = (direction + Vector3(direction.z, 0, -direction.x) * avoid_direction * 0.9).normalized()
