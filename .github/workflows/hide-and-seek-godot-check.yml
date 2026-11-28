@@ -32,5 +32,8 @@ jobs:
       - name: Import project and parse scripts
         run: godot --headless --path games/hide-and-seek-3d --editor --quit
 
+      - name: Run gameplay smoke tests
+        run: godot --headless --path games/hide-and-seek-3d --script res://tests/smoke_test.gd
+
       - name: Launch main scene headlessly
         run: godot --headless --path games/hide-and-seek-3d --quit-after 5
