@@ -33,24 +33,73 @@ func _build_hunter() -> void:
 	collision.position.y = 1.02
 	add_child(collision)
 
-	var visual := MeshInstance3D.new()
-	var mesh := CapsuleMesh.new()
-	mesh.radius = 0.46
-	mesh.height = 2.0
-	visual.mesh = mesh
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color("#492f3c")
-	mat.roughness = 0.62
-	visual.material_override = mat
-	visual.position.y = 1.0
+	var visual := Node3D.new()
+	visual.name = "HunterCharacterVisual"
 	add_child(visual)
+	_add_hunter_capsule(visual, "LongCoat", 0.43, 1.35, Vector3(0, 1.02, 0), Color("#492f3c"))
+	_add_hunter_box(visual, "ChestHarness", Vector3(0.72, 0.55, 0.48), Vector3(0, 1.18, -0.025), Color("#302b32"))
+	_add_hunter_box(visual, "LeftShoulderArmor", Vector3(0.34, 0.28, 0.52), Vector3(-0.43, 1.38, 0), Color("#59404a"))
+	_add_hunter_box(visual, "RightShoulderArmor", Vector3(0.34, 0.28, 0.52), Vector3(0.43, 1.38, 0), Color("#59404a"))
+	_add_hunter_capsule(visual, "LeftSleeve", 0.14, 0.78, Vector3(-0.52, 0.94, 0), Color("#392d36"))
+	_add_hunter_capsule(visual, "RightSleeve", 0.14, 0.78, Vector3(0.52, 0.94, 0), Color("#392d36"))
+	_add_hunter_box(visual, "LeftBoot", Vector3(0.32, 0.3, 0.48), Vector3(-0.22, 0.16, -0.04), Color("#171b20"))
+	_add_hunter_box(visual, "RightBoot", Vector3(0.32, 0.3, 0.48), Vector3(0.22, 0.16, -0.04), Color("#171b20"))
+	_add_hunter_sphere(visual, "Hood", 0.42, Vector3(0, 1.83, 0.015), Color("#25242d"))
+	_add_hunter_box(visual, "PorcelainMask", Vector3(0.54, 0.34, 0.12), Vector3(0, 1.72, -0.35), Color("#c5c1b2"))
+	_add_hunter_box(visual, "MaskLowerShadow", Vector3(0.34, 0.09, 0.035), Vector3(0, 1.61, -0.425), Color("#292a2d"))
+	_add_hunter_sphere(visual, "LeftEyeGlow", 0.065, Vector3(-0.14, 1.76, -0.43), Color("#d84d48"), true)
+	_add_hunter_sphere(visual, "RightEyeGlow", 0.065, Vector3(0.14, 1.76, -0.43), Color("#d84d48"), true)
+	_add_hunter_box(visual, "Belt", Vector3(0.82, 0.12, 0.5), Vector3(0, 0.57, 0), Color("#202226"))
+	_add_hunter_box(visual, "BackCanister", Vector3(0.34, 0.62, 0.28), Vector3(0, 1.15, 0.36), Color("#263c3b"))
 
 	var eye := OmniLight3D.new()
-	eye.position = Vector3(0, 1.55, -0.35)
+	eye.position = Vector3(0, 1.75, -0.55)
 	eye.light_color = Color("#d65b54")
 	eye.light_energy = 0.45
 	eye.omni_range = 2.8
 	add_child(eye)
+
+func _hunter_material(color: Color, glow: bool = false) -> StandardMaterial3D:
+	var material := StandardMaterial3D.new()
+	material.albedo_color = color
+	material.roughness = 0.76
+	if glow:
+		material.emission_enabled = true
+		material.emission = color
+		material.emission_energy_multiplier = 1.5
+	return material
+
+func _add_hunter_box(parent: Node3D, part_name: String, size: Vector3, local_pos: Vector3, color: Color) -> void:
+	var visual := MeshInstance3D.new()
+	visual.name = part_name
+	var mesh := BoxMesh.new()
+	mesh.size = size
+	visual.mesh = mesh
+	visual.material_override = _hunter_material(color)
+	visual.position = local_pos
+	parent.add_child(visual)
+
+func _add_hunter_sphere(parent: Node3D, part_name: String, radius: float, local_pos: Vector3, color: Color, glow: bool = false) -> void:
+	var visual := MeshInstance3D.new()
+	visual.name = part_name
+	var mesh := SphereMesh.new()
+	mesh.radius = radius
+	mesh.height = radius * 2.0
+	visual.mesh = mesh
+	visual.material_override = _hunter_material(color, glow)
+	visual.position = local_pos
+	parent.add_child(visual)
+
+func _add_hunter_capsule(parent: Node3D, part_name: String, radius: float, height: float, local_pos: Vector3, color: Color) -> void:
+	var visual := MeshInstance3D.new()
+	visual.name = part_name
+	var mesh := CapsuleMesh.new()
+	mesh.radius = radius
+	mesh.height = height
+	visual.mesh = mesh
+	visual.material_override = _hunter_material(color)
+	visual.position = local_pos
+	parent.add_child(visual)
 
 func _physics_process(delta: float) -> void:
 	frozen_time = maxf(0.0, frozen_time - delta)
