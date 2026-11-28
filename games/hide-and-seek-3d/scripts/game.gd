@@ -23,7 +23,7 @@ var inventory: OtkatCosmeticInventory
 var mall: AbandonedMallBuilder
 var total_wins := 0
 var total_losses := 0
-var selected_weapon_id := "re_sentinel"
+var selected_weapon_id := "ap_scout"
 var ability_buttons: Array[Button] = []
 var weapon_buttons: Array[Button] = []
 var ammo_label: Label
@@ -77,11 +77,11 @@ func _spawn_characters() -> void:
 	add_child(hunter)
 
 	inventory = InventoryManager.new()
-	if not inventory.owns_weapon("re_sentinel"):
-		inventory.unlock_weapon("re_sentinel")
-	if not inventory.owns_skin("re_sentinel_graphite"):
-		inventory.unlock_skin("re_sentinel_graphite")
-	inventory.equip_skin("re_sentinel", "re_sentinel_graphite")
+	if not inventory.owns_weapon("ap_scout"):
+		inventory.unlock_weapon("ap_scout")
+	if not inventory.owns_skin("ap_scout_tape"):
+		inventory.unlock_skin("ap_scout_tape")
+	inventory.equip_skin("ap_scout", "ap_scout_tape")
 	_load_profile_stats()
 
 	weapon_runtime = WeaponRuntime.new()
@@ -94,7 +94,7 @@ func _spawn_characters() -> void:
 	weapon_runtime.target_hit.connect(_on_weapon_hit)
 	weapon_runtime.ammo_changed.connect(_on_ammo_changed)
 	weapon_runtime.weapon_blocked.connect(_on_weapon_blocked)
-	weapon_runtime.equip("realistic", selected_weapon_id, inventory.get_equipped_skin(selected_weapon_id))
+	weapon_runtime.equip("apocalypse", selected_weapon_id, inventory.get_equipped_skin(selected_weapon_id))
 	weapon_runtime.set_process(false)
 
 	abilities = AbilityManager.new()
@@ -276,9 +276,9 @@ func _load_profile_stats() -> void:
 	if config.load("user://otkat_hide_seek_profile.cfg") == OK:
 		total_wins = int(config.get_value("stats", "wins", 0))
 		total_losses = int(config.get_value("stats", "losses", 0))
-		selected_weapon_id = str(config.get_value("loadout", "weapon", "re_sentinel"))
+		selected_weapon_id = str(config.get_value("loadout", "weapon", "ap_scout"))
 	if not inventory.owns_weapon(selected_weapon_id):
-		selected_weapon_id = "re_sentinel"
+		selected_weapon_id = "ap_scout"
 
 func _save_profile_stats() -> void:
 	var config := ConfigFile.new()
@@ -299,7 +299,7 @@ func _show_profile() -> void:
 
 func _show_armory() -> void:
 	var buttons: Array = []
-	for item in ArsenalRegistry.get_world_weapons("realistic"):
+	for item in ArsenalRegistry.get_world_weapons("apocalypse"):
 		var weapon_id := str(item.id)
 		var button_text := ""
 		var action: Callable
@@ -311,10 +311,10 @@ func _show_armory() -> void:
 			action = Callable(self, "_buy_weapon").bind(weapon_id)
 		buttons.append({"text": button_text, "action": action})
 	buttons.append({"text": "НАЗАД", "action": Callable(self, "_build_main_menu")})
-	_show_screen("АРСЕНАЛ", "Оружие реалистичного мира. Покупки совершаются только за игровые кредиты. Выбранное оружие: %s." % selected_weapon_id, buttons)
+	_show_screen("АРСЕНАЛ", "Оружие мира Апокалипсиса. Покупки совершаются только за игровые кредиты. Выбранное оружие: %s." % selected_weapon_id, buttons)
 
 func _buy_weapon(weapon_id: String) -> void:
-	var item := ArsenalRegistry.get_weapon("realistic", weapon_id)
+	var item := ArsenalRegistry.get_weapon("apocalypse", weapon_id)
 	if item.is_empty():
 		return
 	if not inventory.spend_credits(int(item.value)):
@@ -328,11 +328,11 @@ func _equip_weapon(weapon_id: String) -> void:
 		return
 	selected_weapon_id = weapon_id
 	_save_profile_stats()
-	weapon_runtime.equip("realistic", selected_weapon_id, inventory.get_equipped_skin(selected_weapon_id))
+	weapon_runtime.equip("apocalypse", selected_weapon_id, inventory.get_equipped_skin(selected_weapon_id))
 	_show_weapon_skins(weapon_id)
 
 func _show_weapon_skins(weapon_id: String) -> void:
-	var item := ArsenalRegistry.get_weapon("realistic", weapon_id)
+	var item := ArsenalRegistry.get_weapon("apocalypse", weapon_id)
 	var buttons: Array = []
 	for skin in item.get("skins", []):
 		var skin_id := str(skin.id)
@@ -349,7 +349,7 @@ func _show_weapon_skins(weapon_id: String) -> void:
 	_show_screen(str(item.name), "Выбирай оформление оружия. Скины не дают боевого преимущества.", buttons)
 
 func _buy_skin(weapon_id: String, skin_id: String) -> void:
-	var skin := ArsenalRegistry.get_skin("realistic", weapon_id, skin_id)
+	var skin := ArsenalRegistry.get_skin("apocalypse", weapon_id, skin_id)
 	if skin.is_empty():
 		return
 	if not inventory.spend_credits(int(skin.value)):
@@ -360,7 +360,7 @@ func _buy_skin(weapon_id: String, skin_id: String) -> void:
 
 func _equip_skin(weapon_id: String, skin_id: String) -> void:
 	if inventory.equip_skin(weapon_id, skin_id) and selected_weapon_id == weapon_id:
-		weapon_runtime.equip("realistic", weapon_id, skin_id)
+		weapon_runtime.equip("apocalypse", weapon_id, skin_id)
 	_show_weapon_skins(weapon_id)
 
 func _show_settings() -> void:
@@ -418,7 +418,7 @@ func _start_round() -> void:
 	abilities.cooldowns.clear()
 	abilities.set_process(true)
 	weapon_runtime.set_process(true)
-	weapon_runtime.equip("realistic", selected_weapon_id, inventory.get_equipped_skin(selected_weapon_id))
+	weapon_runtime.equip("apocalypse", selected_weapon_id, inventory.get_equipped_skin(selected_weapon_id))
 	pending_fire = false
 	victory_message = "Ты пережил всю охоту и выбрался из торгового центра."
 	player.set_physics_process(true)
@@ -512,7 +512,7 @@ func _on_weapon_blocked(reason: String) -> void:
 
 func _on_weapon_hit(target: Object, weapon_id: String) -> void:
 	if target == hunter:
-		var weapon_data := ArsenalRegistry.get_weapon("realistic", weapon_id)
+		var weapon_data := ArsenalRegistry.get_weapon("apocalypse", weapon_id)
 		var damage := int(weapon_data.get("damage", 0))
 		hunter.take_damage(damage)
 		hud_status.text = "Попадание! Здоровье охотника: %d%%" % hunter.health
