@@ -228,7 +228,7 @@ func _show_screen(title_text: String, body_text: String, buttons: Array) -> void
 	var panel := PanelContainer.new()
 	panel.set_anchors_preset(Control.PRESET_CENTER)
 	var viewport_size := get_viewport().get_visible_rect().size
-	var panel_size := Vector2(minf(520.0, viewport_size.x - 28.0), minf(440.0, viewport_size.y - 28.0))
+	var panel_size := Vector2(minf(520.0, viewport_size.x - 28.0), minf(620.0, viewport_size.y - 28.0))
 	panel.position = -panel_size * 0.5
 	panel.custom_minimum_size = panel_size
 	var panel_style := StyleBoxFlat.new()
@@ -418,7 +418,7 @@ func _start_round() -> void:
 	abilities.cooldowns.clear()
 	abilities.set_process(true)
 	weapon_runtime.set_process(true)
-	weapon_runtime.equip("realistic", "re_sentinel", "re_sentinel_graphite")
+	weapon_runtime.equip("realistic", selected_weapon_id, inventory.get_equipped_skin(selected_weapon_id))
 	pending_fire = false
 	victory_message = "Ты пережил всю охоту и выбрался из торгового центра."
 	player.set_physics_process(true)
