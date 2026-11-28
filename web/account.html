@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#090a10">
+  <meta name="description" content="OTKAT ID — единый аккаунт для игр и приложений OTKAT.">
+  <title>OTKAT ID — аккаунт</title>
+  <link rel="stylesheet" href="account.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="brand-mark">O</span><span>OTKAT<small>GAMES UNIVERSE</small></span></a>
+    <a class="back-link" href="index.html">← На главную</a>
+  </header>
+  <main class="shell">
+    <section class="intro">
+      <div class="eyebrow"><span></span> ЕДИНЫЙ АККАУНТ OTKAT</div>
+      <h1>Твой мир.<br><em>Твой OTKAT ID.</em></h1>
+      <p>Одна учётная запись для сайта, игр и приложений OTKAT. Начни с регистрации — облачные сохранения и достижения подключим поэтапно.</p>
+      <div class="feature-list">
+        <div><b class="yellow">01</b><span>Один аккаунт для всех платформ</span></div>
+        <div><b class="purple">02</b><span>Профиль и игровые достижения</span></div>
+        <div><b class="green">03</b><span>Облачные сохранения игр</span></div>
+      </div>
+      <div class="orbit"><div class="orbit-ring ring-a"></div><div class="orbit-ring ring-b"></div><div class="orbit-core">O</div><span class="orbit-dot dot-a"></span><span class="orbit-dot dot-b"></span></div>
+    </section>
+    <section class="auth-panel" aria-live="polite">
+      <div class="panel-top"><span class="status-dot"></span><span>OTKAT ID / SECURE ACCESS</span><span class="version">BETA</span></div>
+      <div id="config-warning" class="notice warning" hidden>Подключение ещё не настроено. Добавим URL проекта и публичный ключ Supabase после проверки настроек.</div>
+      <div id="auth-view">
+        <div class="tabs" role="tablist">
+          <button class="tab active" id="tab-login" type="button" data-mode="login">Вход</button>
+          <button class="tab" id="tab-signup" type="button" data-mode="signup">Регистрация</button>
+        </div>
+        <form id="auth-form">
+          <label id="name-wrap" hidden>Имя пользователя
+            <input id="display-name" type="text" autocomplete="nickname" maxlength="32" placeholder="Как тебя показывать в играх">
+          </label>
+          <label>Email
+            <input id="email" type="email" autocomplete="email" placeholder="name@example.com" required>
+          </label>
+          <label>Пароль
+            <span class="password-wrap"><input id="password" type="password" autocomplete="current-password" minlength="8" placeholder="Минимум 8 символов" required><button type="button" id="toggle-password" aria-label="Показать пароль">◉</button></span>
+          </label>
+          <div class="form-meta"><span>Минимум 8 символов</span><button type="button" class="text-button" id="forgot-button">Забыли пароль?</button></div>
+          <button class="primary-button" id="submit-button" type="submit"><span id="submit-label">Войти в OTKAT ID</span><span>↗</span></button>
+        </form>
+        <div class="or"><span></span> ИЛИ <span></span></div>
+        <button class="secondary-button" id="magic-button" type="button">Отправить ссылку для входа по Email</button>
+        <p class="fineprint">Продолжая, ты создаёшь аккаунт OTKAT ID. Подтверждение Email обязательно.</p>
+      </div>
+      <section id="profile-view" hidden>
+        <div class="profile-avatar" id="profile-avatar">O</div>
+        <p class="eyebrow centered">АККАУНТ ПОДКЛЮЧЁН</p>
+        <h2 id="profile-name">Пользователь OTKAT</h2>
+        <p class="profile-email" id="profile-email"></p>
+        <div class="id-card"><small>ТВОЙ OTKAT USER ID</small><code id="profile-id"></code><button id="copy-id" type="button">Копировать</button></div>
+        <div class="profile-stats"><div><b>01</b><span>Аккаунт</span></div><div><b>SYNC</b><span>Сохранения — следующий этап</span></div></div>
+        <button class="secondary-button" id="signout-button" type="button">Выйти из аккаунта</button>
+      </section>
+      <div id="message" class="notice" role="status" hidden></div>
+      <div id="recovery-view" hidden>
+        <h2>Новый пароль</h2>
+        <p class="muted">Укажи новый пароль для OTKAT ID.</p>
+        <form id="recovery-form"><label>Новый пароль<input id="new-password" type="password" minlength="8" required autocomplete="new-password"></label><button class="primary-button" type="submit">Сохранить пароль ↗</button></form>
+      </div>
+    </section>
+  </main>
+  <footer><span>© 2026 OTKAT</span><span>ONE ACCOUNT · ALL WORLDS</span><a href="https://github.com/OTKAT628/otkat-games">Исходный код</a></footer>
+  <script type="module" src="account.js"></script>
+</body>
+</html>
