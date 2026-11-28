@@ -94,36 +94,36 @@ func _build_mobile_controls() -> void:
 
 	mobile_button = Button.new()
 	mobile_button.text = "МАСКИРОВКА  [E]"
-	mobile_button.custom_minimum_size = Vector2(190, 64)
+	mobile_button.custom_minimum_size = Vector2(142, 58)
 	mobile_button.anchor_left = 1.0
 	mobile_button.anchor_top = 1.0
 	mobile_button.anchor_right = 1.0
 	mobile_button.anchor_bottom = 1.0
-	mobile_button.position = Vector2(-218, -112)
-	mobile_button.add_theme_font_size_override("font_size", 18)
+	mobile_button.position = Vector2(-152, -112)
+	mobile_button.add_theme_font_size_override("font_size", 14)
 	mobile_button.pressed.connect(_on_interact_pressed)
 	layer.add_child(mobile_button)
 
 	sprint_button = Button.new()
 	sprint_button.text = "БЕГ"
-	sprint_button.custom_minimum_size = Vector2(92, 58)
-	sprint_button.anchor_left = 1.0
+	sprint_button.custom_minimum_size = Vector2(86, 58)
+	sprint_button.anchor_left = 0.0
 	sprint_button.anchor_top = 1.0
-	sprint_button.anchor_right = 1.0
+	sprint_button.anchor_right = 0.0
 	sprint_button.anchor_bottom = 1.0
-	sprint_button.position = Vector2(-430, -112)
+	sprint_button.position = Vector2(18, -112)
 	sprint_button.button_down.connect(_on_sprint_down)
 	sprint_button.button_up.connect(_on_sprint_up)
 	layer.add_child(sprint_button)
 
 	crouch_button = Button.new()
 	crouch_button.text = "ПРИСЕСТЬ"
-	crouch_button.custom_minimum_size = Vector2(100, 58)
-	crouch_button.anchor_left = 1.0
+	crouch_button.custom_minimum_size = Vector2(90, 58)
+	crouch_button.anchor_left = 0.0
 	crouch_button.anchor_top = 1.0
-	crouch_button.anchor_right = 1.0
+	crouch_button.anchor_right = 0.0
 	crouch_button.anchor_bottom = 1.0
-	crouch_button.position = Vector2(-326, -112)
+	crouch_button.position = Vector2(112, -112)
 	crouch_button.button_down.connect(_on_crouch_down)
 	crouch_button.button_up.connect(_on_crouch_up)
 	layer.add_child(crouch_button)
@@ -132,8 +132,11 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		_rotate_view(event.relative, MOUSE_SENSITIVITY)
 	elif event is InputEventScreenTouch:
-		var width := get_viewport().get_visible_rect().size.x
+		var viewport_size := get_viewport().get_visible_rect().size
+		var width := viewport_size.x
 		if event.pressed:
+			if _is_touch_ui_position(event.position, viewport_size):
+				return
 			if event.position.x < width * 0.48 and move_touch_id == -1:
 				move_touch_id = event.index
 				move_touch_origin = event.position
@@ -158,6 +161,14 @@ func _input(event: InputEvent) -> void:
 			_on_interact_pressed()
 		elif event.keycode == KEY_ESCAPE:
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+
+func _is_touch_ui_position(position: Vector2, viewport_size: Vector2) -> bool:
+	if position.y >= viewport_size.y - 132.0:
+		if position.x <= 220.0 or position.x >= viewport_size.x - 180.0:
+			return true
+	if position.y <= 82.0 and position.x >= viewport_size.x - 340.0:
+		return true
+	return false
 
 func _rotate_view(delta: Vector2, sensitivity: float) -> void:
 	rotate_y(-delta.x * sensitivity)
