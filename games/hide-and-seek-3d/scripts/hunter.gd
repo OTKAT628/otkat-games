@@ -104,6 +104,12 @@ func _physics_process(delta: float) -> void:
 		_:
 			_patrol(delta)
 
+func hear_noise(point: Vector3, radius: float) -> void:
+	if global_position.distance_to(point) <= radius and lure_time <= 0.0:
+		state = "investigate"
+		search_position = point
+		search_time = 3.0
+
 func investigate_position(point: Vector3, duration: float) -> void:
 	lure_position = point
 	lure_time = duration
