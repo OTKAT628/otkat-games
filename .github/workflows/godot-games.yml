@@ -31,7 +31,7 @@ jobs:
             godot --headless --editor --path "$path" --quit
             mkdir -p "$path/build"
             echo "Exporting $project for Web"
-            godot --headless --path "$path" --export-release "Web" "$path/build/index.html"
+            godot --headless --path "$path" --export-release "Web" "build/index.html"
             test -s "$path/build/index.html"
           done
       - name: Upload Godot web builds
