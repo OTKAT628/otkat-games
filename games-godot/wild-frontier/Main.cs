@@ -112,10 +112,7 @@ public partial class Main : Node2D
         if (what == NotificationWMCloseRequest || what == NotificationPredelete) SaveProgress();
     }
 
-    private void UpdateHud() => _hud.Text = $"OTKAT WILD FRONTIER   День {_day}   Здоровье {_health}   Голод {(int)_hunger}
-Дерево {_wood}   Камень {_stone}   Еда {_food}
-{_message}
-E — собрать   F — поесть   C — построить укрытие";
+    private void UpdateHud() => _hud.Text = $"OTKAT WILD FRONTIER   День {_day}   Здоровье {_health}   Голод {(int)_hunger}\nДерево {_wood}   Камень {_stone}   Еда {_food}\n{_message}\nE — собрать   F — поесть   C — построить укрытие";
 
     public override void _Draw()
     {
