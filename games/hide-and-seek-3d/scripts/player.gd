@@ -16,6 +16,10 @@ const GRAVITY := 18.0
 
 var camera_pivot: Node3D
 var camera: Camera3D
+var body_collision: CollisionShape3D
+var body_capsule: CapsuleShape3D
+var body_visual: MeshInstance3D
+var visual_capsule: CapsuleMesh
 var disguised := false
 var disguise_anchor := Vector3.ZERO
 var touch_move := Vector2.ZERO
@@ -45,26 +49,26 @@ func _ready() -> void:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 func _build_body() -> void:
-	var shape := CollisionShape3D.new()
-	var capsule := CapsuleShape3D.new()
-	capsule.radius = 0.36
-	capsule.height = 1.75
-	shape.shape = capsule
-	shape.position.y = 0.9
-	add_child(shape)
+	body_collision = CollisionShape3D.new()
+	body_capsule = CapsuleShape3D.new()
+	body_capsule.radius = 0.36
+	body_capsule.height = 1.75
+	body_collision.shape = body_capsule
+	body_collision.position.y = 0.9
+	add_child(body_collision)
 
-	var body_mesh := MeshInstance3D.new()
-	var capsule_mesh := CapsuleMesh.new()
-	capsule_mesh.radius = 0.34
-	capsule_mesh.height = 1.7
-	body_mesh.mesh = capsule_mesh
+	body_visual = MeshInstance3D.new()
+	visual_capsule = CapsuleMesh.new()
+	visual_capsule.radius = 0.34
+	visual_capsule.height = 1.7
+	body_visual.mesh = visual_capsule
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = Color("#e8bf57")
 	mat.roughness = 0.72
-	body_mesh.material_override = mat
-	body_mesh.position.y = 0.9
-	body_mesh.name = "SurvivorVisual"
-	add_child(body_mesh)
+	body_visual.material_override = mat
+	body_visual.position.y = 0.9
+	body_visual.name = "SurvivorVisual"
+	add_child(body_visual)
 
 func _build_camera() -> void:
 	camera_pivot = Node3D.new()
@@ -189,7 +193,10 @@ func _physics_process(delta: float) -> void:
 		input_vector.y -= 1.0
 	input_vector += touch_move
 	input_vector = input_vector.limit_length(1.0)
-	is_crouching = touch_crouch or Input.is_key_pressed(KEY_CTRL)
+	var wants_crouch := touch_crouch or Input.is_key_pressed(KEY_CTRL)
+	if wants_crouch != is_crouching:
+		is_crouching = wants_crouch
+		_set_crouch_pose(is_crouching)
 	is_sprinting = (touch_sprint or Input.is_key_pressed(KEY_SHIFT)) and not is_crouching and input_vector.length() > 0.1 and stamina > 0.5
 	if is_sprinting:
 		stamina = maxf(0.0, stamina - STAMINA_DRAIN * delta)
@@ -211,6 +218,14 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.y = -0.2
 	move_and_slide()
+
+func _set_crouch_pose(active: bool) -> void:
+	var capsule_height := 1.05 if active else 1.75
+	body_capsule.height = capsule_height
+	body_collision.position.y = capsule_height * 0.5
+	visual_capsule.height = capsule_height
+	body_visual.position.y = capsule_height * 0.5
+	camera_pivot.position.y = 1.05 if active else 1.58
 
 func _on_sprint_down() -> void:
 	touch_sprint = true
@@ -242,9 +257,8 @@ func set_disguised(active: bool, anchor: Vector3 = Vector3.ZERO) -> void:
 		collision_layer = saved_collision_layer
 		collision_mask = saved_collision_mask
 	disguised = active
-	var visual := get_node_or_null("SurvivorVisual") as MeshInstance3D
-	if visual:
-		visual.visible = not active
+	if body_visual:
+		body_visual.visible = not active
 	disguise_changed.emit(active)
 
 func get_camera_direction() -> Vector3:
