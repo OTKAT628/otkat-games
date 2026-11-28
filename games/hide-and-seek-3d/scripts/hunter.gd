@@ -3,8 +3,8 @@ class_name MallHunter
 
 signal caught_survivor
 
-const HUNT_SPEED := 3.7
-const PATROL_SPEED := 2.1
+const HUNT_SPEED := 5.6
+const PATROL_SPEED := 2.4
 const DETECTION_RANGE := 19.0
 const CATCH_RANGE := 1.55
 const GRAVITY := 18.0
