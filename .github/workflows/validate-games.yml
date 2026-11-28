@@ -2,7 +2,7 @@ name: Validate new game lineup
 
 on:
   push:
-    branches: [feature/new-game-lineup]
+    branches: [feature/godot-mobile100-consolidation]
     paths:
       - "web/**"
       - ".github/workflows/validate-games.yml"
@@ -30,16 +30,20 @@ jobs:
             echo "Checking $file"
             node --check "$file"
           done
-      - name: Check new game pages and shared engine
+      - name: Check standalone product catalogues
         run: |
-          for slug in depths swarm kingdoms orbital cozy; do
-            test -s "web/$slug/index.html"
-            grep -q 'data-game="'$slug'"' "web/$slug/index.html"
-            grep -q 'src="../new-games.js"' "web/$slug/index.html"
+          test -s web/games/index.html
+          test -s web/apps/index.html
+          test -s web/downloads/index.html
+          for slug in party-circuit mindforge wild-frontier; do
+            test -s "web/games/$slug/index.html"
+            grep -q 'ОПИСАНИЕ И УСТАНОВКА' web/games/index.html
           done
-          test -s web/new-games.js
-          grep -q 'Neon Depths' web/games/index.html
-          grep -q 'Last Stand: Swarm' web/games/index.html
-          grep -q 'Tiny Kingdoms' web/games/index.html
-          grep -q 'Orbital Rush' web/games/index.html
-          grep -q 'Cozy Valley' web/games/index.html
+          grep -q 'OTKAT Party Circuit' web/games/index.html
+          grep -q 'OTKAT Mindforge' web/games/index.html
+          grep -q 'OTKAT Wild Frontier' web/games/index.html
+          ! grep -qi 'Mobile 100\|105 игр\|мини-игр' web/apps/index.html
+          ! grep -qi 'Mobile 100\|105 игр' web/downloads/index.html
+          grep -q 'OTKAT Stream' web/apps/index.html
+          grep -q 'OTKAT Library' web/apps/index.html
+          grep -q 'OTKAT Games' web/games/index.html

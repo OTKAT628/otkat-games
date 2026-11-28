@@ -1,0 +1,91 @@
+name: Validate Godot native game projects
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "games-godot/**"
+      - "games/hide-and-seek/**"
+      - ".github/workflows/godot-games.yml"
+  push:
+    branches: [feature/godot-mobile100-consolidation]
+    paths:
+      - "games-godot/**"
+      - "games/hide-and-seek/**"
+      - ".github/workflows/godot-games.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-native:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.4.1
+          use-dotnet: true
+          include-templates: false
+      - name: Build all C# game projects
+        run: |
+          set -euo pipefail
+          dotnet build games-godot/party-circuit/OTKAT.PartyCircuit.csproj --configuration Release
+          dotnet build games-godot/mindforge/OTKAT.Mindforge.csproj --configuration Release
+          dotnet build games-godot/wild-frontier/OTKAT.WildFrontier.csproj --configuration Release
+          dotnet build games-godot/world-detective/OTKAT.WorldDetective.csproj --configuration Release
+          dotnet build games-godot/survival/OTKAT.Survival.csproj --configuration Release
+      - name: Validate Godot project imports
+        shell: bash
+        run: |
+          set -euo pipefail
+          for project in party-circuit mindforge wild-frontier world-detective survival; do
+            godot --headless --editor --path "games-godot/$project" --quit
+          done
+          godot --headless --editor --path games/hide-and-seek --quit
+          godot --headless --editor --path games-godot/world-detective-mobile --quit
+      - name: Run headless gameplay smoke tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path games/hide-and-seek --quit-after 10
+          godot --headless --path games-godot/world-detective-mobile --quit-after 10
+          godot --headless --path games-godot/survival --quit-after 10
+
+  export-world-detective-android:
+    runs-on: ubuntu-latest
+    needs: validate-native
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.4.1
+          use-dotnet: false
+          include-templates: true
+      - name: Install Android SDK packages
+        run: sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "cmake;3.10.2.4988404" "ndk;23.2.8568313"
+      - name: Build and export Android APK
+        run: |
+          set -euo pipefail
+          godot --headless --editor --path games-godot/world-detective-mobile --install-android-build-template
+          mkdir -p artifacts
+          godot --headless --path games-godot/world-detective-mobile --export-debug "Android" artifacts/otkat-world-detective-debug.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: otkat-world-detective-android-debug
+          path: artifacts/otkat-world-detective-debug.apk
+          if-no-files-found: error
