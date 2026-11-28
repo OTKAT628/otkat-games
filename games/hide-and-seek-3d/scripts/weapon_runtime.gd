@@ -24,9 +24,14 @@ var cooldown_left := 0.0
 var is_reloading := false
 var weapon_visual: Node3D
 var shooter: CollisionObject3D
+var reload_time_left := 0.0
 
 func _process(delta: float) -> void:
 	cooldown_left = maxf(0.0, cooldown_left - delta)
+	if is_reloading:
+		reload_time_left = maxf(0.0, reload_time_left - delta)
+		if reload_time_left <= 0.0:
+			_complete_reload()
 
 func equip(world: String, weapon_id: String, skin_id: String = "") -> bool:
 	var candidate := Registry.get_weapon(world, weapon_id)
@@ -81,10 +86,14 @@ func reload_weapon() -> void:
 	if magazine_size <= 0 or ammo_in_magazine >= magazine_size or reserve_ammo <= 0:
 		return
 	is_reloading = true
-	await get_tree().create_timer(1.65).timeout
+	reload_time_left = 1.65
+
+func _complete_reload() -> void:
+	var magazine_size := int(MAGAZINE_SIZES.get(str(weapon_data.type), 8))
 	var needed := magazine_size - ammo_in_magazine
 	var loaded := mini(needed, reserve_ammo)
 	ammo_in_magazine += loaded
 	reserve_ammo -= loaded
 	is_reloading = false
+	reload_time_left = 0.0
 	ammo_changed.emit(ammo_in_magazine, reserve_ammo)
