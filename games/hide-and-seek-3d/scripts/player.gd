@@ -15,6 +15,7 @@ var disguised := false
 var disguise_anchor := Vector3.ZERO
 var touch_move := Vector2.ZERO
 var move_touch_id := -1
+var move_touch_origin := Vector2.ZERO
 var look_touch_id := -1
 var last_look_position := Vector2.ZERO
 var mobile_button: Button
@@ -94,6 +95,7 @@ func _input(event: InputEvent) -> void:
 		if event.pressed:
 			if event.position.x < width * 0.48 and move_touch_id == -1:
 				move_touch_id = event.index
+				move_touch_origin = event.position
 				touch_move = Vector2.ZERO
 			elif event.position.x >= width * 0.48 and look_touch_id == -1:
 				look_touch_id = event.index
@@ -106,7 +108,7 @@ func _input(event: InputEvent) -> void:
 				look_touch_id = -1
 	elif event is InputEventScreenDrag:
 		if event.index == move_touch_id:
-			touch_move = (event.position - Vector2(150, get_viewport().get_visible_rect().size.y - 150)).limit_length(90.0) / 90.0
+			touch_move = (event.position - move_touch_origin).limit_length(90.0) / 90.0
 			touch_move.y = -touch_move.y
 		elif event.index == look_touch_id:
 			_rotate_view(event.relative, TOUCH_LOOK_SENSITIVITY)
