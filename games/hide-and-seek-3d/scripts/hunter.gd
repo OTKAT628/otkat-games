@@ -61,7 +61,7 @@ func _physics_process(delta: float) -> void:
 		else:
 			_patrol(delta)
 			return
-	elif distance <= DETECTION_RANGE:
+	elif distance <= DETECTION_RANGE and _can_see_target():
 		state = "chase"
 		search_position = target_pos
 	elif state == "chase":
@@ -84,6 +84,13 @@ func _physics_process(delta: float) -> void:
 				state = "patrol"
 		_:
 			_patrol(delta)
+
+func _can_see_target() -> bool:
+	var origin := global_position + Vector3.UP * 1.15
+	var destination := target.global_position + Vector3.UP * 1.0
+	var query := PhysicsRayQueryParameters3D.create(origin, destination, [self])
+	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	return not hit.is_empty() and hit.get("collider") == target
 
 func _patrol(delta: float) -> void:
 	var point := patrol_points[patrol_index]
