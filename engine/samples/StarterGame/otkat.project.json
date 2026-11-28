@@ -1,0 +1,6 @@
+{
+  "name": "OTKAT Engine Starter Game",
+  "engineVersion": "0.1.0-dev",
+  "targetPlatforms": ["Windows", "Android"],
+  "startupScene": "Scenes/Starter.scene.json"
+}

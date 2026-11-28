@@ -1,0 +1,25 @@
+name: Validate OTKAT Engine foundation
+on:
+  pull_request:
+    branches: [main]
+    paths: ["engine/**", ".github/workflows/otkat-engine.yml"]
+  push:
+    branches: [feature/otkat-engine-foundation]
+    paths: ["engine/**", ".github/workflows/otkat-engine.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Build engine, editor and starter sample
+        run: dotnet build engine/OTKAT.Engine.sln --configuration Release
+      - name: Run runtime smoke sample
+        run: dotnet run --project engine/samples/StarterGame/StarterGame.csproj --configuration Release
+      - name: Validate sample scene
+        run: dotnet run --project engine/src/Otkat.Engine.Editor/Otkat.Engine.Editor.csproj --configuration Release -- engine/samples/StarterGame/Scenes/Starter.scene.json
