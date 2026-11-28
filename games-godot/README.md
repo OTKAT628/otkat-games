@@ -24,7 +24,7 @@ A top-down exploration/survival and resource-management game with crafting, navi
 Legacy mechanics to migrate:
 - Lunar Touchdown, Power Grid, Shadow Step, Wild Balance, Windwright, Magnet Crane, Fossil Brush, Rooftop Gardener, Comet Catcher, Tiny Tactician
 - Canyon Courier, Cloud Shepherd, Dungeon Draft, Forest Code, Seed Vault, Water Share, Battery Plan, Fuel Convoy, Oxygen Crew, Thermal Control
-- Tide Gauge, Alternator, Beacon Keeper, Shield Wall, Treasure Crew, Tiny Giants, Reverse River, Corner Quest, River Fork, Portal Path
+- Tide Gauge, Alternator, Beacon Keeper, Shield Wall, Tiny Giants, Reverse River, Color Scout, Letter Dock, Orbit Word, Winter Note
 
 ## Current implementation status
 
