@@ -60,6 +60,7 @@ func _spawn_characters() -> void:
 
 	abilities = AbilityManager.new()
 	abilities.name = "PropAbilities"
+	abilities.set_process(false)
 	add_child(abilities)
 	abilities.decoy_created.connect(_on_decoy_created)
 	abilities.hunter_frozen.connect(_on_hunter_frozen)
@@ -202,7 +203,7 @@ func _show_screen(title_text: String, body_text: String, buttons: Array) -> void
 func _show_controls_help() -> void:
 	_show_screen(
 		"УПРАВЛЕНИЕ",
-		"КОМПЬЮТЕР\nWASD или стрелки — движение. Мышь — обзор. E — спрятаться или выйти из маскировки. Esc — пауза. R — новый раунд после завершения.\n\nANDROID\nЛевая половина экрана — движение. Правая половина — обзор. Кнопка «Маскировка» — спрятаться или выйти.\n\nЦЕЛЬ\nНайди предмет для маскировки до конца подготовки. Охотник может заметить тебя, если подойдёт близко. Переживи 150 секунд.",
+		"КОМПЬЮТЕР\nWASD или стрелки — движение. Shift — бег (расходует выносливость). Ctrl — присесть и двигаться тише. Мышь — обзор. E — маскировка. Q — обман, F — заморозка, G — мешок. Esc — пауза. R — новый раунд после завершения.\n\nANDROID\nЛевая половина экрана — движение. Правая — обзор. Кнопки «Бег», «Присесть», «Маскировка» и три способности находятся на экране.\n\nЦЕЛЬ\nНайди предмет для маскировки до конца подготовки. Охотник может заметить тебя, если подойдёт близко. Переживи 150 секунд.",
 		[{"text": "НАЗАД", "action": Callable(self, "_build_main_menu")}]
 	)
 
@@ -221,6 +222,8 @@ func _start_round() -> void:
 	player.global_position = Vector3(-23.0, 0.1, 17.0)
 	player.stamina = 100.0
 	player.noise_timer = 0.0
+	abilities.cooldowns.clear()
+	abilities.set_process(true)
 	player.set_physics_process(true)
 	player.set_process_input(true)
 	var touch_controls := player.get_node_or_null("TouchControls")
@@ -394,6 +397,7 @@ func _finish(won: bool) -> void:
 	player.set_physics_process(false)
 	player.set_process_input(false)
 	hunter.set_physics_process(false)
+	abilities.set_process(false)
 	var touch_controls := player.get_node_or_null("TouchControls")
 	if touch_controls:
 		touch_controls.visible = false
@@ -418,6 +422,12 @@ func _pause_round() -> void:
 	player.set_physics_process(false)
 	player.set_process_input(false)
 	hunter.set_physics_process(false)
+	abilities.set_process(false)
+	var touch_controls := player.get_node_or_null("TouchControls")
+	if touch_controls:
+		touch_controls.visible = false
+	for button in ability_buttons:
+		button.get_parent().visible = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	_show_screen(
 		"ПАУЗА",
@@ -434,6 +444,7 @@ func _resume_round() -> void:
 		screen_layer.queue_free()
 	screen_layer = null
 	round_active = true
+	abilities.set_process(true)
 	player.set_physics_process(true)
 	player.set_process_input(true)
 	hunter.set_physics_process(round_phase == "hunt")
