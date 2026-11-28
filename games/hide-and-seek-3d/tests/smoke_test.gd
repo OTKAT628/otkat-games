@@ -63,6 +63,9 @@ func _run_smoke_test() -> void:
 	if game.hunter.lure_time <= 0.0:
 		_fail("Decoy ability did not lure the hunter.")
 		return
+	if game.get_node_or_null("DecoyEcho") == null:
+		_fail("Decoy ability did not create a visible decoy.")
+		return
 
 	print("OTKAT Hide & Seek smoke test passed.")
 	quit(0)
