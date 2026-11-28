@@ -14,8 +14,10 @@ public partial class Main : Control
 
     public override void _Ready()
     {
+        LoadProgress();
         BuildUi();
-        NewPuzzle();
+        if (_level > 30) ShowCompletion();
+        else NewPuzzle();
     }
 
     private void BuildUi()
@@ -105,6 +107,31 @@ public partial class Main : Control
         _feedback.Text = "Реши задачу и введи целое число.";
     }
 
+    private void ShowCompletion()
+    {
+        _question.Text = "КАМПАНИЯ ПРОЙДЕНА!\n\nТы решил все 30 задач.";
+        _feedback.Text = $"Итог: {_points} очков. Прогресс сохранён.";
+        var restart = new Button { Text = "Новая кампания" };
+        restart.Pressed += () => { _level = 1; _points = 0; SaveProgress(); NewPuzzle(); };
+        AddChild(restart);
+    }
+
+    private void SaveProgress()
+    {
+        var config = new ConfigFile();
+        config.SetValue("campaign", "level", _level);
+        config.SetValue("campaign", "points", _points);
+        config.Save("user://mindforge.cfg");
+    }
+
+    private void LoadProgress()
+    {
+        var config = new ConfigFile();
+        if (config.Load("user://mindforge.cfg") != Error.Ok) return;
+        _level = Math.Clamp(config.GetValue("campaign", "level", 1).AsInt32(), 1, 31);
+        _points = Math.Max(0, config.GetValue("campaign", "points", 0).AsInt32());
+    }
+
     private void CheckAnswer()
     {
         if (!int.TryParse(_answer.Text.Trim(), out var value))
@@ -119,15 +146,8 @@ public partial class Main : Control
         }
         _points += 10;
         _level++;
-        if (_level > 30)
-        {
-            _question.Text = "КАМПАНИЯ ПРОЙДЕНА!\n\nТы решил все 30 задач.";
-            _feedback.Text = $"Итог: {_points} очков. Нажми «Новая кампания», чтобы начать заново.";
-            var restart = new Button { Text = "Новая кампания" };
-            restart.Pressed += () => { _level = 1; _points = 0; restart.QueueFree(); NewPuzzle(); };
-            AddChild(restart);
-            return;
-        }
+        SaveProgress();
+        if (_level > 30) { ShowCompletion(); return; }
         _feedback.Text = "Верно! +10 очков.";
         NewPuzzle();
     }

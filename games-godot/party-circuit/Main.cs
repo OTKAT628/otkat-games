@@ -11,7 +11,7 @@ public partial class Main : Control
     private Label _prompt = null!, _status = null!, _score = null!;
     private readonly List<Button> _playerButtons = new();
 
-    public override void _Ready() { BuildUi(); NewRound(); }
+    public override void _Ready() { LoadProgress(); BuildUi(); NewRound(); }
 
     private void BuildUi()
     {
@@ -30,9 +30,9 @@ public partial class Main : Control
         settings.AddChild(new Label { Text = "Игроков:" });
         var count = new OptionButton();
         for (int n = 2; n <= 4; n++) count.AddItem(n.ToString(), n);
-        count.Select(0);
-        count.ItemSelected += index => { _players = (int)index + 2; NewRound(); };
-        settings.AddChild(count); root.AddChild(settings);
+        count.Select(_players - 2);
+        count.ItemSelected += index => { _players = (int)index + 2; SaveProgress(); NewRound(); };
+        settings.AddChild(count); var reset = new Button { Text = "Сбросить счёт" }; reset.Pressed += ResetProgress; settings.AddChild(reset); root.AddChild(settings);
         _prompt = new Label { CustomMinimumSize = new Vector2(0, 170), AutowrapMode = TextServer.AutowrapMode.WordSmart };
         _prompt.AddThemeFontSizeOverride("font_size", 24); root.AddChild(_prompt);
         _status = new Label(); root.AddChild(_status);
@@ -79,8 +79,35 @@ public partial class Main : Control
         _roundOpen = false; _scores[player]++;
         _status.Text = $"Раунд забрал игрок {player + 1}!";
         foreach (var button in _playerButtons) button.Disabled = true;
-        _round++; UpdateScores();
+        _round++; UpdateScores(); SaveProgress();
     }
 
     private void UpdateScores() => _score.Text = string.Join("     ", Enumerable.Range(0, _players).Select(i => $"Игрок {i + 1}: {_scores[i]}"));
+
+    private void SaveProgress()
+    {
+        var config = new ConfigFile();
+        config.SetValue("party", "players", _players);
+        config.SetValue("party", "round", _round);
+        config.SetValue("party", "scores", new Godot.Collections.Array<int>(_scores));
+        config.Save("user://party-circuit.cfg");
+    }
+
+    private void LoadProgress()
+    {
+        var config = new ConfigFile();
+        if (config.Load("user://party-circuit.cfg") != Error.Ok) return;
+        _players = Math.Clamp(config.GetValue("party", "players", 2).AsInt32(), 2, 4);
+        _round = Math.Max(1, config.GetValue("party", "round", 1).AsInt32());
+        var saved = config.GetValue("party", "scores", new Godot.Collections.Array()).AsGodotArray();
+        for (int i = 0; i < Math.Min(4, saved.Count); i++) _scores[i] = Math.Max(0, saved[i].AsInt32());
+    }
+
+    private void ResetProgress()
+    {
+        Array.Clear(_scores, 0, _scores.Length);
+        _round = 1;
+        SaveProgress();
+        NewRound();
+    }
 }

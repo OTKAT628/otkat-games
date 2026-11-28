@@ -1,6 +1,6 @@
 using Godot;
 using System;
-using System.Collections.Generic;
+using System.Collections.Generic;\nusing System.Linq;\nusing System.Text.Json;
 
 public partial class Main : Node2D
 {
@@ -14,10 +14,14 @@ public partial class Main : Node2D
 
     public override void _Ready()
     {
-        for (int i = 0; i < 45; i++)
+        bool loaded = LoadProgress();
+        if (!loaded)
         {
-            var p = new Vector2I(GD.RandRange(1, MapW - 2), GD.RandRange(1, MapH - 2));
-            if (p != _player) _resources.Add((p, new[] { "tree", "rock", "berry" }[GD.RandRange(0, 2)]));
+            for (int i = 0; i < 45; i++)
+            {
+                var p = new Vector2I(GD.RandRange(1, MapW - 2), GD.RandRange(1, MapH - 2));
+                if (p != _player) _resources.Add((p, new[] { "tree", "rock", "berry" }[GD.RandRange(0, 2)]));
+            }
         }
         var layer = new CanvasLayer(); AddChild(layer);
         _hud = new Label { Position = new Vector2(18, 14) };
@@ -48,7 +52,7 @@ public partial class Main : Node2D
             Key.A or Key.Left => Vector2I.Left, Key.D or Key.Right => Vector2I.Right,
             _ => Vector2I.Zero
         };
-        if (dir != Vector2I.Zero) { _player = new Vector2I(Math.Clamp(_player.X + dir.X, 0, MapW - 1), Math.Clamp(_player.Y + dir.Y, 0, MapH - 1)); _moveCooldown = 0.12; }
+        if (dir != Vector2I.Zero) { _player = new Vector2I(Math.Clamp(_player.X + dir.X, 0, MapW - 1), Math.Clamp(_player.Y + dir.Y, 0, MapH - 1)); _moveCooldown = 0.12; SaveProgress(); }
     }
 
     private void Gather()
@@ -59,18 +63,53 @@ public partial class Main : Node2D
         if (item.Kind == "tree") { _wood++; _message = "Собрано дерево."; }
         else if (item.Kind == "rock") { _stone++; _message = "Собран камень."; }
         else { _food++; _message = "Собраны ягоды."; }
-        _resources.RemoveAt(found); UpdateHud();
+        _resources.RemoveAt(found); UpdateHud(); SaveProgress();
     }
     private void Eat()
     {
         if (_food <= 0) { _message = "Еды нет. Найди кусты с ягодами."; return; }
-        _food--; _hunger = Math.Min(100, _hunger + 35); _message = "Ты поел. Голод уменьшился.";
+        _food--; _hunger = Math.Min(100, _hunger + 35); _message = "Ты поел. Голод уменьшился."; SaveProgress();
     }
     private void Craft()
     {
-        if (_wood >= 3 && _stone >= 2) { _wood -= 3; _stone -= 2; _health = Math.Min(100, _health + 25); _message = "Ты построил укрытие и восстановил здоровье."; }
+        if (_wood >= 3 && _stone >= 2) { _wood -= 3; _stone -= 2; _health = Math.Min(100, _health + 25); _message = "Ты построил укрытие и восстановил здоровье."; SaveProgress(); }
         else _message = "Для укрытия нужно 3 дерева и 2 камня.";
     }
+    private sealed record SavedResource(int X, int Y, string Kind);
+    private sealed record SavedGame(int X, int Y, int Wood, int Stone, int Food, int Health, int Day, double Hunger, List<SavedResource> Resources);
+
+    private void SaveProgress()
+    {
+        var snapshot = new SavedGame(_player.X, _player.Y, _wood, _stone, _food, _health, _day, _hunger,
+            _resources.Select(r => new SavedResource(r.Pos.X, r.Pos.Y, r.Kind)).ToList());
+        using var file = FileAccess.Open("user://wild-frontier-save.json", FileAccess.ModeFlags.Write);
+        file?.StoreString(JsonSerializer.Serialize(snapshot));
+    }
+
+    private bool LoadProgress()
+    {
+        if (!FileAccess.FileExists("user://wild-frontier-save.json")) return false;
+        try
+        {
+            var snapshot = JsonSerializer.Deserialize<SavedGame>(FileAccess.GetFileAsString("user://wild-frontier-save.json"));
+            if (snapshot is null) return false;
+            _player = new Vector2I(Math.Clamp(snapshot.X, 0, MapW - 1), Math.Clamp(snapshot.Y, 0, MapH - 1));
+            _wood = Math.Max(0, snapshot.Wood); _stone = Math.Max(0, snapshot.Stone); _food = Math.Max(0, snapshot.Food);
+            _health = Math.Clamp(snapshot.Health, 0, 100); _day = Math.Max(1, snapshot.Day); _hunger = Math.Clamp(snapshot.Hunger, 0, 100);
+            _resources.Clear();
+            foreach (var r in snapshot.Resources ?? new List<SavedResource>())
+                if (r.X >= 0 && r.X < MapW && r.Y >= 0 && r.Y < MapH && (r.Kind == "tree" || r.Kind == "rock" || r.Kind == "berry"))
+                    _resources.Add((new Vector2I(r.X, r.Y), r.Kind));
+            return true;
+        }
+        catch (Exception ex) { GD.PushWarning($"Save could not be loaded: {ex.Message}"); return false; }
+    }
+
+    public override void _Notification(int what)
+    {
+        if (what == NotificationWMCloseRequest || what == NotificationPredelete) SaveProgress();
+    }
+
     private void UpdateHud() => _hud.Text = $"OTKAT WILD FRONTIER   День {_day}   Здоровье {_health}   Голод {(int)_hunger}\nДерево {_wood}   Камень {_stone}   Еда {_food}\n{_message}\nE — собрать   F — поесть   C — построить укрытие";
 
     public override void _Draw()
