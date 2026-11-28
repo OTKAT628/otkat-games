@@ -37,11 +37,12 @@ jobs:
           dotnet build games-godot/mindforge/OTKAT.Mindforge.csproj --configuration Release
           dotnet build games-godot/wild-frontier/OTKAT.WildFrontier.csproj --configuration Release
           dotnet build games-godot/world-detective/OTKAT.WorldDetective.csproj --configuration Release
+          dotnet build games-godot/survival/OTKAT.Survival.csproj --configuration Release
       - name: Validate Godot project imports
         shell: bash
         run: |
           set -euo pipefail
-          for project in party-circuit mindforge wild-frontier world-detective; do
+          for project in party-circuit mindforge wild-frontier world-detective survival; do
             godot --headless --editor --path "games-godot/$project" --quit
           done
           godot --headless --editor --path games/hide-and-seek --quit
