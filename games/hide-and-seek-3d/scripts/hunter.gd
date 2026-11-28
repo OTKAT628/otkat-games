@@ -2,6 +2,7 @@ extends CharacterBody3D
 class_name MallHunter
 
 signal caught_survivor
+signal hunter_defeated
 
 const HUNT_SPEED := 5.6
 const PATROL_SPEED := 2.4
@@ -20,6 +21,7 @@ var frozen_time := 0.0
 var bagged_time := 0.0
 var lure_time := 0.0
 var lure_position := Vector3.ZERO
+var health := 100
 
 func _ready() -> void:
 	_build_hunter()
@@ -157,6 +159,13 @@ func _physics_process(delta: float) -> void:
 				state = "patrol"
 		_:
 			_patrol(delta)
+
+func take_damage(amount: int) -> void:
+	if health <= 0:
+		return
+	health = maxi(0, health - maxi(amount, 0))
+	if health <= 0:
+		hunter_defeated.emit()
 
 func hear_noise(point: Vector3, radius: float) -> void:
 	if global_position.distance_to(point) <= radius and lure_time <= 0.0:
