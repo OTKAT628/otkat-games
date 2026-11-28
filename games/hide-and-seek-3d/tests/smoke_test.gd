@@ -25,6 +25,9 @@ func _run_smoke_test() -> void:
 	if not game.round_active:
 		_fail("Round did not start.")
 		return
+	if game.weapon_runtime.ammo_in_magazine <= 0 or not game.inventory.owns_weapon("ap_scout"):
+		_fail("Starter weapon or ammunition was not initialized.")
+		return
 
 	game.player.global_position = game.mall.disguise_points[0] + Vector3(0, 0, 0.8)
 	game.call("_toggle_disguise")
@@ -51,7 +54,7 @@ func _run_smoke_test() -> void:
 		return
 
 	var initial_hunter_health := game.hunter.health
-	game.call("_on_weapon_hit", game.hunter, "re_sentinel")
+	game.call("_on_weapon_hit", game.hunter, "ap_scout")
 	if game.hunter.health >= initial_hunter_health:
 		_fail("Weapon hit did not damage the hunter.")
 		return
@@ -71,6 +74,12 @@ func _run_smoke_test() -> void:
 		return
 	if game.get_node_or_null("DecoyEcho") == null:
 		_fail("Decoy ability did not create a visible decoy.")
+		return
+
+	var previous_wins := game.total_wins
+	game.call("_finish", true)
+	if game.total_wins != previous_wins + 1 or game.inventory.credits < 100:
+		_fail("Victory reward and profile progression were not saved.")
 		return
 
 	print("OTKAT Hide & Seek smoke test passed.")
