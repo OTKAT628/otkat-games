@@ -1,0 +1,7 @@
+{
+  "name": "Starter Scene",
+  "entities": [
+    { "name": "Player", "x": 100, "y": 80, "rotation": 0, "scaleX": 1, "scaleY": 1 },
+    { "name": "Camera", "x": 0, "y": 0, "rotation": 0, "scaleX": 1, "scaleY": 1 }
+  ]
+}
