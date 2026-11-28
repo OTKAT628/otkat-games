@@ -105,7 +105,7 @@ func _build_hud() -> void:
 
 	var ability_row := HBoxContainer.new()
 	ability_row.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	ability_row.position = Vector2(-330, 18)
+	ability_row.position = Vector2(-330, 136)
 	ability_row.add_theme_constant_override("separation", 8)
 	layer.add_child(ability_row)
 	for ability in [
