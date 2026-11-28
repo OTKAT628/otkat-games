@@ -1,0 +1,48 @@
+name: Build OTKAT Games Windows installer
+
+on:
+  push:
+    branches: [feature/android-apk-windows-exe, feature/15-new-app-games]
+    paths: ["web/**", "windows/**", ".github/workflows/build-windows-exe.yml"]
+  pull_request:
+    branches: [main, feature/15-new-app-games]
+    paths: ["web/**", "windows/**", ".github/workflows/build-windows-exe.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  installer:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install desktop packaging dependencies
+        working-directory: windows
+        run: npm install
+      - name: Build Windows installer
+        working-directory: windows
+        run: npm run dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: otkat-games-windows-installer
+          path: windows/dist/*.exe
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Publish Windows test release
+        if: github.ref == 'refs/heads/feature/android-apk-windows-exe'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: otkat-games-windows-v1.0.0-test
+          name: OTKAT Games Windows v1.0.0 (test)
+          prerelease: true
+          make_latest: false
+          body: |
+            Test build of the OTKAT Games desktop wrapper.
+            This unsigned Windows installer may trigger SmartScreen. Review the source and install only if you trust this test build.
+            Games load from bundled browser assets.
+          files: windows/dist/*.exe

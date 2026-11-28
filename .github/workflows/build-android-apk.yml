@@ -1,0 +1,53 @@
+name: Build OTKAT Games Android APK
+
+on:
+  push:
+    branches: [feature/android-apk-windows-exe, feature/15-new-app-games]
+    paths: ["web/**", "android/**", ".github/workflows/build-android-apk.yml"]
+  pull_request:
+    branches: [main, feature/15-new-app-games]
+    paths: ["web/**", "android/**", ".github/workflows/build-android-apk.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+      - name: Bundle web games into Android assets
+        run: |
+          mkdir -p android/app/src/main/assets/site
+          cp -R web/. android/app/src/main/assets/site/
+      - name: Build debug APK
+        working-directory: android
+        run: gradle --no-daemon assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: otkat-games-android-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Publish Android test release
+        if: github.ref == 'refs/heads/feature/android-apk-windows-exe'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: otkat-games-android-v1.0.0-test
+          name: OTKAT Games Android v1.0.0 (test)
+          prerelease: true
+          make_latest: false
+          body: |
+            Test build of the OTKAT Games Android catalog launcher.
+            This is a debug-signed WebView wrapper, not a Play Store production release.
+            The games themselves are browser/PWA experiences and require internet access.
+          files: android/app/build/outputs/apk/debug/app-debug.apk
