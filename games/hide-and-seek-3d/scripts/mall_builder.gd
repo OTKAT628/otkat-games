@@ -12,6 +12,8 @@ func build() -> void:
 	_build_shops()
 	_build_debris()
 	_build_props()
+	_build_overgrowth()
+	_build_atmosphere_details()
 
 func _material(color: Color, roughness: float = 0.88, metallic: float = 0.0) -> StandardMaterial3D:
 	var m := StandardMaterial3D.new()
@@ -71,6 +73,9 @@ func _build_lighting() -> void:
 	env.ambient_light_color = Color(0.22, 0.27, 0.31)
 	env.ambient_light_energy = 0.55
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	env.fog_enabled = true
+	env.fog_light_color = Color(0.19, 0.23, 0.22)
+	env.fog_density = 0.012
 	world.environment = env
 	add_child(world)
 
@@ -182,3 +187,63 @@ func _build_props() -> void:
 			4:
 				_box("LostSuitcase", Vector3(0.85, 0.55, 0.48), pos + Vector3(0, 0.28, 0), colors[i % colors.size()])
 		disguise_points.append(pos + Vector3(0, 0.5, 0))
+
+func _build_overgrowth() -> void:
+	var mold_dark := _material(Color("#293d32"), 0.98)
+	var mold_mid := _material(Color("#405343"), 0.96)
+	var vine_mat := _material(Color("#344b35"), 0.92)
+	var vine_light := _material(Color("#536347"), 0.9)
+	# Irregular damp patches on the floor and lower walls.
+	for i in range(26):
+		var x := rng.randf_range(-29.0, 29.0)
+		var z := rng.randf_range(-21.0, 21.0)
+		var sx := rng.randf_range(0.45, 2.4)
+		var sz := rng.randf_range(0.35, 1.8)
+		var patch := _box("MoldPatchFloor", Vector3(sx, 0.018, sz), Vector3(x, 0.018, z), mold_dark if i % 2 == 0 else mold_mid, false)
+		patch.rotation.y = rng.randf_range(-0.6, 0.6)
+	# Vertical mold stains along the outer walls.
+	for side in [-1.0, 1.0]:
+		for i in range(9):
+			var z := -20.0 + i * 5.0
+			var stain := _box("MoldStainWall", Vector3(0.025, rng.randf_range(0.8, 2.8), rng.randf_range(0.5, 2.0)), Vector3(side * 31.42, rng.randf_range(1.2, 3.0), z), mold_mid, false)
+			stain.rotation.x = rng.randf_range(-0.12, 0.12)
+	# Hanging roots and vines: short linked cylinders keep the mesh inexpensive.
+	for i in range(18):
+		var start := Vector3(rng.randf_range(-29.0, 29.0), 8.9, rng.randf_range(-21.0, 21.0))
+		var length := rng.randf_range(1.1, 3.8)
+		var sway := Vector3(rng.randf_range(-1.2, 1.2), -length, rng.randf_range(-1.2, 1.2))
+		_add_vine_segment(start, start + sway * 0.45, vine_mat, 0.055)
+		_add_vine_segment(start + sway * 0.45, start + sway, vine_light if i % 3 == 0 else vine_mat, 0.04)
+
+func _add_vine_segment(a: Vector3, b: Vector3, mat: Material, radius: float) -> void:
+	var delta := b - a
+	var length := delta.length()
+	if length < 0.05:
+		return
+	var mesh := CylinderMesh.new()
+	mesh.top_radius = radius * 0.72
+	mesh.bottom_radius = radius
+	mesh.height = length
+	var visual := MeshInstance3D.new()
+	visual.name = "HangingVine"
+	visual.mesh = mesh
+	visual.material_override = mat
+	visual.position = (a + b) * 0.5
+	visual.look_at(b, Vector3.UP)
+	visual.rotate_object_local(Vector3.RIGHT, PI * 0.5)
+	add_child(visual)
+
+func _build_atmosphere_details() -> void:
+	var broken_glass := _material(Color(0.42, 0.55, 0.57, 0.42), 0.12, 0.28)
+	var dirty_metal := _material(Color("#303638"), 0.82, 0.32)
+	# Fallen ceiling frames and shards suggest long-term abandonment.
+	for i in range(12):
+		var x := rng.randf_range(-27.0, 27.0)
+		var z := rng.randf_range(-21.0, 21.0)
+		if absf(x) < 8.0 and absf(z) < 6.0:
+			continue
+		var shard := _box("BrokenGlassShard", Vector3(rng.randf_range(0.25, 0.8), 0.025, rng.randf_range(0.18, 0.55)), Vector3(x, 0.035, z), broken_glass, false)
+		shard.rotation.y = rng.randf_range(-PI, PI)
+	for i in range(5):
+		var beam := _box("FallenCeilingFrame", Vector3(rng.randf_range(2.5, 5.5), 0.12, 0.16), Vector3(rng.randf_range(-25.0, 25.0), rng.randf_range(0.5, 2.2), rng.randf_range(-20.0, 20.0)), dirty_metal, false)
+		beam.rotation.z = rng.randf_range(-0.7, 0.7)
