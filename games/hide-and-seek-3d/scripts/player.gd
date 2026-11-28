@@ -3,8 +3,13 @@ class_name HideAndSeekPlayer
 
 signal disguise_changed(active: bool)
 signal player_caught
+signal noise_emitted(position: Vector3, radius: float)
 
 const WALK_SPEED := 5.2
+const SPRINT_SPEED := 7.4
+const CROUCH_SPEED := 2.8
+const STAMINA_DRAIN := 24.0
+const STAMINA_REGEN := 16.0
 const MOUSE_SENSITIVITY := 0.0024
 const TOUCH_LOOK_SENSITIVITY := 0.004
 const GRAVITY := 18.0
@@ -19,6 +24,14 @@ var move_touch_origin := Vector2.ZERO
 var look_touch_id := -1
 var last_look_position := Vector2.ZERO
 var mobile_button: Button
+var sprint_button: Button
+var crouch_button: Button
+var touch_sprint := false
+var touch_crouch := false
+var stamina := 100.0
+var is_sprinting := false
+var is_crouching := false
+var noise_timer := 0.0
 var interact_callback: Callable
 var position_before_disguise := Vector3.ZERO
 var saved_collision_layer := 1
@@ -91,6 +104,30 @@ func _build_mobile_controls() -> void:
 	mobile_button.pressed.connect(_on_interact_pressed)
 	layer.add_child(mobile_button)
 
+	sprint_button = Button.new()
+	sprint_button.text = "БЕГ"
+	sprint_button.custom_minimum_size = Vector2(92, 58)
+	sprint_button.anchor_left = 1.0
+	sprint_button.anchor_top = 1.0
+	sprint_button.anchor_right = 1.0
+	sprint_button.anchor_bottom = 1.0
+	sprint_button.position = Vector2(-430, -112)
+	sprint_button.button_down.connect(_on_sprint_down)
+	sprint_button.button_up.connect(_on_sprint_up)
+	layer.add_child(sprint_button)
+
+	crouch_button = Button.new()
+	crouch_button.text = "ПРИСЕСТЬ"
+	crouch_button.custom_minimum_size = Vector2(100, 58)
+	crouch_button.anchor_left = 1.0
+	crouch_button.anchor_top = 1.0
+	crouch_button.anchor_right = 1.0
+	crouch_button.anchor_bottom = 1.0
+	crouch_button.position = Vector2(-326, -112)
+	crouch_button.button_down.connect(_on_crouch_down)
+	crouch_button.button_up.connect(_on_crouch_up)
+	layer.add_child(crouch_button)
+
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		_rotate_view(event.relative, MOUSE_SENSITIVITY)
@@ -141,14 +178,40 @@ func _physics_process(delta: float) -> void:
 		input_vector.y -= 1.0
 	input_vector += touch_move
 	input_vector = input_vector.limit_length(1.0)
+	is_crouching = touch_crouch or Input.is_key_pressed(KEY_CTRL)
+	is_sprinting = (touch_sprint or Input.is_key_pressed(KEY_SHIFT)) and not is_crouching and input_vector.length() > 0.1 and stamina > 0.5
+	if is_sprinting:
+		stamina = maxf(0.0, stamina - STAMINA_DRAIN * delta)
+	else:
+		stamina = minf(100.0, stamina + STAMINA_REGEN * delta)
+	var move_speed := CROUCH_SPEED if is_crouching else (SPRINT_SPEED if is_sprinting else WALK_SPEED)
+	var target_camera_height := 1.05 if is_crouching else 1.58
+	camera_pivot.position.y = move_toward(camera_pivot.position.y, target_camera_height, delta * 3.0)
 	var direction := (global_transform.basis * Vector3(input_vector.x, 0, -input_vector.y)).normalized()
-	velocity.x = direction.x * WALK_SPEED
-	velocity.z = direction.z * WALK_SPEED
+	velocity.x = direction.x * move_speed
+	velocity.z = direction.z * move_speed
+	if is_sprinting:
+		noise_timer -= delta
+		if noise_timer <= 0.0:
+			noise_emitted.emit(global_position, 23.0)
+			noise_timer = 0.85
 	if not is_on_floor():
 		velocity.y -= GRAVITY * delta
 	else:
 		velocity.y = -0.2
 	move_and_slide()
+
+func _on_sprint_down() -> void:
+	touch_sprint = true
+
+func _on_sprint_up() -> void:
+	touch_sprint = false
+
+func _on_crouch_down() -> void:
+	touch_crouch = true
+
+func _on_crouch_up() -> void:
+	touch_crouch = false
 
 func _on_interact_pressed() -> void:
 	if interact_callback.is_valid():
