@@ -4,19 +4,23 @@ Engine target: Godot 4.7.2 (GDScript), Compatibility renderer for desktop and mo
 
 Open `project.godot` in Godot 4.7.2 and run the main scene.
 
-## Current playable loop in source
-- Main menu and controls/help screen.
-- First-person survivor movement with keyboard/mouse and two-zone Android touch controls.
-- Walk, sprint and crouch movement; sprint consumes stamina and loud footsteps can attract the hunter.
+## Current gameplay implemented in source
+- Main menu, help, settings, profile, armory and exit.
+- First-person and collision-aware third-person camera modes.
+- Keyboard/mouse and Android touch controls.
+- Walk, sprint, crouch, stamina and noise-based hunter investigation.
 - Twelve-second preparation phase followed by a 150-second hunt.
-- Five disguise prop forms matching the mall prop set: cart, barrel, shop display, planter and suitcase.
-- Hunter patrol/chase/investigation with line-of-sight checks, hearing for sprinting and close-range discovery of a disguised player.
-- Three active survivor abilities: decoy lure, temporary freeze and temporary hunter slow.
-- Pause/resume, win/lose result screen, replay and return-to-menu flow.
-- Headless gameplay smoke test in `tests/smoke_test.gd`, invoked by the Godot 4.7.2 GitHub Actions workflow.
+- Five disguise prop forms: shopping cart, barrel, shop display, planter and suitcase. Player collision and weapon view are hidden while disguised and restored when leaving.
+- Hunter patrol, line-of-sight chase, hearing, investigation, close-range capture and health/damage.
+- A usable starter sidearm with ammo, reserve ammo, reload, mobile fire/reload buttons and a hunter health readout. The hunter can be defeated by landing enough hits.
+- Three survivor abilities: decoy lure, temporary freeze and temporary hunter slow.
+- Original modular low-poly survivor and masked hunter models assembled from procedural parts.
+- Local profile persistence for wins, losses and selected weapon; wins award 100 credits and losses award 25.
+- Credit-only armory for Apocalypse weapons and cosmetic weapon skins. No real-money purchases.
+- Headless gameplay assertions in `tests/smoke_test.gd`, invoked by the Godot 4.7.2 GitHub Actions workflow.
 
 ## Current scope and limitations
-This is a local single-player vertical slice, not the complete commercial game. The map and characters still use procedural blockout geometry. There is no online multiplayer, room code/Quick Join, second hunter, finished character art/animation, complete weapon combat and armory UI, production cosmetic shop, six finished worlds or 72 finished maps yet. The weapon/cosmetic catalog is a data prototype and is not yet integrated into the match loop.
+This is one local single-player map using procedural geometry and character art, not the complete commercial game. Online multiplayer, room codes/Quick Join, the other five worlds and 72 finished maps, authored production art/animations, full survivor/hunter roster, full cosmetics for characters, achievements, cloud progression and OTKAT ID sync are not complete.
 
 ## Validation
-The GitHub Actions smoke test imports the project, runs gameplay assertions for round start, disguise/collision restoration and all three abilities, then launches the main scene headlessly. Do not treat the project as verified until the workflow completes successfully and the game is also checked on an actual Android device.
+The GitHub Actions workflow imports the project, runs gameplay assertions for scene startup, disguise/collision restoration, crouch, camera switching, weapon damage, abilities and victory rewards, then launches the main scene headlessly. Do not treat the project as verified until the workflow completes successfully and the game is also checked on an actual Android device.
