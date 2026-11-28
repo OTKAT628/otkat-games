@@ -79,7 +79,7 @@ async function boot() {
   const { data: { session }, error } = await supabase.auth.getSession();
   if (error) showMessage(error.message, "error");
   await renderSession(session?.user || null);
-  supabase.auth.onAuthStateChange(async (event, sessionState) => {
+  supabase.auth.onAuthStateChange((event, sessionState) => {
     if (event === "PASSWORD_RECOVERY") {
       authView.hidden = true;
       profileView.hidden = true;
@@ -87,7 +87,7 @@ async function boot() {
       clearMessage();
       return;
     }
-    await renderSession(sessionState?.user || null);
+    queueMicrotask(() => { void renderSession(sessionState?.user || null); });
   });
 }
 $("tab-login").addEventListener("click", () => setMode("login"));
