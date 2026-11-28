@@ -203,7 +203,7 @@ func _show_screen(title_text: String, body_text: String, buttons: Array) -> void
 func _show_controls_help() -> void:
 	_show_screen(
 		"УПРАВЛЕНИЕ",
-		"КОМПЬЮТЕР\nWASD или стрелки — движение. Shift — бег (расходует выносливость). Ctrl — присесть и двигаться тише. Мышь — обзор. E — маскировка. Q — обман, F — заморозка, G — мешок. Esc — пауза. R — новый раунд после завершения.\n\nANDROID\nЛевая половина экрана — движение. Правая — обзор. Кнопки «Бег», «Присесть», «Маскировка» и три способности находятся на экране.\n\nЦЕЛЬ\nНайди предмет для маскировки до конца подготовки. Охотник может заметить тебя, если подойдёт близко. Переживи 150 секунд.",
+		"КОМПЬЮТЕР\nWASD или стрелки — движение. Shift — бег (расходует выносливость). Ctrl — присесть и двигаться тише. V — переключить вид от первого/третьего лица. Мышь — обзор. E — маскировка. Q — обман, F — заморозка, G — мешок. Esc — пауза. R — новый раунд после завершения.\n\nANDROID\nЛевая половина экрана — движение. Правая — обзор. Кнопки «Бег», «Присесть», «Маскировка», «Камера» и три способности находятся на экране.\n\nЦЕЛЬ\nНайди предмет для маскировки до конца подготовки. Охотник может заметить тебя, если подойдёт близко. Переживи 150 секунд.",
 		[{"text": "НАЗАД", "action": Callable(self, "_build_main_menu")}]
 	)
 
@@ -222,6 +222,11 @@ func _start_round() -> void:
 	player.global_position = Vector3(-23.0, 0.1, 17.0)
 	player.stamina = 100.0
 	player.noise_timer = 0.0
+	player.touch_sprint = false
+	player.touch_crouch = false
+	player.is_sprinting = false
+	player.is_crouching = false
+	player._set_crouch_pose(false)
 	abilities.cooldowns.clear()
 	abilities.set_process(true)
 	player.set_physics_process(true)
