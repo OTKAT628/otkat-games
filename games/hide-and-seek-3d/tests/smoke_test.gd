@@ -28,12 +28,12 @@ func _run_smoke_test() -> void:
 
 	game.player.global_position = game.mall.disguise_points[0] + Vector3(0, 0, 0.8)
 	game.call("_toggle_disguise")
-	if not game.player.disguised or game.player.collision_layer != 0:
-		_fail("Disguise did not hide the player and disable player collision.")
+	if not game.player.disguised or game.player.collision_layer != 0 or game.player.weapon_mount.visible:
+		_fail("Disguise did not hide the player, weapon and player collision.")
 		return
 	game.call("_leave_disguise")
-	if game.player.disguised or game.player.collision_layer == 0:
-		_fail("Leaving disguise did not restore the player.")
+	if game.player.disguised or game.player.collision_layer == 0 or not game.player.weapon_mount.visible:
+		_fail("Leaving disguise did not restore the player and weapon.")
 		return
 
 	game.player._set_crouch_pose(true)
