@@ -29,8 +29,12 @@ jobs:
           version: 4.4.1
           use-dotnet: true
           include-templates: false
-      - name: Build C# Mindforge project
-        run: dotnet build games-godot/mindforge/OTKAT.Mindforge.csproj --configuration Release
+      - name: Build all C# game projects
+        run: |
+          set -euo pipefail
+          dotnet build games-godot/party-circuit/OTKAT.PartyCircuit.csproj --configuration Release
+          dotnet build games-godot/mindforge/OTKAT.Mindforge.csproj --configuration Release
+          dotnet build games-godot/wild-frontier/OTKAT.WildFrontier.csproj --configuration Release
       - name: Validate Godot project imports
         shell: bash
         run: |
