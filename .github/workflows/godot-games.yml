@@ -45,6 +45,7 @@ jobs:
             godot --headless --editor --path "games-godot/$project" --quit
           done
           godot --headless --editor --path games/hide-and-seek --quit
+          godot --headless --editor --path games-godot/world-detective-mobile --quit
 
   export-world-detective-android:
     runs-on: ubuntu-latest
@@ -64,16 +65,16 @@ jobs:
       - uses: chickensoft-games/setup-godot@v2
         with:
           version: 4.4.1
-          use-dotnet: true
+          use-dotnet: false
           include-templates: true
       - name: Install Android SDK packages
-        run: sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+        run: sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "cmake;3.10.2.4988404" "ndk;23.2.8568313"
       - name: Build and export Android APK
         run: |
           set -euo pipefail
-          dotnet build games-godot/world-detective/OTKAT.WorldDetective.csproj --configuration Release
+          godot --headless --editor --path games-godot/world-detective-mobile --install-android-build-template
           mkdir -p artifacts
-          godot --headless --path games-godot/world-detective --export-debug "Android" artifacts/otkat-world-detective-debug.apk
+          godot --headless --path games-godot/world-detective-mobile --export-debug "Android" artifacts/otkat-world-detective-debug.apk
       - uses: actions/upload-artifact@v4
         with:
           name: otkat-world-detective-android-debug
