@@ -36,6 +36,20 @@ func _run_smoke_test() -> void:
 		_fail("Leaving disguise did not restore the player.")
 		return
 
+	game.player._set_crouch_pose(true)
+	if not is_equal_approx(game.player.body_capsule.height, 1.05):
+		_fail("Crouch did not change the player collision capsule.")
+		return
+	game.player._set_crouch_pose(false)
+	game.player.toggle_camera_mode()
+	if not game.player.third_person:
+		_fail("Third-person camera mode did not activate.")
+		return
+	game.player.toggle_camera_mode()
+	if game.player.third_person:
+		_fail("First-person camera mode did not restore.")
+		return
+
 	game.round_phase = "hunt"
 	game.call("_use_ability", "freeze")
 	if game.hunter.frozen_time <= 0.0:
