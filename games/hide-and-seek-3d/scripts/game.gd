@@ -4,6 +4,8 @@ const MallBuilder = preload("res://scripts/mall_builder.gd")
 const PlayerController = preload("res://scripts/player.gd")
 const HunterController = preload("res://scripts/hunter.gd")
 const AbilityManager = preload("res://scripts/prop_abilities.gd")
+const WeaponRuntime = preload("res://scripts/weapon_runtime.gd")
+const ArsenalRegistry = preload("res://scripts/arsenal_registry.gd")
 
 const PREP_TIME := 12.0
 const ROUND_TIME := 150.0
@@ -15,8 +17,12 @@ var fov_index := 1
 var player: HideAndSeekPlayer
 var hunter: MallHunter
 var abilities: OtkatPropAbilities
+var weapon_runtime: OtkatWeaponRuntime
 var mall: AbandonedMallBuilder
 var ability_buttons: Array[Button] = []
+var weapon_buttons: Array[Button] = []
+var ammo_label: Label
+var victory_message := "Ты пережил всю охоту и выбрался из торгового центра."
 var round_phase := "prepare"
 var phase_time := PREP_TIME
 var finished := false
@@ -60,7 +66,19 @@ func _spawn_characters() -> void:
 	hunter.set_physics_process(false)
 	hunter.target = player
 	hunter.caught_survivor.connect(_on_player_caught)
+	hunter.hunter_defeated.connect(_on_hunter_defeated)
 	add_child(hunter)
+
+	weapon_runtime = WeaponRuntime.new()
+	weapon_runtime.name = "SurvivorWeapon"
+	weapon_runtime.shooter = player
+	weapon_runtime.position = Vector3(0.32, -0.25, -0.55)
+	player.camera.add_child(weapon_runtime)
+	player.weapon_mount = weapon_runtime
+	player.fire_callback = Callable(self, "_fire_weapon")
+	weapon_runtime.target_hit.connect(_on_weapon_hit)
+	weapon_runtime.ammo_changed.connect(_on_ammo_changed)
+	weapon_runtime.equip("realistic", "re_sentinel", "re_sentinel_graphite")
 
 	abilities = AbilityManager.new()
 	abilities.name = "PropAbilities"
@@ -107,6 +125,11 @@ func _build_hud() -> void:
 	stamina_label.add_theme_color_override("font_color", Color("#8fd2a0"))
 	column.add_child(stamina_label)
 
+	ammo_label = Label.new()
+	ammo_label.add_theme_font_size_override("font_size", 15)
+	ammo_label.add_theme_color_override("font_color", Color("#e6c36a"))
+	column.add_child(ammo_label)
+
 	var ability_row := HBoxContainer.new()
 	ability_row.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 	ability_row.position = Vector2(-330, 136)
@@ -125,6 +148,24 @@ func _build_hud() -> void:
 		ability_row.add_child(ability_button)
 		ability_buttons.append(ability_button)
 	ability_row.visible = OS.has_feature("mobile")
+
+	var weapon_row := HBoxContainer.new()
+	weapon_row.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	weapon_row.position = Vector2(-230, 192)
+	weapon_row.add_theme_constant_override("separation", 8)
+	layer.add_child(weapon_row)
+	for action in [
+		{"label": "СТРЕЛЯТЬ", "callback": Callable(self, "_fire_weapon")},
+		{"label": "ПЕРЕЗАРЯДИТЬ", "callback": Callable(self, "_reload_weapon")}
+	]:
+		var weapon_button := Button.new()
+		weapon_button.text = str(action.label)
+		weapon_button.custom_minimum_size = Vector2(108, 48)
+		weapon_button.add_theme_font_size_override("font_size", 13)
+		weapon_button.pressed.connect(action.callback)
+		weapon_row.add_child(weapon_button)
+		weapon_buttons.append(weapon_button)
+	weapon_row.visible = OS.has_feature("mobile")
 
 	var crosshair := Label.new()
 	crosshair.text = "+"
@@ -260,6 +301,8 @@ func _start_round() -> void:
 	player._set_crouch_pose(false)
 	abilities.cooldowns.clear()
 	abilities.set_process(true)
+	weapon_runtime.equip("realistic", "re_sentinel", "re_sentinel_graphite")
+	victory_message = "Ты пережил всю охоту и выбрался из торгового центра."
 	player.set_physics_process(true)
 	player.set_process_input(true)
 	var touch_controls := player.get_node_or_null("TouchControls")
@@ -267,6 +310,9 @@ func _start_round() -> void:
 		touch_controls.visible = OS.has_feature("mobile")
 	for button in ability_buttons:
 		button.get_parent().visible = OS.has_feature("mobile")
+	for button in weapon_buttons:
+		button.get_parent().visible = OS.has_feature("mobile")
+	hunter.health = 100
 	hunter.global_position = Vector3(23.0, 0.1, -17.0)
 	hunter.frozen_time = 0.0
 	hunter.bagged_time = 0.0
@@ -318,6 +364,32 @@ func _use_ability(ability_id: String) -> void:
 		ability_position += Vector3.UP * 0.5
 	abilities.global_position = ability_position
 	abilities.use_ability(ability_id, hunter)
+
+func _fire_weapon() -> void:
+	if not round_active or finished or round_phase != "hunt":
+		hud_status.text = "Стрелять можно только во время охоты."
+		return
+	weapon_runtime.try_fire(player.camera.global_position, player.get_camera_direction())
+
+func _reload_weapon() -> void:
+	if not round_active or finished:
+		return
+	weapon_runtime.reload_weapon()
+
+func _on_ammo_changed(current: int, reserve: int) -> void:
+	if is_instance_valid(ammo_label):
+		ammo_label.text = "ПАТРОНЫ  %02d / %02d" % [current, reserve]
+
+func _on_weapon_hit(target: Object, weapon_id: String) -> void:
+	if target == hunter:
+		var weapon_data := ArsenalRegistry.get_weapon("realistic", weapon_id)
+		var damage := int(weapon_data.get("damage", 0))
+		hunter.take_damage(damage)
+		hud_status.text = "Попадание! Здоровье охотника: %d%%" % hunter.health
+
+func _on_hunter_defeated() -> void:
+	victory_message = "Ты победил охотника и открыл выход из торгового центра!"
+	_finish(true)
 
 func _on_player_noise(point: Vector3, radius: float) -> void:
 	if round_phase == "hunt" and not player.disguised:
@@ -437,9 +509,11 @@ func _finish(won: bool) -> void:
 		touch_controls.visible = false
 	for button in ability_buttons:
 		button.get_parent().visible = false
+	for button in weapon_buttons:
+		button.get_parent().visible = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	var result_title := "ПОБЕДА!" if won else "ТЕБЯ НАШЛИ"
-	var result_body := "Ты пережил всю охоту и выбрался из торгового центра." if won else "Охотник обнаружил твою маскировку. Попробуй другую точку и следи за его маршрутом."
+	var result_body := victory_message if won else "Охотник обнаружил тебя. Попробуй другую точку, используй маскировку и способности."
 	_show_screen(
 		result_title,
 		result_body,
@@ -461,6 +535,8 @@ func _pause_round() -> void:
 	if touch_controls:
 		touch_controls.visible = false
 	for button in ability_buttons:
+		button.get_parent().visible = false
+	for button in weapon_buttons:
 		button.get_parent().visible = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	_show_screen(
@@ -487,6 +563,8 @@ func _resume_round() -> void:
 		touch_controls.visible = OS.has_feature("mobile")
 	for button in ability_buttons:
 		button.get_parent().visible = OS.has_feature("mobile")
+	for button in weapon_buttons:
+		button.get_parent().visible = OS.has_feature("mobile")
 	if not OS.has_feature("mobile"):
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
@@ -500,6 +578,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 		elif event.keycode == KEY_R and finished:
 			_start_round()
+		elif event.keycode == KEY_R and round_active:
+			_reload_weapon()
 		elif event.keycode == KEY_Q:
 			_use_ability("decoy")
 		elif event.keycode == KEY_F:
