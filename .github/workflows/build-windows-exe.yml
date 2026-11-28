@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   installer:
@@ -31,4 +31,18 @@ jobs:
           name: otkat-games-windows-installer
           path: windows/dist/*.exe
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 90
+
+      - name: Publish Windows test release
+        if: github.ref == 'refs/heads/feature/android-apk-windows-exe'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: otkat-games-windows-v1.0.0-test
+          name: OTKAT Games Windows v1.0.0 (test)
+          prerelease: true
+          make_latest: false
+          body: |
+            Test build of the OTKAT Games desktop wrapper.
+            This unsigned Windows installer may trigger SmartScreen. Review the source and install only if you trust this test build.
+            Games load from bundled browser assets.
+          files: windows/dist/*.exe
