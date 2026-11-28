@@ -30,12 +30,12 @@ for (const slug of standalone) {
   }
 }
 pass(`${standalone.length} standalone pages and registrations`);
-const slugify = value => value.toLowerCase().normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const slugify = value => value.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const mobileRows = [
-  ...[...read('web/apps/mobile-100/mobile-100.js').matchAll(/\\['[^']*','([^']*)'/g)].slice(0,10).map(m=>m[1]),
-  ...[...read('web/apps/mobile-100-02/mobile-100-02.js').matchAll(/\\['[^']*','([^']*)'/g)].slice(0,10).map(m=>m[1]),
-  ...[...read('web/apps/mobile-100-03/mobile-100-03.js').matchAll(/\\['[^']*','([^']*)'/g)].slice(0,10).map(m=>m[1]),
-  ...JSON.parse(read('web/apps/mobile-100-04/mobile-100-04.js').match(/const G=(\\[[\\s\\S]*?\\]);const \\$=/)[1]).map(x=>x.name)
+  ...[...read('web/apps/mobile-100/mobile-100.js').matchAll(/\['[^']*','([^']*)'/g)].slice(0,10).map(m=>m[1]),
+  ...[...read('web/apps/mobile-100-02/mobile-100-02.js').matchAll(/\['[^']*','([^']*)'/g)].slice(0,10).map(m=>m[1]),
+  ...[...read('web/apps/mobile-100-03/mobile-100-03.js').matchAll(/\['[^']*','([^']*)'/g)].slice(0,10).map(m=>m[1]),
+  ...JSON.parse(read('web/apps/mobile-100-04/mobile-100-04.js').match(/const G=(\[[\s\\S]*?\]);const \$=/)[1]).map(x=>x.name)
 ];
 if (mobileRows.length !== 90) fail(`expected 90 individual Mobile 100 entries, found ${mobileRows.length}`);
 for (const name of mobileRows) {
