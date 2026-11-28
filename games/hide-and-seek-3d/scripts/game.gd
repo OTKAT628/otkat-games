@@ -6,6 +6,7 @@ const HunterController = preload("res://scripts/hunter.gd")
 const AbilityManager = preload("res://scripts/prop_abilities.gd")
 const WeaponRuntime = preload("res://scripts/weapon_runtime.gd")
 const ArsenalRegistry = preload("res://scripts/arsenal_registry.gd")
+const InventoryManager = preload("res://scripts/cosmetic_inventory.gd")
 
 const PREP_TIME := 12.0
 const ROUND_TIME := 150.0
@@ -18,7 +19,11 @@ var player: HideAndSeekPlayer
 var hunter: MallHunter
 var abilities: OtkatPropAbilities
 var weapon_runtime: OtkatWeaponRuntime
+var inventory: OtkatCosmeticInventory
 var mall: AbandonedMallBuilder
+var total_wins := 0
+var total_losses := 0
+var selected_weapon_id := "re_sentinel"
 var ability_buttons: Array[Button] = []
 var weapon_buttons: Array[Button] = []
 var ammo_label: Label
@@ -71,6 +76,14 @@ func _spawn_characters() -> void:
 	hunter.hunter_defeated.connect(_on_hunter_defeated)
 	add_child(hunter)
 
+	inventory = InventoryManager.new()
+	if not inventory.owns_weapon("re_sentinel"):
+		inventory.unlock_weapon("re_sentinel")
+	if not inventory.owns_skin("re_sentinel_graphite"):
+		inventory.unlock_skin("re_sentinel_graphite")
+	inventory.equip_skin("re_sentinel", "re_sentinel_graphite")
+	_load_profile_stats()
+
 	weapon_runtime = WeaponRuntime.new()
 	weapon_runtime.name = "SurvivorWeapon"
 	weapon_runtime.shooter = player
@@ -81,7 +94,7 @@ func _spawn_characters() -> void:
 	weapon_runtime.target_hit.connect(_on_weapon_hit)
 	weapon_runtime.ammo_changed.connect(_on_ammo_changed)
 	weapon_runtime.weapon_blocked.connect(_on_weapon_blocked)
-	weapon_runtime.equip("realistic", "re_sentinel", "re_sentinel_graphite")
+	weapon_runtime.equip("realistic", selected_weapon_id, inventory.get_equipped_skin(selected_weapon_id))
 	weapon_runtime.set_process(false)
 
 	abilities = AbilityManager.new()
@@ -191,6 +204,8 @@ func _build_main_menu() -> void:
 		[
 			{"text": "НАЧАТЬ ИГРУ", "action": Callable(self, "_start_round")},
 			{"text": "КАК ИГРАТЬ", "action": Callable(self, "_show_controls_help")},
+			{"text": "АРСЕНАЛ", "action": Callable(self, "_show_armory")},
+			{"text": "ПРОФИЛЬ", "action": Callable(self, "_show_profile")},
 			{"text": "НАСТРОЙКИ", "action": Callable(self, "_show_settings")},
 			{"text": "ВЫХОД", "action": Callable(self, "_exit_game")}
 		]
@@ -229,7 +244,7 @@ func _show_screen(title_text: String, body_text: String, buttons: Array) -> void
 	screen_layer.add_child(panel)
 
 	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 16)
+	column.add_theme_constant_override("separation", 10)
 	panel.add_child(column)
 
 	var title := Label.new()
@@ -251,10 +266,102 @@ func _show_screen(title_text: String, body_text: String, buttons: Array) -> void
 	for item in buttons:
 		var button := Button.new()
 		button.text = str(item["text"])
-		button.custom_minimum_size = Vector2(0, 54)
-		button.add_theme_font_size_override("font_size", 18)
+		button.custom_minimum_size = Vector2(0, 48)
+		button.add_theme_font_size_override("font_size", 17)
 		button.pressed.connect(item["action"])
 		column.add_child(button)
+
+func _load_profile_stats() -> void:
+	var config := ConfigFile.new()
+	if config.load("user://otkat_hide_seek_profile.cfg") == OK:
+		total_wins = int(config.get_value("stats", "wins", 0))
+		total_losses = int(config.get_value("stats", "losses", 0))
+		selected_weapon_id = str(config.get_value("loadout", "weapon", "re_sentinel"))
+	if not inventory.owns_weapon(selected_weapon_id):
+		selected_weapon_id = "re_sentinel"
+
+func _save_profile_stats() -> void:
+	var config := ConfigFile.new()
+	config.set_value("stats", "wins", total_wins)
+	config.set_value("stats", "losses", total_losses)
+	config.set_value("loadout", "weapon", selected_weapon_id)
+	config.save("user://otkat_hide_seek_profile.cfg")
+
+func _show_profile() -> void:
+	_show_screen(
+		"ПРОФИЛЬ ВЫЖИВШЕГО",
+		"Победы: %d\nПоражения: %d\nКредиты: %d\nОружие открыто: %d\nСкины открыты: %d\n\nВыбранное оружие: %s" % [
+			total_wins, total_losses, inventory.credits, inventory.owned_weapons.size(),
+			inventory.owned_skins.size(), selected_weapon_id
+		],
+		[{"text": "НАЗАД", "action": Callable(self, "_build_main_menu")}]
+	)
+
+func _show_armory() -> void:
+	var buttons: Array = []
+	for item in ArsenalRegistry.get_world_weapons("realistic"):
+		var weapon_id := str(item.id)
+		var button_text := ""
+		var action: Callable
+		if inventory.owns_weapon(weapon_id):
+			button_text = "ВЫБРАТЬ: %s" % str(item.name)
+			action = Callable(self, "_equip_weapon").bind(weapon_id)
+		else:
+			button_text = "КУПИТЬ: %s — %d кр." % [str(item.name), int(item.value)]
+			action = Callable(self, "_buy_weapon").bind(weapon_id)
+		buttons.append({"text": button_text, "action": action})
+	buttons.append({"text": "НАЗАД", "action": Callable(self, "_build_main_menu")})
+	_show_screen("АРСЕНАЛ", "Оружие реалистичного мира. Покупки совершаются только за игровые кредиты. Выбранное оружие: %s." % selected_weapon_id, buttons)
+
+func _buy_weapon(weapon_id: String) -> void:
+	var item := ArsenalRegistry.get_weapon("realistic", weapon_id)
+	if item.is_empty():
+		return
+	if not inventory.spend_credits(int(item.value)):
+		_show_screen("НЕ ХВАТАЕТ КРЕДИТОВ", "Нужно %d кредитов. Сейчас у тебя %d." % [int(item.value), inventory.credits], [{"text": "В АРСЕНАЛ", "action": Callable(self, "_show_armory")}])
+		return
+	inventory.unlock_weapon(weapon_id)
+	_equip_weapon(weapon_id)
+
+func _equip_weapon(weapon_id: String) -> void:
+	if not inventory.owns_weapon(weapon_id):
+		return
+	selected_weapon_id = weapon_id
+	_save_profile_stats()
+	weapon_runtime.equip("realistic", selected_weapon_id, inventory.get_equipped_skin(selected_weapon_id))
+	_show_weapon_skins(weapon_id)
+
+func _show_weapon_skins(weapon_id: String) -> void:
+	var item := ArsenalRegistry.get_weapon("realistic", weapon_id)
+	var buttons: Array = []
+	for skin in item.get("skins", []):
+		var skin_id := str(skin.id)
+		var action: Callable
+		var label_text: String
+		if inventory.owns_skin(skin_id):
+			label_text = "ЭКИПИРОВАТЬ СКИН: %s" % str(skin.name)
+			action = Callable(self, "_equip_skin").bind(weapon_id, skin_id)
+		else:
+			label_text = "КУПИТЬ СКИН: %s — %d кр." % [str(skin.name), int(skin.value)]
+			action = Callable(self, "_buy_skin").bind(weapon_id, skin_id)
+		buttons.append({"text": label_text, "action": action})
+	buttons.append({"text": "НАЗАД К ОРУЖИЮ", "action": Callable(self, "_show_armory")})
+	_show_screen(str(item.name), "Выбирай оформление оружия. Скины не дают боевого преимущества.", buttons)
+
+func _buy_skin(weapon_id: String, skin_id: String) -> void:
+	var skin := ArsenalRegistry.get_skin("realistic", weapon_id, skin_id)
+	if skin.is_empty():
+		return
+	if not inventory.spend_credits(int(skin.value)):
+		_show_screen("НЕ ХВАТАЕТ КРЕДИТОВ", "Нужно %d кредитов. Сейчас у тебя %d." % [int(skin.value), inventory.credits], [{"text": "К СКИНАМ", "action": Callable(self, "_show_weapon_skins").bind(weapon_id)}])
+		return
+	inventory.unlock_skin(skin_id)
+	_equip_skin(weapon_id, skin_id)
+
+func _equip_skin(weapon_id: String, skin_id: String) -> void:
+	if inventory.equip_skin(weapon_id, skin_id) and selected_weapon_id == weapon_id:
+		weapon_runtime.equip("realistic", weapon_id, skin_id)
+	_show_weapon_skins(weapon_id)
 
 func _show_settings() -> void:
 	_show_screen(
@@ -521,6 +628,14 @@ func _on_player_caught() -> void:
 func _finish(won: bool) -> void:
 	if finished:
 		return
+	if won:
+		total_wins += 1
+		inventory.add_credits(100)
+		victory_message += "\nНаграда: +100 кредитов."
+	else:
+		total_losses += 1
+		inventory.add_credits(25)
+	_save_profile_stats()
 	finished = true
 	round_active = false
 	player.set_physics_process(false)
