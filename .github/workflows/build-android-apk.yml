@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   apk:
@@ -36,4 +36,18 @@ jobs:
           name: otkat-games-android-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 90
+
+      - name: Publish Android test release
+        if: github.ref == 'refs/heads/feature/android-apk-windows-exe'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: otkat-games-android-v1.0.0-test
+          name: OTKAT Games Android v1.0.0 (test)
+          prerelease: true
+          make_latest: false
+          body: |
+            Test build of the OTKAT Games Android catalog launcher.
+            This is a debug-signed WebView wrapper, not a Play Store production release.
+            The games themselves are browser/PWA experiences and require internet access.
+          files: android/app/build/outputs/apk/debug/app-debug.apk
