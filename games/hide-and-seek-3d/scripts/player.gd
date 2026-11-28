@@ -233,15 +233,18 @@ func _input(event: InputEvent) -> void:
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 func _is_touch_ui_position(position: Vector2, viewport_size: Vector2) -> bool:
-	if position.y >= viewport_size.y - 132.0:
-		if position.x <= 220.0 or position.x >= viewport_size.x - 180.0:
-			return true
+	if position.x <= 220.0 and position.y >= viewport_size.y - 132.0:
+		return true
+	if position.x >= viewport_size.x - 180.0 and position.y >= viewport_size.y - 190.0:
+		return true
 	if position.y <= 190.0 and position.x >= viewport_size.x - 340.0:
 		return true
 	return false
 
 func toggle_camera_mode() -> void:
 	third_person = not third_person
+	if is_instance_valid(camera_mode_button):
+		camera_mode_button.text = "КАМЕРА: 3-Е ЛИЦО" if third_person else "КАМЕРА: 1-Е ЛИЦО"
 	if not third_person:
 		camera.position = Vector3.ZERO
 		camera.rotation = Vector3.ZERO
