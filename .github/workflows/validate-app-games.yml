@@ -49,7 +49,8 @@ jobs:
           for slug in clockwork-courier lumen-garden cargo-zero mine-signal signal-siege pulse-runner inkbound deep-current rift-cartographer marble-foundry kitchen-sprint orbit-weaver skyhook frostline hex-frontier; do
             test -s "web/apps/$slug/index.html"
             grep -q "data-app-game=\"$slug\"" "web/apps/$slug/index.html"
-            grep -q 'src="../app-games.js"' "web/apps/$slug/index.html"
+            grep -Eq 'src="../app-games.js"|const root=document.querySelector' "web/apps/$slug/index.html"
+            grep -q 'download=' "web/apps/$slug/index.html"
           done
           test -s web/apps/app-games.js
           grep -q "clockwork-courier" web/apps/app-games.js
